@@ -1,0 +1,49 @@
+@import url("../index.scss");
+
+.digit-app-container {
+  @extend .light-background;
+  width: 100%;
+  form {
+    .digit-card {
+      max-width: 960px;
+      h2 {
+        @extend .light-text-color-primary;
+        text-align: left;
+      }
+      button {
+        @extend .light-primary-button;
+        max-width: 240px;
+      }
+      .digit-input-otp-wrap,
+      .digit-card-text-button {
+        @extend .light-primary-button;
+        text-align: left;
+      }
+    }
+  }
+}
+
+@screen dt {
+  .digit-employee-app-container {
+    @apply w-full;
+  }
+
+  .digit-app-container {
+    width: 100%;
+    form {
+      .digit-card {
+        max-width: 960px;
+        h2 {
+          text-align: left;
+        }
+        button {
+          max-width: 240px;
+        }
+        .digit-input-otp-wrap,
+        .digit-card-text-button {
+          text-align: left;
+        }
+      }
+    }
+  }
+}

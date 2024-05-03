@@ -1,0 +1,11 @@
+.digit-search-box {
+  @apply flex m-sm justify-between;
+  .digit-search-action {
+    position: relative;
+    @apply flex flex-row text-focus;
+    align-items: center;
+    .digit-search-text {
+      @apply ml-sm;
+    }
+  }
+}
