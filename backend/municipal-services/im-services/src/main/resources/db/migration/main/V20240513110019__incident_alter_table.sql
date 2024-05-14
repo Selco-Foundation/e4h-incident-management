@@ -1,0 +1,1 @@
+ALTER TABLE eg_incident_v2 ADD COLUMN comments CHARACTER VARYING(256);

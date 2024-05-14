@@ -1,0 +1,83 @@
+serviceMaps:
+  serviceName: im-services
+  mappings:
+  - version: 1.0
+    description: Persists im service request in tables
+    fromTopic: save-im-request
+    isTransaction: true
+    queryMaps:
+
+    - query: INSERT INTO eg_incident_v2(id, tenantid, incidenttype, incidentsubtype, incidentid, additionaldetails, applicationstatus, district, block, phctype, phcsubtype, createdby, createdtime, lastmodifiedby, lastmodifiedtime, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      basePath: incident
+      jsonMaps:
+      - jsonPath: $.incident.id
+
+      - jsonPath: $.incident.tenantId
+
+      - jsonPath: $.incident.incidentType
+
+      - jsonPath: $.incident.incidentSubType
+
+      - jsonPath: $.incident.incidentId
+
+      - jsonPath: $.incident.additionalDetail
+        type: JSON
+        dbType: JSONB
+
+      - jsonPath: $.incident.applicationStatus
+
+      - jsonPath: $.incident.district
+
+      - jsonPath: $.incident.block
+
+      - jsonPath: $.incident.phcType
+
+      - jsonPath: $.incident.phcSubType
+
+      - jsonPath: $.incident.auditDetails.createdBy
+
+      - jsonPath: $.incident.auditDetails.createdTime
+
+      - jsonPath: $.incident.auditDetails.lastModifiedBy
+
+      - jsonPath: $.incident.auditDetails.lastModifiedTime
+
+      - jsonPath: $.incident.comments
+
+
+  - version: 1.0
+    description: Updates im service request in tables
+    fromTopic: update-im-request
+    isTransaction: true
+    queryMaps:
+
+    - query: UPDATE eg_incident_v2 SET incidenttype=?, incidentid=?, incidentsubtype=?, additionaldetails=?, applicationstatus=?, district=? , block=? , phctype=? , phcsubtype=?, lastmodifiedby=?, lastmodifiedtime=?, comments=? WHERE id=?;
+      basePath: incident
+      jsonMaps:
+      - jsonPath: $.incident.incidentType
+
+      - jsonPath: $.incident.incidentId
+
+      - jsonPath: $.incident.incidentSubType
+
+      - jsonPath: $.incident.additionalDetail
+        type: JSON
+        dbType: JSONB
+
+      - jsonPath: $.incident.applicationStatus
+
+      - jsonPath: $.incident.district
+
+      - jsonPath: $.incident.block
+
+      - jsonPath: $.incident.phcType
+
+      - jsonPath: $.incident.phcSubType
+
+      - jsonPath: $.incident.auditDetails.lastModifiedBy
+
+      - jsonPath: $.incident.auditDetails.lastModifiedTime
+
+      - jsonPath: $.incident.comments
+
+      - jsonPath: $.incident.id
