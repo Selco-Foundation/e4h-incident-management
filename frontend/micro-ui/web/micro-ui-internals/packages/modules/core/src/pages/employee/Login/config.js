@@ -3,7 +3,7 @@ export const loginConfig = [
     texts: {
       header: "CORE_COMMON_LOGIN",
       submitButtonLabel: "CORE_COMMON_CONTINUE",
-      secondaryButtonLabel: "CORE_COMMON_FORGOT_PASSWORD",
+      secondaryButtonLabel: "",
     },
     inputs: [
       {

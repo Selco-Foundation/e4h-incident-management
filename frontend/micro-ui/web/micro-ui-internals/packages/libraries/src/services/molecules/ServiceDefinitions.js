@@ -20,20 +20,14 @@ export const GetServiceDefinitions = {
       },
     };
     const serviceDefs = await MdmsService.getDataByCriteria(tenantId, criteria, "Incident");
-    console.log("serv", serviceDefs)
-    
-    
     Storage.set("serviceDefinitions", serviceDefs);
     return serviceDefs;
   },
   getMenu: async (stateCode, t) => {
-    console.log("statecode", stateCode)
     var Menu = [];
     const response = await GetServiceDefinitions.get(stateCode);
-    console.log("subres", response)
     await Promise.all(
       response.map((def) => {
-        console.log("Menu", Menu)
         if (!Menu.find((e) => e.key === def.menuPath)) {
           def.menuPath === ""
             ? Menu.push({
@@ -51,9 +45,7 @@ export const GetServiceDefinitions = {
   },
 
   getSubMenu: async (tenantId, selectedType, t) => {
-    console.log("selectedttt", selectedType)
     const fetchServiceDefs = await GetServiceDefinitions.get(tenantId);
-    console.log("fetch", fetchServiceDefs)
     return fetchServiceDefs
       .filter((def) => def.menuPath === selectedType.key)
       .map((id) => ({

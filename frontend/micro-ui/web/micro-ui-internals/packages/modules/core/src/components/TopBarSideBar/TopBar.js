@@ -5,7 +5,7 @@ import ChangeCity from "../ChangeCity";
 import ChangeLanguage from "../ChangeLanguage";
 
 const TextToImg = (props) => (
-  <span className="user-img-txt" onClick={props.toggleMenu} title={props.name}>
+  <span className="user-img-txt" style={{backgroundColor:"#7a2829"}} onClick={props.toggleMenu} title={props.name}>
     {props?.name?.[0]?.toUpperCase()}
   </span>
 );
@@ -100,19 +100,20 @@ const TopBar = ({
     );
   }
   const loggedin = userDetails?.access_token ? true : false;
+  console.log("cityDetails",cityDetails)
   return (
     <div className="topbar">
       {mobileView ? <Hamburger handleClick={toggleSidebar} color="#9E9E9E" /> : null}
       <img className="city" src={loggedin ? cityDetails?.logoId : stateInfo?.statelogo} />
       <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
         {loggedin &&
-          (cityDetails?.city?.ulbGrade ? (
+          (cityDetails?.city ? (
             <p className="ulb" style={mobileView ? { fontSize: "14px", display: "inline-block" } : {}}>
               {t(cityDetails?.i18nKey).toUpperCase()}{" "}
-              {t(`ULBGRADE_${cityDetails?.city?.ulbGrade.toUpperCase().replace(" ", "_").replace(".", "_")}`).toUpperCase()}
+              {/* {t(`ULBGRADE_${cityDetails?.city?.ulbGrade.toUpperCase().replace(" ", "_").replace(".", "_")}`).toUpperCase()} */}
             </p>
           ) : (
-            <img className="state" src={logoUrl} />
+            <img className="state" src={""} />
           ))}
         {!loggedin && (
           <p className="ulb" style={mobileView ? { fontSize: "14px", display: "inline-block" } : {}}>
@@ -147,7 +148,7 @@ const TopBar = ({
                 />
               </div>
             )}
-            <img className="state" src={logoUrl} />
+       <img className="city" src={loggedin ? cityDetails?.logoId : stateInfo?.statelogo} />
           </div>
         )}
       </span>

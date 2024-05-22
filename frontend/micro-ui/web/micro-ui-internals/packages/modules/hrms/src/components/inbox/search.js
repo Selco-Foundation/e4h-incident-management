@@ -86,7 +86,7 @@ const SearchApplication = ({ onSearch, type, onClose, searchFields, searchParams
             </div>
             <div className="inbox-action-container">
               {type === "desktop" && !mobileView && (
-                <span style={{ paddingTop: "9px" }} className="clear-search">
+                <span style={{ paddingTop: "9px", color:"#7a2829" }} className="clear-search" >
                   {clearAll()}
                 </span>
               )}

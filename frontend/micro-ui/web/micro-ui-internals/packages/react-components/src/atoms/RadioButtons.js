@@ -13,6 +13,33 @@ const RadioButtons = (props) => {
 
   return (
     <div style={props.style} className={`radio-wrap ${props?.additionalWrapperClass}`}>
+         <style>
+        {`
+          .radio-wrap .radio-btn-wrap input:checked ~ .radio-btn-checkmark:after,
+          .radio-wrap .radio-btn-wrap .checkbox-wrap .input-emp:checked ~ .radio-btn-checkmark:after,
+          .checkbox-wrap .radio-wrap .radio-btn-wrap .input-emp:checked ~ .radio-btn-checkmark:after {
+            display: block;
+            --bg-opacity: 1;
+            background-color: #7a2829;
+            background-color: #7a2829;
+            height: 1.25rem;
+            width: 1.25rem;
+            border-radius: 9999px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+          }
+
+          .radio-wrap .radio-btn-wrap input:checked ~ .radio-btn-checkmark,
+          .radio-wrap .radio-btn-wrap .checkbox-wrap .input-emp:checked ~ .radio-btn-checkmark,
+          .checkbox-wrap .radio-wrap .radio-btn-wrap .input-emp:checked ~ .radio-btn-checkmark {
+            border-width: 1px;
+            --border-opacity: 1;
+            border-color:  #7a2829;
+            border-color:  #7a2829;
+          }
+        `}
+      </style>
       {props?.options?.map((option, ind) => {
         if (props?.optionsKey && !props?.isDependent) {
           return (

@@ -8,7 +8,7 @@ const EmployeeModuleCard = ({ Icon, moduleName, kpis = [], links = [], isCitizen
       <div className="complaint-links-container">
         <div className="header" style={isCitizen ? { padding: "0px" } : longModuleName ? {alignItems:"flex-start"}:{}}>
           <span className="text removeHeight">{moduleName}</span>
-          <span className="logo removeBorderRadiusLogo">{Icon}</span>
+          <span className="logo removeBorderRadiusLogo" style={{backgroundColor:"#7a2829"}}>{Icon}</span>
         </div>
         <div className="body" style={{ margin: "0px", padding: "0px" }}>
           {kpis.length !== 0 && (
@@ -20,7 +20,7 @@ const EmployeeModuleCard = ({ Icon, moduleName, kpis = [], links = [], isCitizen
                   </div>
                   <div>
                     {link ? (
-                      <Link to={link} className="employeeTotalLink">
+                      <Link to={link} className="employeeTotalLink" style={{color:"#7a2829"}}>
                         {label}
                       </Link>
                     ) : null}
@@ -32,11 +32,11 @@ const EmployeeModuleCard = ({ Icon, moduleName, kpis = [], links = [], isCitizen
           <div className="links-wrapper" style={{ width: "80%" }}>
             {links.map(({ count, label, link, hyperlink }, index) => (
               <span className="link" key={index}>
-                {link ? hyperlink ? <a href={link}>{label}</a> : <Link to={link}>{label}</Link> : null}
+                {link ? hyperlink ? <a href={link}>{label}</a> : <Link to={link} style={{color:"#7a2829"}}>{label}</Link> : null}
                 {count ? (
                   <>
                     {FsmHideCount ? null : <span className={"inbox-total"}>{count || "-"}</span>}
-                    <Link to={link}>
+                    <Link to={link} style={{color:"#7a2829"}}>
                       <ArrowRightInbox />
                     </Link>
                   </>
@@ -55,7 +55,7 @@ const ModuleCardFullWidth = ({ moduleName,  links = [], isCitizen = false, class
     <div className={className ? className : "employeeCard card-home customEmployeeCard home-action-cards"} style={styles ? styles : {}}>
       <div className="complaint-links-container" style={{ padding: "10px" }}>
         <div className="header" style={isCitizen ? { padding: "0px" } : headerStyle}>
-          <span className="text removeHeight">{moduleName}</span>
+          <span className="text removeHeight" >{moduleName}</span>
           <span className="link">
             <a href={subHeaderLink}>
               <span className={"inbox-total"} style={{ display: "flex", alignItems: "center", color: "#F47738", fontWeight: "bold" }}>

@@ -39,7 +39,7 @@ if (!user || !user.access_token || !user.info) {
   const employeeToken = getFromStorage("Employee.token")
   const employeeInfo = getFromStorage("Employee.user-info")
   const employeeTenantId = getFromStorage("Employee.tenant-id")
-
+console.log("employeeTenantIdemployeeTenantId",employeeTenantId)
   const userType = token === citizenToken ? "citizen" : "employee";
   window.Digit.SessionStorage.set("user_type", userType);
   window.Digit.SessionStorage.set("userType", userType);

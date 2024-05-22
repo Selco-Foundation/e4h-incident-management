@@ -6,6 +6,7 @@ const useComplaintSubType = (complaintType, t) => {
   useEffect(() => {
     (async () => {
       if (complaintType) {
+        console.log("Digit.ULBService.getCurrentTenantId()")
         const menu = await Digit.GetServiceDefinitions.getSubMenu(Digit.ULBService.getCurrentTenantId(), complaintType, t);
         setSubTypeMenu(menu);
       }

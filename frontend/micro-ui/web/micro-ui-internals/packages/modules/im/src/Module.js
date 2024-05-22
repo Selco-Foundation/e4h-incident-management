@@ -21,7 +21,7 @@ import SelectRating from "./pages/citizen/Rating/SelectRating";
 import ResponseCitizen from "./pages/citizen/Response";
 
 
-export const PGRReducers = getRootReducer;
+export const IMReducers = getRootReducer;
 
 const IMModule = ({ stateCode, userType, tenants }) => {
   const moduleCode = "IM";
@@ -33,7 +33,7 @@ const IMModule = ({ stateCode, userType, tenants }) => {
   }
 
   Digit.SessionStorage.set("IM_TENANTS", tenants);
-
+console.log("IM_TENANTS",tenants)
   if (userType === "citizen") {
     return <CitizenApp />;
   } else {

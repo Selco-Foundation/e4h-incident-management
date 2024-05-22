@@ -1,29 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
 import { initLibraries } from "@egovernments/digit-ui-libraries";
-import { PGRReducers } from "@egovernments/digit-ui-module-pgr";
-
-
-
-
+import { IMReducers } from "@egovernments/digit-ui-module-pgr";
+import { initHRMSComponents } from "@egovernments/digit-ui-module-hrms";
+import { HRMSModule } from "@egovernments/digit-ui-module-hrms";
 import { initIMComponents } from "@egovernments/digit-ui-module-pgr";
-
-
 import { initReceiptsComponents, ReceiptsModule } from "@egovernments/digit-ui-module-receipts";
 // import { initReportsComponents } from "@egovernments/digit-ui-module-reports";
-
-
 import { PaymentModule, PaymentLinks, paymentConfigs } from "@egovernments/digit-ui-module-common";
-
-
-
-
-
 import { DigitUI } from "@egovernments/digit-ui-module-core";
 import { initCommonPTComponents } from "@egovernments/digit-ui-module-commonpt";
 import { initBillsComponents, BillsModule } from "@egovernments/digit-ui-module-bills";
-
 // import {initCustomisationComponents} from "./customisations";
 
 // import { PGRModule, PGRLinks } from "@egovernments/digit-ui-module-pgr";
@@ -40,18 +27,16 @@ var Digit = window.Digit || {};
 
 const enabledModules = [
   "PGR",
-  
   "Payment",
   "PT",
   "QuickPayLinks",
-  
   "Receipts",
   "Reports",
-  
   "Bills",
   "SW",
   "BillAmendment",
-  "IM"
+  "IM",
+  "HRMS"
 ];
 
 const initTokens = (stateCode) => {
@@ -66,7 +51,7 @@ const initTokens = (stateCode) => {
   const employeeInfo = window.localStorage.getItem("Employee.user-info");
  // console.log("empInfo", employeeInfo)
   const employeeTenantId = window.localStorage.getItem("Employee.tenant-id");
-
+console.log("employeeTenantId",employeeTenantId)
   const userTypeInfo = userType === "CITIZEN" || userType === "QACT" ? "citizen" : "employee";
   window.Digit.SessionStorage.set("user_type", userTypeInfo);
   window.Digit.SessionStorage.set("userType", userTypeInfo);
@@ -84,37 +69,20 @@ const initTokens = (stateCode) => {
 
 const initDigitUI = () => {
   window?.Digit.ComponentRegistryService.setupRegistry({
-    ...pgrComponents,
     PaymentModule,
+    HRMSModule,
     ...paymentConfigs,
     PaymentLinks,
-   
-   
     ReceiptsModule,
     BillsModule,
-
-    // TLModule,
-    // TLLinks,
   });
-
- 
   initIMComponents();
- 
- 
-  
   initReceiptsComponents();
-  // initReportsComponents();
-  
- 
-  
-  
   initCommonPTComponents();
   initBillsComponents();
-
-  // initCustomisationComponents();
-
+  initHRMSComponents();
   const moduleReducers = (initData) => ({
-    pgr: PGRReducers(initData),
+    pgr: IMReducers(initData),
   });
 
   window.Digit.Customizations = {

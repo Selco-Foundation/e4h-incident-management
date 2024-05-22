@@ -47,6 +47,7 @@ const LogoutDialog = ({ onSelect, onCancel, onDismiss }) => {
       });
     };
   });
+  console.log("isMobileViewisMobileView",isMobileView,t("CORE_LOGOUT_WEB_CONFIRMATION_MESSAGE") )
   return (
     isMobileView
       ? <Modal
@@ -100,7 +101,7 @@ const LogoutDialog = ({ onSelect, onCancel, onDismiss }) => {
         actionSaveOnSubmit={onSelect}
         formId="modal-action">
         <div>
-          <CardText style={{ marginBottom: "54px", marginLeft: "8px", marginRight: "8px" }}>
+          <CardText style={{ marginBottom: "54px", marginLeft: "8px", marginRight: "8px", color:"black" }}>
             {t("CORE_LOGOUT_WEB_CONFIRMATION_MESSAGE") + " "}
             <strong>{t("CORE_LOGOUT_MESSAGE")}?</strong>
           </CardText>

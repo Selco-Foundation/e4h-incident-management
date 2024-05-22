@@ -63,7 +63,7 @@ const NavItem = props => {
       <div className='actions' style={{padding:"0px"}}>
       {leftIcon /*className={style.navIcon}*/ }
       <div data-tip="React-tooltip" data-for={`jk-side-${getModuleName}`}>
-      <span /*className={style.navLabel}*/ style={{fontSize:"14px"}}>{trimModuleName}</span>
+      <span /*className={style.navLabel}*/ style={{fontSize:"14px",color:"White"}}>{trimModuleName}</span>
       {trimModuleName?.includes("...") && <ReactTooltip textColor="white" backgroundColor="grey" place="right" type="info" effect="solid" id={`jk-side-${getModuleName}`}>
                     {t(`ACTION_TEST_${getModuleName}`)}
                   </ReactTooltip>}

@@ -47,7 +47,7 @@ public class NotificationConsumer {
             // Adding in MDC so that tracer can add it in header
             MDC.put(IMConstants.TENANTID_MDC_STRING, tenantId);
 
-           // notificationService.process(request, topic);
+            notificationService.process(request, topic);
         } catch (Exception ex) {
             StringBuilder builder = new StringBuilder("Error while listening to value: ").append(record)
                     .append("on topic: ").append(topic);

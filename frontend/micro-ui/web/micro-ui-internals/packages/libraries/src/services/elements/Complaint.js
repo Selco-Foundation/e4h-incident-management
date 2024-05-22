@@ -4,37 +4,31 @@ export const Complaint = {
     comments,
     district,
     uploadedFile,
-   block,
-   reporterName,
-   complaintType,
-   healthcentre,
-   healthCareType,
+    block,
+    reporterName,
+    complaintType,
+    uploadImages,
+    healthcentre,
+    healthCareType,
+    tenantId
   }) => {
-    const tenantId = Digit.ULBService.getCurrentTenantId();
-    console.log("uploadedFile", uploadedFile)
-    let uploadedImages=null
-    if(uploadedFile!==null){
-      uploadedImages=[{
-        documentType: "PHOTO",
-        fileStoreId: uploadedFile||"",
-        documentUid: "",
-        additionalDetails: {},
-      }]
-    }
+    console.log("tenantId",tenantId)
+    const tenantIdNew = tenantId;
     let mobileNumber = JSON.parse(sessionStorage.getItem("Digit.User"))?.value?.info?.mobileNumber;
-    var serviceDefs = await Digit.MDMSService.getServiceDefs(tenantId, "Incident");
+    var serviceDefs = await Digit.MDMSService.getServiceDefs(tenantIdNew, "Incident");
     const incidentType = serviceDefs.filter((def) => def.serviceCode === complaintType)[0].menuPath.toUpperCase();
     const defaultData = {
       incident: {
-        district: district?.name,
-        tenantId:tenantId,
+        district: district?.key,
+        tenantId:tenantIdNew,
         incidentType:incidentType,
        incidentSubtype:complaintType,
        phcType:healthcentre?.name,
        phcSubType:healthCareType?.centreType,
        comments:comments,
-        block:block?.name,
+       block:block?.key,
         additionalDetail: {
+          fileStoreId: uploadedFile,
         },
         source: Digit.Utils.browser.isWebview() ? "mobile" : "web",
        
@@ -44,17 +38,11 @@ export const Complaint = {
         //: uploadedImages
       },
     };
-    if(uploadedImages!==null){
+    if(uploadImages!==null){
       defaultData.workflow={
         ...defaultData.workflow,
-        verificationDocuments: [
-        {
-          documentType: "PHOTO",
-          fileStoreId: uploadedFile,
-          documentUid: "",
-          additionalDetails: {},
-        },
-      ]};
+        verificationDocuments:uploadImages
+      };
     }
 
     if (Digit.SessionStorage.get("user_type") === "employee") {
@@ -71,12 +59,10 @@ export const Complaint = {
             tenantId: tenantId,
           },
         ],
-        tenantId: tenantId,
+        tenantId: tenantIdNew,
       };
     }
-    console.log("def", defaultData)
     const response = await Digit.PGRService.create(defaultData, cityCode);
-    console.log("res", response)
     return response;
   },
 
@@ -85,14 +71,7 @@ export const Complaint = {
     complaintDetails.workflow.assignes = employeeData ? [employeeData.uuid] : null;
     complaintDetails.workflow.comments = comments;
     uploadedDocument
-      ? (complaintDetails.workflow.verificationDocuments = [
-            {
-              documentType: "PHOTO",
-              fileStoreId: uploadedDocument,
-              documentUid: "",
-              additionalDetails: {},
-            },
-          ])
+      ? (complaintDetails.workflow.verificationDocuments = uploadedDocument)
       : null;
 
     if (!uploadedDocument) complaintDetails.workflow.verificationDocuments = [];

@@ -361,7 +361,7 @@ const HamburgerIcon = ({ className, styles, color = "#fdfdfd" }) => (
 
 export const HomeIcon = ({ className, styles }) => (
   <svg className={className} viewBox="0 0 24 24" style={{ ...styles }}>
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" style={{fill :"#7a2829"}}></path>
   </svg>
 );
 
@@ -373,7 +373,7 @@ export const LanguageIcon = ({ className, styles }) => (
 
 export const LogoutIcon = ({ className, styles }) => (
   <svg className={className}  viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ ...styles }}>
-<path d="M15 4L13.59 5.41L16.17 8H6V10H16.17L13.59 12.58L15 14L20 9L15 4ZM2 2H10V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H10V16H2V2Z" fill="#505A5F"/>
+<path d="M15 4L13.59 5.41L16.17 8H6V10H16.17L13.59 12.58L15 14L20 9L15 4ZM2 2H10V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H10V16H2V2Z" fill="white"/>
 </svg>
 );
 
@@ -851,7 +851,7 @@ const WSICon = ({ className, styles }) => (
 
 const ArrowVectorDown = ({ className, styles }) => (
   <svg style={{ ...styles }} className={className} viewBox="0 0 16 11" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16 2.33331L14.12 0.453308L8 6.55997L1.88 0.453307L-8.21774e-08 2.33331L8 10.3333L16 2.33331Z" fill="#F47738" />
+    <path d="M16 2.33331L14.12 0.453308L8 6.55997L1.88 0.453307L-8.21774e-08 2.33331L8 10.3333L16 2.33331Z" fill="#7a2829" />
   </svg>
 );
 

@@ -172,7 +172,7 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
                 t={t}
               />
             </div>
-            <div>
+            {/* <div>
               <div className="filter-label">{t("HR_COMMON_TABLE_COL_DEPT")}</div>
               <Dropdown
                 option={Digit.Utils.locale.convertToLocaleData(data?.MdmsRes?.["common-masters"]?.Department, 'COMMON_MASTERS_DEPARTMENT')}
@@ -181,7 +181,7 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
                 optionKey={"i18text"}
                 t={t}
               />
-            </div>
+            </div> */}
             <div>
               <div>
                 {GetSelectOptions(

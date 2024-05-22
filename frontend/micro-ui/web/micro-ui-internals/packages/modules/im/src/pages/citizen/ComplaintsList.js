@@ -12,8 +12,11 @@ export const ComplaintsList = (props) => {
   const tenantId = Digit.SessionStorage.get("CITIZEN.COMMON.HOME.CITY")?.code || Digit.ULBService.getCurrentTenantId();
   const { t } = useTranslation();
   const { path, url } = useRouteMatch();
+
   let { isLoading, error, data, revalidate } = Digit.Hooks.pgr.useComplaintsListByMobile(tenantId, mobileNumber);
 
+
+console.log("datadatadata",data)
   useEffect(() => {
     revalidate();
   }, []);

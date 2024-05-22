@@ -103,8 +103,13 @@ import useCancelBill from "./bills/useCancelBill";
 import useTenantsBills from "./bills/useTenants";
 
 
-
-
+//import useRouteSubscription from "./fsm/useRouteSubscription";
+import useHRMSSearch from "./hrms/useHRMSsearch";
+import useHrmsMDMS from "./hrms/useHRMSMDMS";
+import useHRMSCreate from "./hrms/useHRMScreate";
+import useHRMSUpdate from "./hrms/useHRMSUpdate";
+import useHRMSCount from "./hrms/useHRMSCount";
+import useHRMSGenderMDMS from "./hrms/useHRMSGender";
 import useGetHowItWorksJSON from "./useHowItWorksJSON";
 import useGetFAQsJSON from "./useGetFAQsJSON";
 
@@ -131,23 +136,19 @@ const pgr = {
   useComplaintStatusCount,
   useMDMS: usePGRMDMS,
 };
-
-
-
-
-
-
-
-
-
+const hrms = {
+  useHRMSSearch,
+  useHrmsMDMS,
+  useHRMSCreate,
+  useHRMSUpdate,
+  useHRMSCount,
+  useHRMSGenderMDMS,
+};
 const receipts = {
   useReceiptsMDMS,
   useReceiptsSearch,
   useReceiptsUpdate,
 };
-
-
-
 const events = {
   useInbox: useEventInbox,
   useCreateEvent,
@@ -197,7 +198,7 @@ const Hooks = {
   useStore,
   useDocumentSearch,
   useTenants,
-
+  hrms,
   useFeedBackSearch,
   useAccessControl,
   useBillSearch,
@@ -205,25 +206,13 @@ const Hooks = {
   useTenantsBills,
   usePrivacyContext,
   pgr,
-  
-  
-
-  
-  
- 
   receipts,
-  
   events,
- 
   survey,
-  
-  
   useCustomMDMS,
   useCustomAPIHook,
- 
   useGetHowItWorksJSON,
   useGetFAQsJSON,
-  
   useStaticData,
   useDynamicData,
   useBulkPdfDetails,

@@ -44,6 +44,7 @@ const Filter = (props) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   // let localities = Digit.Hooks.pgr.useLocalities({ city: tenantId });
   const { data: localities } = Digit.Hooks.useBoundaryLocalities(tenantId, "admin", {}, t);
+
   let serviceDefs = Digit.Hooks.pgr.useServiceDefs(tenantId, "PGR");
 
   const onRadioChange = (value) => {

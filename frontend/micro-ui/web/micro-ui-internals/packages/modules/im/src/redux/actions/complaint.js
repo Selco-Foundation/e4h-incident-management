@@ -9,21 +9,21 @@ const createComplaint = ({
  reporterName,
  district,
  block,
+ uploadImages,
  uploadedFile,
-  mobileNumber,
-  name,
+  tenantId
 }) => async (dispatch, getState) => {
   const response = await Digit.Complaint.create({
-    
-    
     comments,
     complaintType,
     block,
     healthCareType,
     uploadedFile,
     healthcentre,
+    uploadImages,
     district,
-    reporterName
+    reporterName,
+    tenantId
 
     
   });

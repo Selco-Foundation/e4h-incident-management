@@ -23,14 +23,67 @@ export const AppModules = ({ stateCode, userType, modules, appTenants }) => {
   if (!user || !user?.access_token || !user?.info) {
     return <Redirect to={{ pathname: "/digit-ui/employee/user/login", state: { from: location.pathname + location.search } }} />;
   }
-//console.log("path", path)
-const appRoutes = modules.map(({ code, tenants }, index) => {
-  const Module = Digit.ComponentRegistryService.getComponent(`${code}Module`);
-  return Module ? (
-    <Route key={index} path={`${path}/${code.toLowerCase()}`}>
-      <Module stateCode={stateCode} moduleCode={code} userType={userType} tenants={getTenants(tenants, appTenants)} />
-    </Route>
-  ) :   <Route key={index} path={`${path}/${code.toLowerCase()}`}>
+  
+  let mod =[
+ 
+    {
+        "module": "HRMS",
+        "code": "HRMS",
+        "active": true,
+        "order": 2,
+        "tenants": [
+            {
+                "code": "pg.aidbhavisubcentre"
+            },
+            {
+                "code": "pg.alkodsubcentre"
+            },
+            {
+                "code": "pg.amdihalsubcentre"
+            },
+            {
+                "code": "pg.ambamathsubcentre"
+            },
+            {
+                "code": "pg"
+            }
+        ]
+    },
+    {
+        "module": "IM",
+        "code": "IM",
+        "bannerImage": "https://egov-uat-assets.s3.amazonaws.com/PGR.png",
+        "active": true,
+        "order": 2,
+        "tenants": [
+            {
+                "code": "pg.aidbhavisubcentre"
+            },
+            {
+                "code": "pg.alkodsubcentre"
+            },
+            {
+                "code": "pg.amdihalsubcentre"
+            },
+            {
+                "code": "pg.ambamathsubcentre"
+            },
+            {
+                "code": "pg"
+            }
+        ]
+    },
+  
+]
+//console.log("path,modules", path,mod)
+  const appRoutes = modules.map(({ code, tenants }, index) => {
+    const Module = Digit.ComponentRegistryService.getComponent(`${code}Module`);
+   // console.log("Module,Module", Module)
+    return Module ? (
+      <Route key={index} path={`${path}/${code.toLowerCase()}`}>
+        <Module stateCode={stateCode} moduleCode={code} userType={userType} tenants={getTenants(tenants, appTenants)} />
+      </Route>
+    ) :   <Route key={index} path={`${path}/${code.toLowerCase()}`}>
     <Redirect to={{ pathname: "/digit-ui/employee/user/error?type=notfound", state: { from: location.pathname + location.search } }} />
   </Route>;
   });

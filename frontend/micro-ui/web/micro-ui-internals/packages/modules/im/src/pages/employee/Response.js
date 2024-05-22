@@ -30,12 +30,13 @@ const BannerPicker = ({ response }) => {
     return <Banner message={t("CS_COMMON_COMPLAINT_NOT_SUBMITTED")} successful={false} />;
   }
 };
-sessionStorage.removeItem("complaintType");
-sessionStorage.removeItem("subType");
+
 const Response = (props) => {
   const { t } = useTranslation();
   const { match } = useRouteMatch();
   const appState = useSelector((state) => state)["pgr"];
+  sessionStorage.removeItem("complaintType");
+sessionStorage.removeItem("subType");
   return (
     <Card>
       {appState.complaints.response && <BannerPicker response={appState} />}

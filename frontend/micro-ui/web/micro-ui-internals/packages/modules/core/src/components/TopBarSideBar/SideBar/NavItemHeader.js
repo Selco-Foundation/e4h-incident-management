@@ -115,10 +115,10 @@ const NavItemHeader = props => {
                 to={item?.to?.includes("digit-ui") ? item?.to : "/employee/" + item?.to}
                 className="custom-link"
                 activeClassName="actions"
-                style={{marginLeft:"40px", marginTop:"10px"}}
+                style={{marginLeft:"40px", marginTop:"10px",color:"#7a2829"}}
               >
                 <div data-tip="React-tooltip" data-for={`jk-side-${getModuleName}`}>
-                <span style={{fontSize:"14px"}}>{trimModuleName}</span>
+                <span style={{fontSize:"14px", color:"white"}}>{trimModuleName}</span>
                 {trimModuleName?.includes("...") && <ReactTooltip textColor="white" backgroundColor="grey" place="right" type="info" effect="solid" id={`jk-side-${getModuleName}`}>
                     {t(`ACTION_TEST_${getModuleName}`)}
                   </ReactTooltip>}

@@ -9,8 +9,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,36 +56,54 @@ public class IMQueryBuilder {
                 builder.append(" ser.tenantId IN (").append(createQuery(tenantIds)).append(")");
                 addToPreparedStatement(preparedStmtList, tenantIds);
             }
+          
+        }
+        else if (criteria.getTenantId()!=null && criteria.getTenantId().contains(","))
+        {
+            //String tenantId = criteria.getTenantId();
+            String[] tenantIdChunks = criteria.getTenantId().split(",");
+            Set<String> tenantIdList = new HashSet<>(Arrays.asList(tenantIdChunks));
+            addClauseIfRequired(preparedStmtList, builder);
+            builder.append(" ser.tenantid IN (").append(createQuery(tenantIdList)).append(")");
+            addToPreparedStatement(preparedStmtList, tenantIdList);
         }
         else {
             if (criteria.getTenantId() != null) {
                 String tenantId = criteria.getTenantId();
-
                 String[] tenantIdChunks = tenantId.split("\\.");
 
                 if (tenantIdChunks.length == config.getStateLevelTenantIdLength()) {
                     addClauseIfRequired(preparedStmtList, builder);
                     builder.append(" ser.tenantid LIKE ? ");
                     preparedStmtList.add(criteria.getTenantId() + '%');
-                } else {
+                }
+                else {
                     addClauseIfRequired(preparedStmtList, builder);
                     builder.append(" ser.tenantid=? ");
                     preparedStmtList.add(criteria.getTenantId());
                 }
+                
             }
         }
-        Set<String> serviceCodes = criteria.getServiceCode();
-        if (!CollectionUtils.isEmpty(serviceCodes)) {
+
+        Set<String> applicationStatus = criteria.getApplicationStatus();
+        if (!CollectionUtils.isEmpty(applicationStatus)) {
             addClauseIfRequired(preparedStmtList, builder);
-            builder.append(" ser.serviceCode IN (").append(createQuery(serviceCodes)).append(")");
-            addToPreparedStatement(preparedStmtList, serviceCodes);
+            builder.append(" ser.applicationstatus IN (").append(createQuery(applicationStatus)).append(")");
+            addToPreparedStatement(preparedStmtList, applicationStatus);
         }
 
-        Set<String> applicationStatuses = criteria.getApplicationStatus();
-        if (!CollectionUtils.isEmpty(applicationStatuses)) {
+        Set<String> incidentSubType = criteria.getIncidentSubType();
+        if (!CollectionUtils.isEmpty(incidentSubType)){
             addClauseIfRequired(preparedStmtList, builder);
-            builder.append(" ser.applicationStatus IN (").append(createQuery(applicationStatuses)).append(")");
-            addToPreparedStatement(preparedStmtList, applicationStatuses);
+            builder.append(" ser.incidentsubtype IN (").append(createQuery(incidentSubType)).append(")");
+            addToPreparedStatement(preparedStmtList, incidentSubType);
+        }
+        Set<String> phcSubType = criteria.getPhcSubType();
+         if (!CollectionUtils.isEmpty(phcSubType)){
+            addClauseIfRequired(preparedStmtList, builder);
+            builder.append(" ser.phcsubtype IN (").append(createQuery(phcSubType)).append(")");
+            addToPreparedStatement(preparedStmtList, phcSubType);
         }
 
         if (criteria.getIncidentId() != null) {

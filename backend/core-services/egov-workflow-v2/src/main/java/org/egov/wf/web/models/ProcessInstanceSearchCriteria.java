@@ -50,6 +50,9 @@ public class ProcessInstanceSearchCriteria {
     
     @JsonIgnore
     private Boolean isNearingSlaCount;
+    
+    @JsonIgnore
+    private Boolean isStateLevelCall=false;
 
     @JsonIgnore
     private List<String> tenantSpecifiStatus;

@@ -187,7 +187,11 @@ public class WorkflowService {
 			url.append("&status=").append(StringUtils.arrayToDelimitedString(criteria.getStatus().toArray(),","));
 		}
 		
-		if(!CollectionUtils.isEmpty(criteria.getBusinessIds())) {
+		if(!CollectionUtils.isEmpty(criteria.getBusinessIds()) && !(criteria.getModuleName().equalsIgnoreCase("im-services"))) {
+			url.append("&businessIds=").append(StringUtils.arrayToDelimitedString(criteria.getBusinessIds().toArray(),","));
+		}
+		if(!CollectionUtils.isEmpty(criteria.getBusinessIds()) && (criteria.getModuleName().equalsIgnoreCase("im-services"))) {
+			
 			url.append("&businessIds=").append(StringUtils.arrayToDelimitedString(criteria.getBusinessIds().toArray(),","));
 		}
 		

@@ -4,6 +4,7 @@ import { Loader, Header } from "@egovernments/digit-ui-react-components";
 
 import DesktopInbox from "../../components/DesktopInbox";
 import MobileInbox from "../../components/MobileInbox";
+import { Link } from "react-router-dom";
 
 const Inbox = () => {
   const { t } = useTranslation();
@@ -41,11 +42,19 @@ const Inbox = () => {
   };
 
   const onSearch = (params = "") => {
+    console.log("paramsparams",params,searchParams)
     setSearchParams({ ...searchParams, search: params });
   };
 
   // let complaints = Digit.Hooks.pgr.useInboxData(searchParams) || [];
-  let { data: complaints, isLoading } = Digit.Hooks.pgr.useInboxData({ ...searchParams, offset: pageOffset, limit: pageSize }) ;
+  console.log("searchParamssearchParams",searchParams)
+  let tenant=""
+  if(searchParams?.search?.phcType)
+  {
+    tenant = searchParams?.search?.phcType
+  }
+  console.log("tenant",tenant)
+  let { data: complaints, isLoading } = Digit.Hooks.pgr.useInboxData({ ...searchParams,offset: pageOffset, limit: pageSize }) ;
   console.log("complai", complaints)
 
   let isMobile = Digit.Utils.browser.isMobile();
@@ -59,6 +68,8 @@ const Inbox = () => {
       return (
         <div>
           <Header>{t("ES_COMMON_INBOX")}</Header>
+          <div style={{color:"#9e1b32", marginBottom:'10px'}}>
+    <Link to={`/digit-ui/employee`}>{t("BACK")}</Link></div> 
           <DesktopInbox
             data={complaints}
             isLoading={isLoading}

@@ -3,13 +3,12 @@ import useComplaintStatus from "./useComplaintStatus";
 
 const useComplaintStatusCount = (complaints) => {
   const [complaintStatusWithCount, setcomplaintStatusWithCount] = useState([]);
-  console.log("complaints", complaints, complaintStatusWithCount)
   let complaintStatus = useComplaintStatus();
   let tenantId = Digit.ULBService.getCurrentTenantId();
 
   const getCount = async (value) => {
-    let response = "";
-    return response || "";
+    let response = await Digit.PGRService.count(tenantId, { applicationStatus: value });
+    return response?.count || "";
   };
 
   useEffect(() => {

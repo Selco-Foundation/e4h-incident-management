@@ -12,12 +12,12 @@ import {
   ActionBar,
   SubmitBar,
   LabelFieldPair,
+  Header,
 } from "@egovernments/digit-ui-react-components";
 
 import { useTranslation } from "react-i18next";
 
 export const FormComposer = (props) => {
-  console.log("props", props)
   const { register, handleSubmit, errors } = useForm();
   const { t } = useTranslation();
 
@@ -77,6 +77,7 @@ export const FormComposer = (props) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
+        <Header>{t("NEW_TICKET")}</Header>
         <CardSubHeader>{props.heading}</CardSubHeader>
         {formFields}
         {props.children}

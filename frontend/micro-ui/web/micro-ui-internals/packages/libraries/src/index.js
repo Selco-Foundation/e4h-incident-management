@@ -20,7 +20,7 @@ import { WorkflowService } from "./services/elements/WorkFlow";
 import { MdmsService } from "./services/elements/MDMS";
 import { Complaint } from "./services/elements/Complaint";
 import { UserService } from "./services/elements/User";
-
+import HrmsService from "./services/elements/HRMS";
 import { WSService } from "./services/elements/WS";
 
 import { Surveys } from "./services/elements/Surveys";
@@ -80,7 +80,7 @@ const initLibraries = () => {
   
   setupLibraries("ReportsService", ReportsService)
   setupLibraries("PaymentService", PaymentService);
-  
+  setupLibraries("HRMSService", HrmsService);
   setupLibraries("DateUtils", dateUtils);
   setupLibraries("WorkflowService", WorkflowService);
   setupLibraries("MDMSService", MdmsService);

@@ -1410,7 +1410,6 @@ export const MdmsService = {
   },
   getDataByCriteria: async (tenantId, mdmsDetails, moduleCode) => {
     const key = `MDMS.${tenantId}.${moduleCode}.${mdmsDetails.type}.${JSON.stringify(mdmsDetails.details)}`;
-    console.log("keyy", key)
     const inStoreValue = PersistantStorage.get(key);
     if (inStoreValue) {
       return inStoreValue;
@@ -1421,7 +1420,17 @@ export const MdmsService = {
     PersistantStorage.set(key, responseValue, cacheSetting.cacheTimeInSecs);
     return responseValue;
   },
-  getServiceDefs: (tenantId, moduleCode) => {
+  getServiceDefs: (tenantIdNew, moduleCode) => {
+    console.log("STEP 1getServiceDefsgetServiceDefs",  window.location.href,tenantIdNew)
+    var tenantId
+    if(window.location.href.includes("details"))
+    {
+       tenantId = window.location.href.split("/")[9]
+    }
+   else {
+    tenantId = tenantIdNew
+   }
+
     return MdmsService.getDataByCriteria(tenantId, getModuleServiceDefsCriteria(tenantId, moduleCode), moduleCode);
   },
   getSanitationType: (tenantId, moduleCode) => {

@@ -27,10 +27,12 @@ const Filter = (props) => {
 
   const [selectedComplaintType, setSelectedComplaintType] = useState(null);
   const [selectedHealthCare, setSelectedHealthCare] = useState(null);
+  console.log("hc", selectedHealthCare)
+  console.log("selecCom", selectedComplaintType)
   const [pgrfilters, setPgrFilters] = useState(
     searchParams?.filters?.pgrfilters || {
-      incidentType: [],
-      healthcare: [],
+      incidentSubType: [],
+      phcType: [],
       applicationStatus: [],
     }
   );
@@ -44,11 +46,17 @@ const Filter = (props) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   // let localities = Digit.Hooks.pgr.useLocalities({ city: tenantId });
   const { data: localities } = Digit.Hooks.useBoundaryLocalities(tenantId, "admin", {}, t);
+  console.log("tenantIdtenantIdtenantIdtenantId")
   let serviceDefs = Digit.Hooks.pgr.useServiceDefs(tenantId, "Incident");
   const state = Digit.ULBService.getStateId();
-  const { isMdmsLoading, data: mdmsData } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["District","Block"]);
-const {  data: phcMenu  } = Digit.Hooks.pgr.useMDMS(state, "tenant", ["tenants"]);
-const healthcareMenu=phcMenu?.tenant?.tenants
+//   const { isMdmsLoading, data: mdmsData } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["District","Block"]);
+// const {  data: phcMenu  } = Digit.Hooks.pgr.useMDMS(state, "tenant", ["tenants"]);
+const convertedData = Digit.SessionStorage.get("Tenants").map(item => ({
+  name: item.label,
+  code: item.value
+}));
+const healthcareMenu= Digit.SessionStorage.get("Tenants")
+console.log("healthcare", healthcareMenu)
 
   const onRadioChange = (value) => {
     setSelectedAssigned(value);
@@ -62,6 +70,8 @@ const healthcareMenu=phcMenu?.tenant?.tenants
       if (Array.isArray(pgrfilters[property])) {
         count += pgrfilters[property].length;
         let params = pgrfilters[property].map((prop) => prop.code).join();
+        console.log("property", pgrfilters[property])
+        console.log("params", params)
         if (params) {
           pgrQuery[property] = params;
         }
@@ -99,30 +109,30 @@ const healthcareMenu=phcMenu?.tenant?.tenants
   function complaintType(_type) {
     console.log("typeeee", _type)
     const type = { i18nKey: t("SERVICEDEFS." + _type.serviceCode.toUpperCase()), code: _type.serviceCode };
-    if (!ifExists(pgrfilters.incidentType, type)) {
-      setPgrFilters({ ...pgrfilters, incidentType: [...pgrfilters.incidentType, type] });
+    if (!ifExists(pgrfilters.incidentSubType, type)) {
+      setPgrFilters({ ...pgrfilters, incidentSubType: [...pgrfilters.incidentSubType, type] });
     }
   }
 
   function onSelectHealthCare(value, type) {
-    if (!ifExists(pgrfilters.healthcare, value)) {
-      setPgrFilters({ ...pgrfilters, healthcare: [...pgrfilters.healthcare, value] });
+    if (!ifExists(pgrfilters.phcType, value)) {
+      setPgrFilters({ ...pgrfilters, phcType: [...pgrfilters.phcType, value] });
     }
   }
 console.log("pgrfilters", pgrfilters)
   useEffect(() => {
-    if (pgrfilters.incidentType.length > 1) {
-      setSelectedComplaintType({ i18nKey: `${pgrfilters.incidentType.length} selected` });
+    if (pgrfilters.incidentSubType.length > 1) {
+      setSelectedComplaintType({ i18nKey: `${pgrfilters.incidentSubType.length} selected` });
     } else {
-      setSelectedComplaintType(pgrfilters.incidentType[0]);
+      setSelectedComplaintType(pgrfilters.incidentSubType[0]);
     }
-  }, [pgrfilters.incidentType]);
+  }, [pgrfilters.incidentSubType]);
 
   useEffect(() => {
-    if (pgrfilters.healthcare.length > 1) {
-      setSelectedHealthCare({ name: `${pgrfilters.healthcare.length} selected` });
+    if (pgrfilters.phcType.length > 1) {
+      setSelectedHealthCare({ name: `${pgrfilters.phcType.length} selected` });     
     } else {
-      setSelectedHealthCare(pgrfilters.healthcare[0]);
+      setSelectedHealthCare(pgrfilters.phcType[0]);
     }
   }, [pgrfilters.locality]);
 
@@ -145,7 +155,7 @@ console.log("pgrfilters", pgrfilters)
   };
 
   function clearAll() {
-    let pgrReset = { incidentType: [], healthcare: [], applicationStatus: [] };
+    let pgrReset = { incidentSubType: [], phcType: [], applicationStatus: [] };
     let wfRest = { assigned: [{ code: [] }] };
     setPgrFilters(pgrReset);
     setWfFilters(wfRest);
@@ -153,7 +163,7 @@ console.log("pgrfilters", pgrfilters)
     wfQuery = {};
     setSelectedAssigned("");
     setSelectedComplaintType(null);
-    setSelectedLocality(null);
+    setSelectedHealthCare(null);
   }
 
   const handleFilterSubmit = () => {
@@ -187,7 +197,7 @@ console.log("pgrfilters", pgrfilters)
               {t("ES_COMMON_CLEAR_ALL")}
             </div>
             {props.type === "desktop" && (
-              <span className="clear-search" onClick={clearAll}>
+              <span className="clear-search" style={{color:"#7a2829"}} onClick={clearAll}>
                 {t("ES_COMMON_CLEAR_ALL")}
               </span>
             )}
@@ -207,10 +217,10 @@ console.log("pgrfilters", pgrfilters)
                 complaintType,
                 "i18nKey",
                 onRemove,
-                "incidentType"
+                "incidentSubType"
               )}
             </div>
-            <div>{GetSelectOptions(t("CS_HEALTH_CARE"), healthcareMenu, selectedHealthCare, onSelectHealthCare, "name", onRemove, "healthcare")}</div>
+            <div>{GetSelectOptions(t("CS_HEALTH_CARE"), healthcareMenu, selectedHealthCare, onSelectHealthCare, "name", onRemove, "phcType")}</div>
             {<Status complaints={props.complaints} onAssignmentChange={handleAssignmentChange} pgrfilters={pgrfilters} />}
           </div>
         </div>

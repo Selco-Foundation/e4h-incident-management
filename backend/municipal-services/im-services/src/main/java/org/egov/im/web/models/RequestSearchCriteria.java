@@ -29,6 +29,9 @@ public class RequestSearchCriteria {
 
     @JsonProperty("applicationStatus")
     private Set<String> applicationStatus;
+    
+    @JsonProperty("phcSubType")
+    private Set<String> phcSubType;
 
     @SafeHtml
     @JsonProperty("mobileNumber")
@@ -38,6 +41,9 @@ public class RequestSearchCriteria {
     @JsonProperty("incidentId")
     private String incidentId;
 
+    @JsonProperty("incidentSubType")
+    private Set<String> incidentSubType;
+    
     @JsonProperty("sortBy")
     private SortBy sortBy;
 

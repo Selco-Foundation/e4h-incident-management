@@ -35,6 +35,7 @@ const EmployeeApp = ({
   const location = useLocation();
   const showLanguageChange = location?.pathname?.includes("language-selection");
   const isUserProfile = userScreensExempted.some((url) => location?.pathname?.includes(url));
+  //console.log("appTenantsappTenantsappTenants,",appTenants,modules,stateCode)
   useEffect(() => {
     Digit.UserService.setType("employee");
   }, []);
@@ -59,11 +60,7 @@ const EmployeeApp = ({
           )}
           <div
             className={isUserProfile ? "grounded-container" : "loginContainer"}
-            style={
-              isUserProfile
-                ? { padding: 0, paddingTop: "80px", marginLeft: mobileView ? "" : "64px" }
-                : { "--banner-url": `url(${stateInfo?.bannerUrl})`, padding: "0px" }
-            }
+            style={{backgroundColor:"#225670"}}
           >
             <Switch>
               <Route path={`${path}/user/login`}>

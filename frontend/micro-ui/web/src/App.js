@@ -1,13 +1,8 @@
 import React from "react";
-
 import {
   initIMComponents,
-  PGRReducers,
+  IMReducers,
 } from "@egovernments/digit-ui-module-pgr";
-
-
-
-
 import {
   PaymentModule,
   PaymentLinks,
@@ -15,72 +10,30 @@ import {
 } from "@egovernments/digit-ui-module-common";
 import { DigitUI } from "@egovernments/digit-ui-module-core";
 import { initLibraries } from "@egovernments/digit-ui-libraries";
-
-
-import { initReceiptsComponents, ReceiptsModule } from "@egovernments/digit-ui-module-receipts";
-//import { initOBPSComponents } from "@egovernments/digit-ui-module-obps";
-
-//import { initEngagementComponents } from "@egovernments/digit-ui-module-engagement";
-
-//import { initCustomisationComponents } from "./Customisations";
-//import { initCommonPTComponents } from "@egovernments/digit-ui-module-commonpt";
-//import { initBillsComponents } from "@egovernments/digit-ui-module-bills";
-// import { initReportsComponents } from "@egovernments/digit-ui-module-reports";
-
+import {
+  HRMSModule,
+  initHRMSComponents,
+} from "@egovernments/digit-ui-module-hrms";
 initLibraries();
 
 const enabledModules = [
-  "PGR",
-  
-  "Payment",
-  "PT",
-  "QuickPayLinks",
- 
-  "NDSS",
-  
+  "IM",
   "HRMS",
-  "TL",
-  "Receipts",
-  "OBPS",
-  
-  "Engagement",
-  "CommonPT",
-  
-  "Reports",
   "Bills",
-  "SW",
-  "BillAmendment"
+  "HRMS"
 ];
 window.Digit.ComponentRegistryService.setupRegistry({
   ...paymentConfigs,
-  // PTModule,
-  // PTLinks,
   PaymentModule,
   PaymentLinks,
-  //...PTComponents,
- 
- // HRMSModule,
-  // TLModule,
-  // TLLinks,
-  // ReceiptsModule
+  HRMSModule
+  //HRMSModule,
 });
 
 initIMComponents();
-
-
-
-// initReceiptsComponents();
-//initOBPSComponents();
-
-//initEngagementComponents();
-
-//initCommonPTComponents();
-//initBillsComponents();
-// initReportsComponents();
-//initCustomisationComponents();
-
+initHRMSComponents();
 const moduleReducers = (initData) => ({
-  pgr: PGRReducers(initData),
+  pgr: IMReducers(initData),
 });
 
 function App() {

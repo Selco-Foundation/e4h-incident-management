@@ -29,8 +29,8 @@ const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
         <div className="body">
           {links.map(({ link, text, hyperlink = false, accessTo = [] }, index) => {
             return (
-              <span className="link" key={index}>
-                {hyperlink ? <a href={link}>{t(text)}</a> : <Link to={link}>{t(text)}</Link>}
+              <span className="link" key={index} >
+                {hyperlink ? <a href={link}>{t(text)}</a> : <Link to={link} style={{color:"#7a2829"}}>{t(text)}</Link>}
               </span>
             );
           })}

@@ -7,7 +7,7 @@ const InboxLinks = ({logoIcon, headerText, links}) => {
     const { t } = useTranslation();
     
     const GetLogo = () => <div className="header">
-        <span className="logo">
+        <span className="logo" style={{color:"#7a2829"}}>
         {logoIcon}
         </span>{" "}
         <span className="text">{t(headerText)}</span>

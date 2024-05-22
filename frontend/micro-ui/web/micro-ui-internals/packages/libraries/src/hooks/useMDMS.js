@@ -26,7 +26,7 @@ const useMDMS = (tenantId, moduleCode, type, config = {}, payload = []) => {
   const _default = () => {
     return useQuery([tenantId, moduleCode, type], () => MdmsService.getMultipleTypes(tenantId, moduleCode, type), config);
   };
-
+  
   switch (type) {
     case "PaymentGateway":
       return usePaymentGateway();

@@ -18,9 +18,9 @@ const ButtonSelector = (props) => {
       form={props.formId}
       onClick={props.onSubmit}
       disabled={props.isDisabled}
-      style={props.style ? props.style : null}
+      style={props.style ? {...props.style, backgroundColor:"#7a2829", color:"white"} : null}
     >
-      <h2 style={{ ...props?.textStyles, ...{ width: "100%" } }}>{props.label}</h2>
+      <h2 style={{ ...props?.textStyles, ...{ width: "100%" ,color:"white"} }}>{props.label}</h2>
     </button>
   );
 };

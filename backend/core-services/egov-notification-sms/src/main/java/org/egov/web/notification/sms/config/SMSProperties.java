@@ -17,7 +17,7 @@ public class SMSProperties {
     @Value("${sms.provider.requestType}")
     public String requestType;
 
-    @Value("${sms.provider.contentType:application/x-www-form-urlencoded}")
+    @Value("${sms.provider.contentType:application/json}")
     public String contentType;
 
     @Value("${sms.mobile.prefix:}")

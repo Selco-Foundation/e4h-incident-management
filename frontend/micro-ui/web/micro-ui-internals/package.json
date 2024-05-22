@@ -10,6 +10,7 @@
     "packages/modules/common",
     "packages/modules/core",
     "packages/modules/im",
+    "packages/modules/hrms",
     "packages/modules/bills"
   ],
   "author": "Abhinav Kushwaha <abhinav.kushwaha@egovernments.org>",
@@ -28,32 +29,21 @@
     "dev:libraries": "cd packages/libraries && yarn start",
     "dev:components": "cd packages/react-components && yarn start",
     "dev:common": "cd packages/modules/common && yarn start",
-   
-    
     "dev:core": "cd packages/modules/core && yarn start",
     "dev:im": "cd packages/modules/im && yarn start",
-   
-   
+    "dev:hrms": "cd packages/modules/hrms && yarn start",
     "dev:receipts": "cd packages/modules/receipts && yarn start",
-   
-   
     "dev:bills": "cd packages/modules/bills && yarn start",
-   
     "dev:example": "cd example && yarn start",
     "build": "run-p build:**",
     "build:libraries": "cd packages/libraries && yarn build",
     "build:components": "cd packages/react-components && yarn build",
     "build:common": "cd packages/modules/common && yarn build",
-   
-   
     "build:core": "cd packages/modules/core && yarn build",
     "build:im": "cd packages/modules/im && yarn build",
-   
-    
-    "buildD:receipts": "cd packages/modules/receipts && yarn build",
-    
-    "buildD:bills": "cd packages/modules/bills && yarn build",
-    
+    "build:hrms": "cd packages/modules/hrms && yarn build",
+    "build:receipts": "cd packages/modules/receipts && yarn build",
+    "build:bills": "cd packages/modules/bills && yarn build",
     "deploy:jenkins": "./scripts/jenkins.sh"
   },
   "devDependencies": {

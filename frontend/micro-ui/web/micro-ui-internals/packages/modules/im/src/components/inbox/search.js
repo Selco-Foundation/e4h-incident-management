@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { TextInput, Label, SubmitBar, LinkLabel, ActionBar, CloseSvg, Dropdown } from "@egovernments/digit-ui-react-components";
@@ -16,13 +16,17 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   const { t } = useTranslation();
 
   const onSubmitInput = (data) => {
-    console.log("subdatra", data)
+    console.log("subdatra", data,phcType)
     if (!Object.keys(errors).filter((i) => errors[i]).length) {
-      if (data.serviceRequestId !== "") {
-        onSearch({ incidentId: data.serviceRequestId });
-      } else if (data.phcType !== "") {
-        onSearch({ phcType: data.phcType });
-      } else {
+      if (data.serviceRequestId !== "" && phcType?.code !=="") {
+        onSearch({ incidentId: data.serviceRequestId,phcType: phcType?.code });
+      } else if (data.code !== "") {
+        onSearch({ phcType: phcType?.code });
+      } 
+      else if(data.serviceRequestId !== "" ){
+        onSearch({ incidentId: data.serviceRequestId})
+      }
+        else {
         onSearch({});
       }
 
@@ -41,7 +45,7 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
 
   const clearAll = () => {
     return (
-      <LinkLabel className="clear-search-label" onClick={clearSearch}>
+      <LinkLabel className="clear-search-label" style={{color:"#7a2829"}}onClick={clearSearch}>
         {t("ES_COMMON_CLEAR_SEARCH")}
       </LinkLabel>
     );
@@ -50,14 +54,23 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   function setComplaint(e) {
     setComplaintNo(e.target.value);
   }
-
+useEffect(()=>{
+console.log()
+if(Digit.SessionStorage.get("Tenants"))
+{
+  let empTenant = Digit.SessionStorage.get("Employee.tenantId")
+  let filtered = Digit.SessionStorage.get("Tenants").filter((abc)=> abc.code ==empTenant)
+  console.log("filtered",filtered)
+  setPhcTypeFunction(filtered?.[0])
+}
+},[])
   function setPhcTypeFunction(value) {
     setPhcType(value);
   }
   function setMobile(e) {
     setMobileNo(e.target.value);
   }
-
+console.log("Digit.SessionStorage.get)",Digit.SessionStorage.get("Tenants"),phcMenu?.tenant?.tenants)
   return (
     <form onSubmit={handleSubmit(onSubmitInput)} style={{ marginLeft: "24px" }}>
       <React.Fragment>
@@ -73,7 +86,7 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
             )}
             <div className="complaint-input-container" style={{display:"grid"}}>
               <span className="complaint-input">
-                <Label>{t("CS_COMMON_TICKET_NO")}.</Label>
+                <Label>{t("CS_COMMON_TICKET_NO")}</Label>
                 <TextInput
                   name="serviceRequestId"
                   value={complaintNo}
@@ -85,14 +98,15 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
                 ></TextInput>
               </span>
               <span className="mobile-input">
-                <Label>{t("CS_COMMON_PHC_TYPE")}.</Label>
+                <Label>{t("CS_COMMON_PHC_TYPE")}</Label>
                 <Dropdown
-                option={phcMenu?.tenant?.tenants}
+                option={Digit.SessionStorage.get("Tenants")}
                   //name="mobileNumber"
                   optionKey="name"
                   id="healthCentre"
                   selected={phcType}
                   select={setPhcTypeFunction}
+                  // disable={true}
                   inputRef={register({
                     pattern: /^[6-9]\d{9}$/,
                   })}
@@ -107,7 +121,7 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
                 />
               )}
             </div>
-            {type === "desktop" && <span className="clear-search">{clearAll()}</span>}
+            {type === "desktop" && <span className="clear-search" style={{color:"#7a2829"}}>{clearAll()}</span>}
           </div>
         </div>
         {type === "mobile" && (
