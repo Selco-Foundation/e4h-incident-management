@@ -1,6 +1,6 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const createProxy = createProxyMiddleware({
-  target: "https://e4h-dev.selcofoundation.org",
+  target: "https://saura-emitra-uat.selcofoundation.org",
   changeOrigin: true,
 });
 module.exports = function (app) {
@@ -15,7 +15,7 @@ module.exports = function (app) {
     "/egov-hrms",
     "/user-otp",
     "/user",
-    
+    "/fsm",
     "/billing-service",
     "/collection-services",
     "/pdf-service",
@@ -23,7 +23,8 @@ module.exports = function (app) {
     "/vehicle",
     "/vendor",
     "/property-services",
-    
+    "/fsm-calculator/v1/billingSlab/_search",
+    "/muster-roll"
   ].forEach((location) =>
     app.use(location, createProxy)
   );

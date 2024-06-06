@@ -5,17 +5,22 @@ const Urls = {
   localization: `/localization/messages/v1/_search`,
   location: {
     localities: `/egov-location/location/v11/boundarys/_search?hierarchyTypeCode=ADMIN&boundaryType=Locality`,
+    wards: `/egov-location/location/v11/boundarys/_search?hierarchyTypeCode=ADMIN&boundaryType=Ward`,
     revenue_localities: `/egov-location/location/v11/boundarys/_search?hierarchyTypeCode=REVENUE&boundaryType=Locality`,
   },
 
-  im_search: `/im-services/v2/request/_search`,
-  im_update: `/im-services/v2/request/_update`,
+  pgr_search: `/pgr-services/v2/request/_search`,
+  pgr_update: `/pgr-services/v2/request/_update`,
   filter_data: `https://run.mocky.io/v3/597a50a0-90e5-4a45-b82e-8a2186b760bd`,
   FileStore: "/filestore/v1/files",
 
-  FileFetch: "/filestore/v1/files/url",
+  im_search: `/im-services/v2/request/_search`,
+  im_update: `/im-services/v2/request/_update`,
   IM_Create: `/im-services/v2/request/_create`,
   im_count: `/im-services/v2/request/_count`,
+  FileFetch: "/filestore/v1/files/url",
+  PGR_Create: `/pgr-services/v2/request/_create`,
+  pgr_count: `/pgr-services/v2/request/_count`,
 
   OTP_Send: "/user-otp/v1/_send",
   Authenticate: "/user/oauth/token",
@@ -25,14 +30,44 @@ const Urls = {
   UserProfileUpdate: "/user/profile/_update",
   EmployeeSearch: "/egov-hrms/employees/_search",
 
-  InboxSearch: "/inbox/v1/_search",
+  InboxSearch: "/works-inbox-service/v2/_search",
 
   UserSearch: "/user/_search",
   UserLogout: "/user/_logout",
 
   Shortener: "/egov-url-shortening/shortener",
 
- 
+  works: {
+    create:"/loi-service/v1/_create",
+    estimateSearch:"/estimate-service/estimate/v1/_search",
+    loiSearch:"/loi-service/v1/_search",
+    createEstimate:"/estimate-service/estimate/v1/_create",
+    approvedEstimateSearch:"/estimate-service/estimate/v1/_search",
+    searchEstimate:"/estimate-service/estimate/v1/_search",
+    updateLOI:"/loi-service/v1/_update",
+    updateEstimate:"/estimate-service/estimate/v1/_update",
+    download_pdf:"/egov-pdf/download/WORKSESTIMATE/estimatepdf"
+  },
+
+  fsm: {
+    search: "/fsm/v1/_search",
+    create: "/fsm/v1/_create",
+    update: "/fsm/v1/_update",
+    vendorSearch: "/vendor/v1/_search",
+    vehicleSearch: "/vehicle/v1/_search",
+    audit: "/fsm/v1/_audit",
+    vehicleTripSearch: "/vehicle/trip/v1/_search",
+    billingSlabSearch: "/fsm-calculator/v1/billingSlab/_search",
+    vehilceUpdate: "/vehicle/trip/v1/_update",
+    createVendor: "/vendor/v1/_create",
+    updateVendor: "/vendor/v1/_update",
+    createVehicle: "/vehicle/v1/_create",
+    updateVehicle: "/vehicle/v1/_update",
+    driverSearch: "/vendor/driver/v1/_search",
+    createDriver: "/vendor/driver/v1/_create",
+    updateDriver: "/vendor/driver/v1/_update",
+    vehicleTripCreate: "/vehicle/trip/v1/_create",
+  },
 
   payment: {
     fetch_bill: "/billing-service/bill/v2/_fetchbill",
@@ -60,9 +95,6 @@ const Urls = {
     assessment_search: "/property-services/assessment/_search",
     payment_search: "/collection-services/payments/PT/_search",
     pt_calculate_mutation: "/pt-calculator-v2/propertytax/mutation/_calculate",
-    cfcreate: "/service-request/service/v1/_create",
-    cfdefinitionsearch: "/service-request/service/definition/v1/_search",
-    cfsearch: "/service-request/service/v1/_search",
   },
 
   dss: {
@@ -70,7 +102,18 @@ const Urls = {
     getCharts: "/dashboard-analytics/dashboard/getChartV2",
   },
 
-  
+  mcollect: {
+    search: "/echallan-services/eChallan/v1/_search",
+    create: "/echallan-services/eChallan/v1/_create?",
+    fetch_bill: "/billing-service/bill/v2/_fetchbill?",
+    search_bill: "/egov-searcher/bill-genie/mcollectbills/_get",
+    search_bill_pt: "/egov-searcher/bill-genie/billswithaddranduser/_get",
+    update: "/echallan-services/eChallan/v1/_update",
+    download_pdf: "/egov-pdf/download/UC/mcollect-challan",
+    receipt_download: "/egov-pdf/download/PAYMENT/consolidatedreceipt",
+    bill_download: "/egov-pdf/download/BILL/consolidatedbill",
+    count: "/echallan-services/eChallan/v1/_count",
+  },
   hrms: {
     search: "/egov-hrms/employees/_search",
     count: "/egov-hrms/employees/_count",
@@ -104,7 +147,7 @@ const Urls = {
     bpaRegUpdate: "/tl-services/v1/BPAREG/_update",
     receipt_download: "/egov-pdf/download/PAYMENT/consolidatedreceipt",
     edcrreportdownload: "/bpa-services/v1/bpa/_permitorderedcr",
-    getSearchDetails: "/inbox/v1/dss/_search",
+    getSearchDetails: "/inbox/v1/dss/_search"
   },
 
   edcr: {
@@ -139,10 +182,9 @@ const Urls = {
     wns_group_bill: "/egov-pdf/download/WNS/wnsgroupbill",
     cancel_group_bill: "/pdf-service/v1/_cancelProcess",
     wns_generate_pdf: "/egov-pdf/download/WNS/wnsbill",
-    water_applyAdhocTax: "/ws-calculator/waterCalculator/_applyAdhocTax",
+    water_applyAdhocTax : "/ws-calculator/waterCalculator/_applyAdhocTax",
     sewerage_applyAdhocTax: "/sw-calculator/sewerageCalculator/_applyAdhocTax",
     getSearchDetails: "/inbox/v1/dss/_search",
-    disconnection_notice: "/pdf-service/v1/_createnosave",
   },
 
   engagement: {
@@ -162,18 +204,26 @@ const Urls = {
     },
   },
 
+  attendencemgmt: {
+    mustorRoll: {
+      estimate: "/muster-roll/v1/_estimate",
+      create: "/muster-roll/v1/_create",
+      update: "/muster-roll/v1/_update",
+      search: "/muster-roll/v1/_search"
+    }
+  },
+
   noc: {
     nocSearch: "/noc-services/v1/noc/_search",
   },
   reports: {
     reportSearch: "/report/",
   },
-  bills: {
-    cancelBill: "/billing-service/bill/v2/_cancelbill",
+  bills:{
+    cancelBill:"/billing-service/bill/v2/_cancelbill"
   },
   access_control: "/access/v1/actions/mdms/_get",
   billgenie: "/egov-searcher",
-  audit: "/inbox/v1/elastic/_search",
 };
 
 export default Urls;

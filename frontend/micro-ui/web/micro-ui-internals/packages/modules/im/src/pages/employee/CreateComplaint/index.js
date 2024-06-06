@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo,useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { DatePicker, Dropdown, ImageUploadHandler, TextArea, TextInput, UploadFile, CardLabel } from "@egovernments/digit-ui-react-components";
+import { Controller, useForm } from "react-hook-form";
+import { DatePicker, Dropdown, ImageUploadHandler, Toast, TextInput, UploadFile, CardLabel } from "@egovernments/digit-ui-react-components";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { FormComposer } from "../../../components/FormComposer";
 import { createComplaint } from "../../../redux/actions/index";
 import { Loader, Header } from "@egovernments/digit-ui-react-components";
 import { Link } from "react-router-dom";
+
 export const CreateComplaint = ({ parentUrl }) => {
   const { t } = useTranslation();
   const [healthCareType, setHealthCareType]=useState();
@@ -16,6 +18,7 @@ export const CreateComplaint = ({ parentUrl }) => {
   const [blockMenuNew, setBlockMenuNew]=useState([]);
   const [districtMenu, setDistrictMenu]=useState([]);
   const [file, setFile]=useState(null);
+  const [showToast, setShowToast] = useState(null);
   const [uploadedFile, setUploadedFile]=useState(null);
   const [uploadedImages, setUploadedImagesIds] = useState(null)
   const [district, setDistrict]=useState(null);
@@ -25,33 +28,35 @@ export const CreateComplaint = ({ parentUrl }) => {
   const [canSubmit, setSubmitValve] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const tenantId = window.Digit.SessionStorage.get("Employee.tenantId");
+  const [tenant,setTenant]=useState(window.Digit.SessionStorage.get("Employee.tenantId"))
   const [complaintType, setComplaintType]=useState(JSON?.parse(sessionStorage.getItem("complaintType")) || {});
   const [subTypeMenu, setSubTypeMenu] = useState([]);
   const [phcSubTypeMenu, setPhcSubTypeMenu]=useState([]);
+  const [disbaled, setDisable] = useState(true)
   const [phcMenuNew, setPhcMenu] = useState([])
+  const dropdownRefs = useRef([]); // Create refs array for dropdowns
+  const [errors, setErrors] = useState(Array(6).fill(""));
   const [subType, setSubType]=useState(JSON?.parse(sessionStorage.getItem("subType")) || {});
-  const [sortedTicketmenu, setSortedTicketMenu]=useState([]);
   let sortedSubMenu=[];
   if(subTypeMenu!==null){
     sortedSubMenu=subTypeMenu.sort((a,b)=>a.name.localeCompare(b.name))
    }
- 
+
     let sortedphcSubMenu=[]
    if(phcSubTypeMenu!==null){
     sortedphcSubMenu=phcSubTypeMenu.sort((a,b)=>a.name.localeCompare(b.name))
    }
   const menu = Digit.Hooks.pgr.useComplaintTypes({ stateCode: tenantId })
-  useEffect(()=>{
-  if (menu !== null) {    
-      const otherOption=menu.filter(item=>item.name.includes('Other'));
-      const remainingOptions=menu.filter(item=> !item.name.includes('Other'));
-      remainingOptions.sort((a,b)=>a.name.localeCompare(b.name))
-      otherOption.sort((a,b)=>a.name.localeCompare(b.name))
-      const sortedMenu=[...remainingOptions, ...otherOption];
-      setSortedTicketMenu(sortedMenu);
-     }
-     
-  }, [menu]);
+let  sortedMenu=[];
+  if (menu !== null) {
+    let othersItem = menu.find(item => item.key === 'Others');
+    let otherItems = menu.filter(item => item.key !== 'Others');
+    otherItems.sort((a, b) => a.name.localeCompare(b.name));
+    if (othersItem) {
+      otherItems.push(othersItem);
+    }
+    sortedMenu = otherItems
+  }
 
   if (subTypeMenu !== null) {
     let othersItem = subTypeMenu.find(item => item.key === 'Other');
@@ -83,7 +88,7 @@ useEffect(()=>{
           setDistrictMenu(
             districts.map(def=>({
            
-           key:def.code, 
+           key:t(def.code), 
             name:t(def.name) 
          }))
           );
@@ -97,6 +102,14 @@ useEffect(()=>{
 useEffect(()=>{
 let tenants =Digit.SessionStorage.get("Employee.tenantId")
 setSelectTenant(tenants)
+if(selectTenant !== "pg")
+{
+  ticketTypeRef.current.validate()
+  ticketSubTypeRef.current.validate()
+}
+else {
+  handleButtonClick()
+}
 
 },[])
 
@@ -106,11 +119,11 @@ useEffect(async () => {
     let tenant = Digit.SessionStorage.get("IM_TENANTS")
     const selectedTenantData = tenant.find(item => item.code === selectTenant);
     const selectedDistrict = {
-      key: selectedTenantData.city.districtCode,
+      key: t(selectedTenantData.city.districtCode),
       name: t(selectedTenantData.city.districtCode.charAt(0).toUpperCase() + selectedTenantData.city.districtCode.slice(1).toLowerCase()),
     };
     const selectedBlock = {
-      key: selectedTenantData.city.blockCode.split(".")[1].toUpperCase(),
+      key: t(selectedTenantData.city.blockCode.split(".")[1].toUpperCase()),
       name: t(selectedTenantData.city.blockCode.split(".").pop().charAt(0).toUpperCase() + selectedTenantData.city.blockCode.split(".").pop().slice(1))
     };
       handleDistrictChange(selectedDistrict);
@@ -121,7 +134,6 @@ useEffect(async () => {
    // setBlock(selectedBlock);
   }
 }, [selectTenant,mdmsData,state]);
-
 
   useEffect(() => {
       (async () => {
@@ -154,12 +166,12 @@ useEffect(async () => {
   const client = useQueryClient();
  
   useEffect(()=>{
-    if(complaintType?.key&& subType?.key){
+    if(complaintType?.key&& subType?.key && healthCareType?.code && healthcentre?.code && district?.key && block.key ){
       setSubmitValve(true);
     }else{
       setSubmitValve(false)
     }
-  },[complaintType, subType])
+  },[complaintType, subType,healthcentre,healthCareType,district,block])
   async function selectedType(value) {
     if (value.key !== complaintType.key) {
       if (value.key === "Others") {
@@ -167,11 +179,14 @@ useEffect(async () => {
         setComplaintType(value);
         sessionStorage.setItem("complaintType",JSON.stringify(value))
         setSubTypeMenu([{ key: "Others", name: t("SERVICEDEFS.OTHERS") }]);
+        ticketSubTypeRef.current.validate()
+
       } else {
         setSubType({ name: "" });
         setComplaintType(value);
         sessionStorage.setItem("complaintType",JSON.stringify(value))
         setSubTypeMenu(await serviceDefinitions.getSubMenu(tenantId, value, t));
+        ticketSubTypeRef.current.validate()
       }
     }
   }
@@ -185,8 +200,8 @@ useEffect(async () => {
       setBlockMenuNew(blocks)
       setBlockMenu(
         blocks.map((block) => ({
-          key: block.name.toUpperCase(),
-          name: t(block.name.toUpperCase()),
+          key: block.name,
+          name: t(block.name),
         }))
       );
     }
@@ -200,6 +215,12 @@ useEffect(async () => {
     setHealthCentre(value);
     setPhcSubTypeMenu([value])
     setHealthCareType(value);
+    setDisable(false)
+    setTenant(value?.city?.districtTenantCode)
+    centerTypeRef.current.clearError()
+    setShowToast(null);
+    console.log("setHealthCareType",phcSubTypeMenu,value)
+   
   }
   const handleBlockChange= (selectedBlock)=>{
     //sessionStorage.setItem("block",JSON.stringify(value))
@@ -228,10 +249,12 @@ useEffect(async () => {
       setBlock(selectedBlock);
 
     }
+
   }
   
-  const handlePhcSubType=(value)=>{
+  const handlePhcSubType=async (value)=>{
     setHealthCareType(value);
+    
   }
   // const selectedDistrict = (value) => {
   //   setDistrict(value);
@@ -241,19 +264,26 @@ useEffect(async () => {
     setFile(e.target.files[0]);
   }
   const handleUpload = (ids) => {
+    console.log("disbaleddisbaled",disbaled)
+    if(disbaled)
+    {
+      setShowToast({ key: true, label: "PLEASE_SELECT_PHC_TYPE"});
+    }
     setUploadedImagesIds(ids);
   };
 
 
    const wrapperSubmit = (data) => {
+    const abc = handleButtonClick()
+    console.log("vvvv",abc,!canSubmit)
     if (!canSubmit) return;
     setSubmitted(true);
-    !submitted && onSubmit(data);
+    !submitted && !abc && onSubmit(data);
   };
   const onSubmit = async (data) => {
     if (!canSubmit) return;
     const { key } = subType;
-    const complaintType = key;
+    //const complaintType = key;
     let uploadImages=[]
     if(uploadedImages!==null){
      uploadImages = uploadedImages?.map((url) => ({
@@ -263,11 +293,44 @@ useEffect(async () => {
       additionalDetails: {},
     }));
   }
-    const formData = { ...data,complaintType, district, block, healthCareType, healthcentre, reporterName, uploadedFile,uploadImages, tenantId:healthcentre?.code};
+    const formData = { ...data,complaintType, subType, district, block, healthCareType, healthcentre, reporterName, uploadedFile,uploadImages, tenantId:healthcentre?.code};
     await dispatch(createComplaint(formData));
     await client.refetchQueries(["fetchInboxData"]);
     history.push(parentUrl + "/incident/response");
   };
+  const districtRef = useRef(null);
+  const blockRef = useRef(null);
+  const healthCareRef = useRef(null);
+  const centerTypeRef = useRef(null);
+  const ticketTypeRef = useRef(null);
+  const ticketSubTypeRef = useRef(null);
+  const fieldsToValidate = [
+    { field: district, ref: districtRef },
+    { field: block, ref: blockRef },
+    { field: healthcentre, ref: healthCareRef },
+    { field: healthCareType, ref: centerTypeRef },
+    { field: complaintType, ref: ticketTypeRef },
+    { field: subType, ref: ticketSubTypeRef }
+  ];
+  const handleButtonClick = () => {
+    const hasEmptyFields = fieldsToValidate.some(({ field }) => field === null || Object.keys(field).length === 0);
+    console.log("hasEmptyFields",hasEmptyFields)
+    if (hasEmptyFields) {
+      fieldsToValidate.forEach(({ field, ref }) => {
+        console.log("field",field)
+        if (field === null || field === undefined || Object.keys(field).length === 0) {
+          
+          ref.current.validate();
+        }
+      });
+      
+      return true; // At least one field is empty
+    } else {
+      return false; // None of the fields are empty
+    }
+   
+  };
+
   const config = [
     
     {
@@ -280,7 +343,7 @@ useEffect(async () => {
           type: "dropdown",
           isMandatory:true,
           populators:  (
-            <Dropdown option={districtMenu} optionKey="name" id="name" selected={district} select={handleDistrictChange} disable={selectTenant && selectTenant !== "pg"?true:false}/>),
+            <Dropdown  ref={districtRef} option={districtMenu} optionKey="name" id="name" selected={district} select={handleDistrictChange} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>),
            
          },
         
@@ -291,7 +354,7 @@ useEffect(async () => {
           menu: { ...blockMenu },
              populators: (
              
-              <Dropdown option={blockMenu} optionKey="name" id="name" selected={block} select={handleBlockChange} disable={selectTenant && selectTenant !== "pg"?true:false}
+              <Dropdown ref={blockRef} option={blockMenu} optionKey="name" id="name" selected={block} select={handleBlockChange} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}
              />
              
              )
@@ -301,7 +364,7 @@ useEffect(async () => {
           isMandatory:true,
           type: "dropdown",
           populators: (
-            <Dropdown option={phcMenuNew} optionKey="name" id="healthCentre" selected={healthcentre} select={selectedHealthCentre} disable={selectTenant && selectTenant !== "pg"?true:false}/>
+            <Dropdown ref={healthCareRef} option={phcMenuNew} optionKey="name" id="healthCentre" selected={healthcentre} select={selectedHealthCentre} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
             
           ),
            
@@ -311,7 +374,7 @@ useEffect(async () => {
           isMandatory:true,
           type: "dropdown",
           populators: (
-            <Dropdown option={sortedphcSubMenu} optionKey="centreType" id="healthcaretype" selected={healthCareType} select={handlePhcSubType} disable={selectTenant && selectTenant !== "pg"?true:false}/>
+            <Dropdown ref={centerTypeRef} option={sortedphcSubMenu} optionKey="centreType" id="healthcaretype" selected={healthCareType} select={handlePhcSubType} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
              
           ),
            
@@ -326,8 +389,7 @@ useEffect(async () => {
           label :t("TICKET_TYPE"),
           type: "dropdown",
           isMandatory:true,
-         
-          populators: <Dropdown option={sortedTicketmenu} optionKey="name" id="complaintType" selected={complaintType} select={selectedType} />,
+          populators: (<Dropdown ref={ticketTypeRef} option={sortedMenu} optionKey="name" id="complaintType" selected={complaintType} select={selectedType}  required={true}/>),
            
          
            
@@ -337,7 +399,7 @@ useEffect(async () => {
           type: "dropdown",
           isMandatory:true,
           menu: { ...subTypeMenu },
-          populators: <Dropdown option={sortedSubMenu} optionKey="name" id="complaintSubType" selected={subType} select={selectedSubType} />,
+          populators: <Dropdown ref={ticketSubTypeRef} option={sortedSubMenu} optionKey="name" id="complaintSubType" selected={subType} select={selectedSubType} required={true}/>,
            
          }
         ]
@@ -358,8 +420,8 @@ useEffect(async () => {
           label:t("INCIDENT_UPLOAD_FILE"),
           populators:
           <div>
-          <ImageUploadHandler tenantId={tenantId} uploadedImages={uploadedImages} onPhotoChange={handleUpload} />
-          <div style={{marginLeft:'20px', marginTop:"10px", fontSize:'12px'}}>{t("CS_IMAGE_BASED_FILES")}</div>
+          <ImageUploadHandler tenantId={tenant} uploadedImages={uploadedImages} onPhotoChange={handleUpload} disabled={disbaled}/>
+          <div style={{marginLeft:'20px', marginTop:"10px", fontSize:'12px'}}>{t("CS_IMAGE_BASED_FILES_ARE_ACCEPTED")}</div>
           </div>
          },
         ]
@@ -372,20 +434,25 @@ useEffect(async () => {
         {`
           .employee-select-wrap .select:hover {
             --border-opacity: 1;
-            border: 1px solid #f47738;
+            border: 1px solid #7a2829;
             border-color: #7a2829;
           }
         `}
       </style>
-       <div style={{color:"#9e1b32", marginBottom:'10px'}}>
-    <Link to={`/digit-ui/employee`}>{t("BACK")}</Link></div> 
+       <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+    <Link to={`/digit-ui/employee`}>{t("CS_COMMON_BACK")}</Link></div> 
     <FormComposer
       heading={t("")}
       config={config}
       onSubmit={wrapperSubmit}
       isDisabled={!canSubmit && !submitted}
       label={t("FILE_INCIDENT")}
-    />     
+    />   
+ 
+     {/* <button onClick={(!selectedOption || Object.keys(selectedOption).length == 0)}>Check Errors</button>  
+      {errors.map((error, index) => (
+        <div key={index}>{error}</div>
+      ))} */}
     </div>  
   );
 };

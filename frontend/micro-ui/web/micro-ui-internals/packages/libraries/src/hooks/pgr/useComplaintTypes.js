@@ -7,7 +7,6 @@ const useComplaintTypes = ({ stateCode }) => {
 
   useEffect(() => {
     (async () => {
-      console.log("GetServiceDefinitionsGetServiceDefinitionsGetServiceDefinitions",stateCode)
       const res = await Digit.GetServiceDefinitions.getMenu(stateCode, t);
       let menu = res.filter((o) => o.key !== "");
       menu.push({ key: "Others", name: t("SERVICEDEFS.OTHERS") });

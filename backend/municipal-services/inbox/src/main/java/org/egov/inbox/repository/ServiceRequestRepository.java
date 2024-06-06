@@ -3,6 +3,7 @@ package org.egov.inbox.repository;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.egov.tracer.model.ServiceCallException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public class ServiceRequestRepository {
 		Object response = null;
 		//log.debug("URI: " + uri.toString());
 		try {
-			//log.debug("Request: " + mapper.writeValueAsString(request));
+			log.info("Request: " + mapper.writeValueAsString(request));
 			response = restTemplate.postForObject(uri.toString(), request, Map.class);
 		} catch (HttpClientErrorException e) {
 			//log.error("External Service threw an Exception: ", e);

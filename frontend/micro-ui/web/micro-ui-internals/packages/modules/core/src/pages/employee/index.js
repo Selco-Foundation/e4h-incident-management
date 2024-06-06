@@ -10,6 +10,7 @@ import LanguageSelection from "./LanguageSelection";
 import EmployeeLogin from "./Login";
 import UserProfile from "../citizen/Home/UserProfile";
 import ErrorComponent from "../../components/ErrorComponent";
+import { PrivateRoute } from "@egovernments/digit-ui-react-components";
 
 const userScreensExempted = ["user/profile", "user/error"];
 
@@ -35,11 +36,10 @@ const EmployeeApp = ({
   const location = useLocation();
   const showLanguageChange = location?.pathname?.includes("language-selection");
   const isUserProfile = userScreensExempted.some((url) => location?.pathname?.includes(url));
-  //console.log("appTenantsappTenantsappTenants,",appTenants,modules,stateCode)
   useEffect(() => {
     Digit.UserService.setType("employee");
   }, []);
-
+  const isMobile = window.Digit.Utils.browser.isMobile();
   return (
     <div className="employee">
       <Switch>
@@ -60,7 +60,7 @@ const EmployeeApp = ({
           )}
           <div
             className={isUserProfile ? "grounded-container" : "loginContainer"}
-            style={{backgroundColor:"#225670"}}
+            style={isUserProfile ? !isMobile ?{backgroundColor:"#225670", "marginLeft":"40px",paddingTop:"100px"}: {backgroundColor:"#225670",paddingTop:"100px"}:{backgroundColor:"#225670"}}
           >
             <Switch>
               <Route path={`${path}/user/login`}>
@@ -105,7 +105,7 @@ const EmployeeApp = ({
             modules={modules}
           />
           <div className={`main ${DSO ? "m-auto" : ""}`}>
-            <div className="employee-app-wrapper">
+            <div className="employee-app-wrapper" >
               <ErrorBoundary initData={initData}>
                 <AppModules stateCode={stateCode} userType="employee" modules={modules} appTenants={appTenants} />
               </ErrorBoundary>

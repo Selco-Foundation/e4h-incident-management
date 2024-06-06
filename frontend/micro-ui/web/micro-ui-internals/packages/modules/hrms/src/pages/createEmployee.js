@@ -16,17 +16,15 @@ const CreateEmployee = () => {
   const history = useHistory();
   const isMobile = window.Digit.Utils.browser.isMobile();
 
-//  const { data: mdmsData,isLoading } = Digit.Hooks.useCommonMDMS(Digit.ULBService.getStateId(), "egov-hrms", ["CommonFieldsConfig"], {
-//     select: (data) => {
-//       return {
-//         config: data?.MdmsRes?.['egov-hrms']?.CommonFieldsConfig
-//       };
-//     },
-//     retry: false,
-//     enable: false,
-//   });
-const mdmsData ={}
-  console.log("datadatadata",mdmsData)
+ const { data: mdmsData,isLoading } = Digit.Hooks.useCommonMDMS(Digit.ULBService.getStateId(), "egov-hrms", ["CommonFieldsConfig"], {
+    select: (data) => {
+      return {
+        config: data?.MdmsRes?.['egov-hrms']?.CommonFieldsConfig
+      };
+    },
+    retry: false,
+    enable: false,
+  });
   const [mutationHappened, setMutationHappened, clear] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [errorInfo, setErrorInfo, clearError] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_ERROR_DATA", false);
   const [successData, setsuccessData, clearSuccessData] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_SUCCESS_DATA", false);
@@ -134,17 +132,17 @@ const mdmsData ={}
   };
 
   const navigateToAcknowledgement = (Employees) => {
-    history.replace(`/digit-ui/employee/hrms/response`, { Employees, key: "CREATE", action: "CREATE" });
+    history.replace(`/${window?.contextPath}/employee/hrms/response`, { Employees, key: "CREATE", action: "CREATE" });
   }
 
   
 
 
   const onSubmit = (data) => {
-    // if (data.Jurisdictions.filter(juris => juris.tenantId == tenantId).length == 0) {
-    //   setShowToast({ key: true, label: "ERR_BASE_TENANT_MANDATORY" });
-    //   return;
-    // }
+    if (data.Jurisdictions.filter(juris => juris.tenantId == tenantId).length == 0) {
+      setShowToast({ key: true, label: "ERR_BASE_TENANT_MANDATORY" });
+      return;
+    }
     if (!Object.values(data.Jurisdictions.reduce((acc, sum) => {
       if (sum && sum?.tenantId) {
         acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
@@ -202,9 +200,9 @@ const mdmsData ={}
       navigateToAcknowledgement(Employees);
     }
   };
-  // if (isLoading) {
-  //   return <Loader />;
-  // }
+  if (isLoading) {
+    return <Loader />;
+  }
   const config =mdmsData?.config?mdmsData.config: newConfig;
   return (
     <div>

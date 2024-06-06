@@ -1,12 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import { Route, Switch, useRouteMatch, Redirect, useLocation } from "react-router-dom";
+import React from "react";
+import { Redirect, Route, Switch, useLocation, useRouteMatch } from "react-router-dom";
 
-import { AppHome } from "./Home";
-import Login from "../pages/citizen/Login";
-import EmployeeLogin from "../pages/employee/Login/index";
 import ChangePassword from "../pages/employee/ChangePassword/index";
 import ForgotPassword from "../pages/employee/ForgotPassword/index";
-import LanguageSelection from "../pages/employee/LanguageSelection";
+import { AppHome } from "./Home";
 // import UserProfile from "./userProfile";
 
 const getTenants = (codes, tenants) => {
@@ -21,64 +18,11 @@ export const AppModules = ({ stateCode, userType, modules, appTenants }) => {
   const user = Digit.UserService.getUser();
 
   if (!user || !user?.access_token || !user?.info) {
-    return <Redirect to={{ pathname: "/digit-ui/employee/user/login", state: { from: location.pathname + location.search } }} />;
+    return <Redirect to={{ pathname: "/digit-ui/employee/user/language-selection", state: { from: location.pathname + location.search } }} />;
   }
-  
-  let mod =[
- 
-    {
-        "module": "HRMS",
-        "code": "HRMS",
-        "active": true,
-        "order": 2,
-        "tenants": [
-            {
-                "code": "pg.aidbhavisubcentre"
-            },
-            {
-                "code": "pg.alkodsubcentre"
-            },
-            {
-                "code": "pg.amdihalsubcentre"
-            },
-            {
-                "code": "pg.ambamathsubcentre"
-            },
-            {
-                "code": "pg"
-            }
-        ]
-    },
-    {
-        "module": "IM",
-        "code": "IM",
-        "bannerImage": "https://egov-uat-assets.s3.amazonaws.com/PGR.png",
-        "active": true,
-        "order": 2,
-        "tenants": [
-            {
-                "code": "pg.aidbhavisubcentre"
-            },
-            {
-                "code": "pg.alkodsubcentre"
-            },
-            {
-                "code": "pg.amdihalsubcentre"
-            },
-            {
-                "code": "pg.ambamathsubcentre"
-            },
-            {
-                "code": "pg"
-            }
-        ]
-    },
-  
-]
-//console.log("path,modules", path,mod)
+
   const appRoutes = modules.map(({ code, tenants }, index) => {
     const Module = Digit.ComponentRegistryService.getComponent(`${code}Module`);
-   // console.log("Module,Module", Module)
     return Module ? (
       <Route key={index} path={`${path}/${code.toLowerCase()}`}>
         <Module stateCode={stateCode} moduleCode={code} userType={userType} tenants={getTenants(tenants, appTenants)} />

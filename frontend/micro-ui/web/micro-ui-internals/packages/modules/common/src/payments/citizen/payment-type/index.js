@@ -69,14 +69,14 @@ export const SelectPaymentType = (props) => {
           },
         ],
         user: {
-          name: name || userInfo?.info?.name || billDetails?.payerName,
+          name: (name || userInfo?.info?.name || billDetails?.payerName).trim(),
           mobileNumber: mobileNumber || userInfo?.info?.mobileNumber || billDetails?.mobileNumber,
           tenantId: billDetails?.tenantId,
         },
         // success
         callbackUrl: window.location.href.includes("mcollect") || wrkflow === "WNS"
-          ? `${window.location.protocol}//${window.location.host}/digit-ui/citizen/payment/success/${businessService}/${wrkflow === "WNS"? encodeURIComponent(consumerCode):consumerCode}/${tenantId}?workflow=${wrkflow === "WNS"? wrkflow : "mcollect"}`
-          : `${window.location.protocol}//${window.location.host}/digit-ui/citizen/payment/success/${businessService}/${wrkflow === "WNS"? encodeURIComponent(consumerCode):consumerCode}/${tenantId}?propertyId=${propertyId}`,
+          ? `${window.location.protocol}//${window.location.host}/${window?.contextPath}/citizen/payment/success/${businessService}/${wrkflow === "WNS"? encodeURIComponent(consumerCode):consumerCode}/${tenantId}?workflow=${wrkflow === "WNS"? wrkflow : "mcollect"}`
+          : `${window.location.protocol}//${window.location.host}/${window?.contextPath}/citizen/payment/success/${businessService}/${wrkflow === "WNS"? encodeURIComponent(consumerCode):consumerCode}/${tenantId}?propertyId=${propertyId}`,
         additionalDetails: {
           isWhatsapp: false,
         },
@@ -100,7 +100,7 @@ export const SelectPaymentType = (props) => {
   if (authorization === "true" && !userInfo.access_token) {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = `/digit-ui/citizen/login?from=${encodeURIComponent(pathname + search)}`;
+    window.location.href = `/${window?.contextPath}/citizen/login?from=${encodeURIComponent(pathname + search)}`;
   }
 
   if (isLoading || paymentLoading) {

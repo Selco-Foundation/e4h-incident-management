@@ -118,8 +118,8 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
           return {
             style: {
               maxWidth: cellInfo.column.Header == t("HR_EMP_ID_LABEL") ? "150px" : "",
-              padding: "20px 18px",
-              fontSize: "16px",
+              padding: "10px 20px",
+              fontSize: "14px",
               minWidth: "150px",
             },
           };
@@ -140,7 +140,7 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
   return (
     <div className="inbox-container" style={{overflow: "auto", scrollbarWidth:"none", msOverflowStyle:"none"}}>
       {!props.isSearch && (
-        <div className="filters-container">
+        <div className="filters-container" style={{ paddingBottom:"80px"}}>
           <InboxLinks
             parentRoute={props.parentRoute}
             allLinks={[
@@ -151,19 +151,28 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
                 roles: ["HRMS_ADMIN"],
               },
             ]}
-            headerText={"HRMS"}
+            headerText={t("HRMS_INBOX_HEADER")}
             businessService={props.businessService}
           />
-          <div>
-            {
+          <div style={{marginTop:"16px"}}>
+          
               <FilterComponent
+              getCellProps={(cellInfo) => {
+                return {
+                  style: {
+                    minWidth: cellInfo.column.Header === t("CS_COMMON_TICKET_NO") ? "240px" : "",
+                    padding: "20px 20px",
+                    fontSize: "14px",
+                  },
+                };
+              }}
                 defaultSearchParams={props.defaultSearchParams}
                 onFilterChange={props.onFilterChange}
                 searchParams={props.searchParams}
                 type="desktop"
                 tenantIds={tenantIds}
               />
-            }
+            
           </div>
         </div>
       )}

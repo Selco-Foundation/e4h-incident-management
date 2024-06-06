@@ -8,6 +8,7 @@ export const Complaint = {
     reporterName,
     complaintType,
     uploadImages,
+    subType,
     healthcentre,
     healthCareType,
     tenantId
@@ -16,13 +17,16 @@ export const Complaint = {
     const tenantIdNew = tenantId;
     let mobileNumber = JSON.parse(sessionStorage.getItem("Digit.User"))?.value?.info?.mobileNumber;
     var serviceDefs = await Digit.MDMSService.getServiceDefs(tenantIdNew, "Incident");
-    const incidentType = serviceDefs.filter((def) => def.serviceCode === complaintType)[0].menuPath.toUpperCase();
+    let phcSubType=[];
+    if(healthCareType?.centreType!==null){
+      phcSubType=healthCareType?.centreType.replace(/\s+/g,'').toUpperCase();
+    }
     const defaultData = {
       incident: {
         district: district?.key,
         tenantId:tenantIdNew,
-        incidentType:incidentType,
-       incidentSubtype:complaintType,
+        incidentType:complaintType?.key,
+       incidentSubtype:subType?.key,
        phcType:healthcentre?.name,
        phcSubType:healthCareType?.centreType,
        comments:comments,
@@ -66,10 +70,11 @@ export const Complaint = {
     return response;
   },
 
-  assign: async (complaintDetails, action, employeeData, comments, uploadedDocument, tenantId) => {
+  assign: async (complaintDetails, action, employeeData, comments, uploadedDocument, tenantId, selectedReopenReason) => {
     complaintDetails.workflow.action = action;
     complaintDetails.workflow.assignes = employeeData ? [employeeData.uuid] : null;
     complaintDetails.workflow.comments = comments;
+    complaintDetails.incident.additionalDetail.reopenreason=selectedReopenReason
     uploadedDocument
       ? (complaintDetails.workflow.verificationDocuments = uploadedDocument)
       : null;

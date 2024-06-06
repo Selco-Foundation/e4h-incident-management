@@ -20,6 +20,7 @@ import {
   FirenocIcon,
   LoginIcon
 } from "@egovernments/digit-ui-react-components";
+import {Login} from "@egovernments/digit-ui-svg-components"
 import { Link, useLocation } from "react-router-dom";
 import SideBarMenu from "../../../config/sidebar-menu";
 import { useTranslation } from "react-i18next";
@@ -91,7 +92,7 @@ const IconsObject = {
   EditPencilIcon: <EditPencilIcon className="icon" />,
   LogoutIcon: <LogoutIcon className="icon" />,
   Phone: <Phone className="icon" />,
-  LoginIcon: <LoginIcon className="icon" />,
+  LoginIcon: <Login className="icon" />,
 };
 const StaticCitizenSideBar = ({ linkData, islinkDataLoading }) => {
   const { t } = useTranslation();

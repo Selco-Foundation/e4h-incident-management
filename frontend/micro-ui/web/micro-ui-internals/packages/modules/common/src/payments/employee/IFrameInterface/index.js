@@ -23,7 +23,7 @@ const IFrameInterface = (props) => {
   useEffect(() => {
     const pageObject = data?.[moduleName]?.["iframe-routes"]?.[pageName] || {};
     const isOrign = pageObject?.["isOrigin"] || false;
-    const domain = isOrign ? (process.env.NODE_ENV === "development" ? "https://e4h-dev.selcofoundation.org" : document.location.origin) : pageObject?.["domain"];
+    const domain = isOrign ? (process.env.NODE_ENV === "development" ? "https://qa.digit.org" : document.location.origin) : pageObject?.["domain"];
     const contextPath = pageObject?.["routePath"] || "";
     const title = pageObject?.["title"] || "";
     let url = `${domain}${contextPath}`;

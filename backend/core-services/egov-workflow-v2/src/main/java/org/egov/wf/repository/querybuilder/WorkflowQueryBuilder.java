@@ -3,9 +3,9 @@ package org.egov.wf.repository.querybuilder;
 import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.wf.config.WorkflowConfig;
@@ -145,6 +145,11 @@ public class WorkflowQueryBuilder {
                     "SELECT max(lastmodifiedTime) from eg_wf_processinstance_v2 as pi_inner where pi_inner.businessid = pi_outer.businessid " +
                     ") ");
         }
+        else 
+        {
+        	 with_query_builder.append(" 1=1");
+        }
+        
         
         if(criteria.getAssignee()!=null){
             with_query_builder.append(" and id in (select processinstanceid from eg_wf_assignee_v2 asg_inner where asg_inner.assignee = ?) ");
@@ -156,16 +161,30 @@ public class WorkflowQueryBuilder {
         	
         {
         	  if (!criteria.getHistory()) {
+        		  
+        		  if(!criteria.getTenantId().contains(","))
+        		  {
                   with_query_builder.append(" pi_outer.lastmodifiedTime = (" +
                           "SELECT max(lastmodifiedTime) from eg_wf_processinstance_v2 as pi_inner where pi_inner.businessid = pi_outer.businessid and tenantid = ? " +
                           ") ");
                   preparedStmtList.add(criteria.getTenantId());
-              }
+        		  }
+        		  else
+        		  {
+                      List<String> tenantIds=Arrays.asList(criteria.getTenantId().split(",", -1));	
 
-              if (criteria.getHistory())
-                  with_query_builder.append(" pi_outer.tenantid=? ");
-              else
-                  with_query_builder.append(" AND pi_outer.tenantid=? ");
+        			  with_query_builder.append(" pi_outer.lastmodifiedTime = (" +
+                              "SELECT max(lastmodifiedTime) from eg_wf_processinstance_v2 as pi_inner where pi_inner.businessid = pi_outer.businessid and tenantid IN (")
+        			  		  .append(createQuery(tenantIds)).append(") )");
+                              addToPreparedStatement(preparedStmtList, tenantIds);
+        		  }
+              }
+        	  if(!criteria.getTenantId().contains(",")) {
+        		  if (criteria.getHistory())
+        			  with_query_builder.append(" pi_outer.tenantid=? ");
+        		  else
+        			  with_query_builder.append(" AND pi_outer.tenantid=? ");
+        	  }
 
               preparedStmtList.add(criteria.getTenantId());
               

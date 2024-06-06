@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.egov.im.web.models.AuditDetails;
@@ -73,9 +74,11 @@ public class ProcessInstance {
 
     private String notificationAction;
 
+    @Size(max=1024)
     @JsonProperty("comment")
-    private String comment;
-
+    @Pattern(regexp = "^[a-zA-Z0-9!@#.,/:; ()&']*$")
+    private String comment = null;
+    
     @JsonProperty("documents")
     @Valid
     private List<Document> documents;

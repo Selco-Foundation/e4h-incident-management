@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 const Inbox = () => {
   const { t } = useTranslation();
-  const tenantId = Digit.ULBService.getCurrentTenantId();
+  let tenantId = Digit.ULBService.getCurrentTenantId();
   const { uuid } = Digit.UserService.getUser().info;
   const [pageOffset, setPageOffset] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -18,7 +18,12 @@ const Inbox = () => {
   useEffect(() => {
     (async () => {
       const applicationStatus = searchParams?.filters?.pgrfilters?.applicationStatus?.map(e => e.code).join(",")
+      if(searchParams?.filters?.pgrQuery?.phcType)
+      {
+        tenantId= searchParams?.filters?.pgrQuery?.phcType
+      }
       let response = await Digit.PGRService.count(tenantId, applicationStatus?.length > 0  ? {applicationStatus} : {} );
+      console.log("STEP6",response,searchParams?.filters?.pgrQuery?.phcType,tenantId)
       if (response?.count) {
         setTotalRecords(response.count);
       }
@@ -58,7 +63,7 @@ const Inbox = () => {
   console.log("complai", complaints)
 
   let isMobile = Digit.Utils.browser.isMobile();
-
+console.log("totalRecords",totalRecords)
   if (complaints?.length !== null) {
     if (isMobile) {
       return (
@@ -67,9 +72,12 @@ const Inbox = () => {
     } else {
       return (
         <div>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
           <Header>{t("ES_COMMON_INBOX")}</Header>
-          <div style={{color:"#9e1b32", marginBottom:'10px'}}>
-    <Link to={`/digit-ui/employee`}>{t("BACK")}</Link></div> 
+          <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+              <Link to={`/digit-ui/employee`}>{t("CS_COMMON_BACK")}</Link>
+          </div> 
+          </div>
           <DesktopInbox
             data={complaints}
             isLoading={isLoading}

@@ -5,7 +5,6 @@ import SelectName from "./components/SelectName";
 const pgrCustomizations = {
   // complaintConfig,
   getComplaintDetailsTableRows: ({ id, service, role, t }) => {
-   // console.log("idddd", id)
     return {};
   },
 };

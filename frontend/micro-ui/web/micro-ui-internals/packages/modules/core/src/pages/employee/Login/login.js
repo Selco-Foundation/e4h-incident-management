@@ -24,6 +24,10 @@ const setEmployeeDetail = (userObject, token) => {
 
 const Login = ({ config: propsConfig, t, isDisabled }) => {
   const { data: cities, isLoading } = Digit.Hooks.useTenants();
+  let  sortedCities=[];
+  if (cities !== null&& cities!==undefined) {  
+    sortedCities=cities.sort((a, b) => a.i18nKey.localeCompare(b.i18nKey));
+  }
   const { data: storeData, isLoading: isStoreLoading } = Digit.Hooks.useStore.getInitData();
  // console.log("storeData", storeData)
   const { stateInfo } = storeData || {};
@@ -33,7 +37,7 @@ const Login = ({ config: propsConfig, t, isDisabled }) => {
 
   const history = useHistory();
   // const getUserType = () => "EMPLOYEE" || Digit.UserService.getType();
-
+  const isMobile = window.Digit.Utils.browser.isMobile();
   useEffect(() => {
     if (!user) {
       return;
@@ -64,7 +68,7 @@ const Login = ({ config: propsConfig, t, isDisabled }) => {
 
   const onLogin = async (data) => {
     if (!data.city) {
-      alert("Please select Health Care Centre");
+      alert(t("ES_SELECT_HEALTH_CARE"));
       return;
     }
     setDisable(true);
@@ -123,7 +127,7 @@ const Login = ({ config: propsConfig, t, isDisabled }) => {
             customProps: {},
             component: (props, customProps) => (
               <Dropdown
-                option={cities}
+                option={sortedCities}
                 className="login-city-dd"
                 optionKey="i18nKey"
                 select={(d) => {
@@ -147,7 +151,6 @@ const Login = ({ config: propsConfig, t, isDisabled }) => {
       <div className="employeeBackbuttonAlign">
         <BackButton variant="white" style={{ borderBottom: "none" }} />
       </div>
-
       <FormComposer
         onSubmit={onLogin}
         isDisabled={isDisabled || disable}
@@ -160,7 +163,7 @@ const Login = ({ config: propsConfig, t, isDisabled }) => {
         onSecondayActionClick={onForgotPassword}
         heading={propsConfig.texts.header}
         headingStyle={{ textAlign: "center" }}
-        cardStyle={{ margin: "auto", minWidth: "408px" }}
+        cardStyle={isMobile?{ margin: "auto",minWidth:"300px" } :{ margin: "auto",minWidth:"400px" }}
         className="loginFormStyleEmployee"
         buttonStyle={{ maxWidth: "100%", width: "100%", backgroundColor:"#7a2829" }}
       >

@@ -11,6 +11,11 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   const state = Digit.ULBService.getStateId();
   const { isMdmsLoading, data: mdmsData } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["District","Block"]);
   const {  data: phcMenu  } = Digit.Hooks.pgr.useMDMS(state, "tenant", ["tenants"]);
+  const phcMenus=Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants"):Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg")
+  let sortedPhcMenu=[];
+  if(phcMenus.length>0){
+    sortedPhcMenu=phcMenus.sort((a, b) => a.name.localeCompare(b.name));
+  }
   const [mobileNo, setMobileNo] = useState(searchParams?.search?.mobileNumber || "");
   const { register, errors, handleSubmit, reset } = useForm();
   const { t } = useTranslation();
@@ -56,12 +61,16 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   }
 useEffect(()=>{
 console.log()
-if(Digit.SessionStorage.get("Tenants"))
+if(Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants"):Digit.SessionStorage.get("IM_TENANTS"))
 {
   let empTenant = Digit.SessionStorage.get("Employee.tenantId")
-  let filtered = Digit.SessionStorage.get("Tenants").filter((abc)=> abc.code ==empTenant)
+  let filtered = Digit.SessionStorage.get("IM_TENANTS").filter((abc)=> abc.code ==empTenant)
   console.log("filtered",filtered)
-  setPhcTypeFunction(filtered?.[0])
+  if(!filtered?.[0].code === "pg")
+  {
+    setPhcTypeFunction(filtered?.[0])
+  }
+ 
 }
 },[])
   function setPhcTypeFunction(value) {
@@ -70,7 +79,7 @@ if(Digit.SessionStorage.get("Tenants"))
   function setMobile(e) {
     setMobileNo(e.target.value);
   }
-console.log("Digit.SessionStorage.get)",Digit.SessionStorage.get("Tenants"),phcMenu?.tenant?.tenants)
+
   return (
     <form onSubmit={handleSubmit(onSubmitInput)} style={{ marginLeft: "24px" }}>
       <React.Fragment>
@@ -84,9 +93,9 @@ console.log("Digit.SessionStorage.get)",Digit.SessionStorage.get("Tenants"),phcM
                 </span>
               </div>
             )}
-            <div className="complaint-input-container" style={{display:"grid"}}>
+            <div className="complaint-input-container" style={{display:"grid", height:"83px"}}>
               <span className="complaint-input">
-                <Label>{t("CS_COMMON_TICKET_NO")}</Label>
+                <Label style={{marginTop:"5px"}}>{t("CS_COMMON_TICKET_NO")}</Label>
                 <TextInput
                   name="serviceRequestId"
                   value={complaintNo}
@@ -100,7 +109,7 @@ console.log("Digit.SessionStorage.get)",Digit.SessionStorage.get("Tenants"),phcM
               <span className="mobile-input">
                 <Label>{t("CS_COMMON_PHC_TYPE")}</Label>
                 <Dropdown
-                option={Digit.SessionStorage.get("Tenants")}
+                option={sortedPhcMenu}
                   //name="mobileNumber"
                   optionKey="name"
                   id="healthCentre"
@@ -113,15 +122,18 @@ console.log("Digit.SessionStorage.get)",Digit.SessionStorage.get("Tenants"),phcM
                 ></Dropdown>
               </span>
               {type === "desktop" && (
+                <div style={{display:'flex', alignItems:'center',marginTop: "5px"}}>
                 <SubmitBar
-                  style={{ marginTop: 32, marginLeft: "16px", width: "calc( 100% - 16px )" }}
+                  style={{ marginLeft: "10px" }}
                   label={t("ES_COMMON_SEARCH")}
                   submit={true}
                   disabled={Object.keys(errors).filter((i) => errors[i]).length}
                 />
+                <span className="clear-search" style={{color:"#7a2829", marginLeft:"15px", marginTop:"10px"}}>{clearAll()}</span>
+                </div>
               )}
-            </div>
-            {type === "desktop" && <span className="clear-search" style={{color:"#7a2829"}}>{clearAll()}</span>}
+             </div>
+            
           </div>
         </div>
         {type === "mobile" && (

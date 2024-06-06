@@ -21,6 +21,8 @@
   }
 
   .body {
+    padding-left: 0px;
+    margin-left: 0px;
     padding: 10px;
     @apply flex items-start flex-col;
     margin-left: 46px;
@@ -28,6 +30,10 @@
     .link {
       @apply p-sm text-primary-main items-center;
       display: flex !important;
+      a{
+        color: inherit;
+        text-decoration: inherit
+      }
     }
 
     .inbox-total {
@@ -65,7 +71,7 @@
 
 .employeeCard-info-box {
   @apply flex justify-end ml-md;
-  background-color: #fafafa;
+  background-color: theme(colors.grey.light);
   div {
     margin-right: 32px;
     span:nth-child(2) {
@@ -97,7 +103,7 @@
       @apply font-bold text-heading-l flex gap-3;
       padding-bottom: 6px;
       svg {
-        fill: #0b0c0c;
+        fill: theme(colors.text.primary);
       }
     }
     .sub-filter-label {
@@ -133,7 +139,7 @@
           @apply text-heading-m block flex gap-3 items-center;
           padding-bottom: 6px;
           svg {
-            fill: #0b0c0c;
+            fill: theme(colors.text.primary);
           }
         }
 
@@ -156,7 +162,7 @@
             @apply text-focus;
             display: none;
             &:hover {
-              color: #003078;
+              color: theme(colors.link.hover);
               cursor: pointer;
             }
           }
@@ -209,11 +215,14 @@
     }
 
     .body {
+      padding-left: 0px;
+      margin-left: 0px;
       padding: 10px;
       @apply flex items-start flex-col;
       margin-left: 46px;
 
       .link {
+        padding-left: 0px;
         @apply p-sm text-primary-main;
       }
     }
@@ -229,7 +238,7 @@
         @apply bg-white;
         svg {
           path {
-            fill: #f47738;
+            fill: theme(colors.primary.main);
           }
         }
       }
@@ -260,6 +269,7 @@
       width: 270px;
 
       .filter {
+        margin-top: 0px !important;
         @apply mt-md;
 
         .filter-card {
@@ -359,7 +369,7 @@
               @apply block;
               cursor: pointer;
               &:hover {
-                color: #003078;
+                color: theme(colors.link.hover);
                 cursor: pointer;
               }
             }
@@ -397,26 +407,26 @@
 }
 
 .cell-text {
-  color: #505a5f;
+  color: theme(colors.text.secondary);
 }
 
 .sla-cell-error {
-  color: #d4351c;
+  color: theme(colors.error);
   background-color: rgba(212, 53, 28, 0.12);
   padding: 0 24px;
   border-radius: 11px;
 }
 
 .sla-cell-success {
-  color: #00703c;
+  color: theme(colors.success);
   background-color: rgba(0, 112, 60, 0.12);
-  padding: 0 24px;
+  padding: 0 20px;
   border-radius: 11px;
 }
 
 .complain-no-cell-text {
   margin-top: "4px";
-  color: "#505A5F";
+  color: "theme(colors.text.secondary)";
 }
 
 .search-error-label {
@@ -444,8 +454,11 @@
   }
 }
 .employeeTotalLink {
-  color: #505a5f;
+  color: #7a2829 !important;
+  font-weight: 700;
+  color: theme(colors.text.secondary);
   font-size: 16px;
+  text-decoration: none;
 }
 
 @screen dt {
@@ -460,7 +473,7 @@
           margin-right: 1rem;
           svg {
             path {
-              fill: #f47738;
+              fill: theme(colors.primary.main);
             }
           }
         }
@@ -468,7 +481,7 @@
           font-size: 24px;
           line-height: 28px;
           font-weight: 400;
-          color: #f47738;
+          color: theme(colors.primary.main);
         }
       }
     }
@@ -498,10 +511,6 @@
       }
     }
   }
-}
-
-.inboxLinksFSM {
-  margin: 0 !important;
 }
 
 .plumber-details-new-value-wrapper {
@@ -570,14 +579,14 @@
   tHead {
     tr {
       th {
-        text-align: left;
+        text-align: center;
       }
     }
   }
   tBody {
     tr {
       td {
-        text-align: left;
+        text-align: center;
       }
     }
   }

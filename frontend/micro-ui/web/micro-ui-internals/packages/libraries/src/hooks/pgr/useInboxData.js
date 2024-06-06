@@ -5,7 +5,7 @@ const useInboxData = (searchParams,tenantIdNew) => {
  console.log("searchParams",searchParams)
   const fetchInboxData = async () => {
     let tenantId = Digit.ULBService.getCurrentTenantId();
-    const tenants = Digit.SessionStorage.get("Tenants").map(item => item.code).join(',');
+    const tenants = Digit.SessionStorage.get("IM_TENANTS").map(item => item.code).join(',');
     const sessionTenantId = Digit.SessionStorage.get("Employee.tenantId");
     if (searchParams?.filters?.pgrQuery?.phcType) {
       tenantId = searchParams.filters.pgrQuery.phcType;
@@ -19,14 +19,24 @@ const useInboxData = (searchParams,tenantIdNew) => {
     let serviceIds = [];
     let commonFilters = { start: 1, end: 10 };
     const { limit, offset } = searchParams;
+    console.log("serviceIdParamsserviceIdParams",searchParams.filters.wfFilters.assignee[0]?.code)
     let appFilters = { ...commonFilters, ...searchParams.filters.pgrQuery, ...searchParams.search, limit, offset };
-    let wfFilters = { ...commonFilters, ...searchParams.filters.wfQuery };
+   let wfFilters
+    if(searchParams.filters.wfFilters.assignee[0]?.code !=="")
+    {
+     wfFilters = { ...commonFilters, ...searchParams.filters.wfQuery,assignee:searchParams.filters.wfFilters.assignee[0]?.code}
+    }
+    else {
+      wfFilters = { ...commonFilters, ...searchParams.filters.wfQuery}
+    }
+    
     let complaintDetailsResponse = null;
     let combinedRes = [];
     complaintDetailsResponse = await Digit.PGRService.search(tenantId, appFilters);
     console.log("STEP 5",tenantId, appFilters,complaintDetailsResponse)
     complaintDetailsResponse.IncidentWrappers.forEach((incident) => serviceIds.push(incident.incident.incidentId));
     const serviceIdParams = serviceIds.join();
+   
     const workflowInstances = await Digit.WorkflowService.getByBusinessId(tenantId, serviceIdParams, wfFilters, false);
     if (workflowInstances.ProcessInstances.length>0) {
       combinedRes = combineResponses(complaintDetailsResponse, workflowInstances).map((data) => ({

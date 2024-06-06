@@ -196,7 +196,8 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
               </div>
             </div>
             <div>
-              <div className="filter-label">{t("HR_EMP_STATUS_LABEL")}</div>
+              <div className="filter-label" style={{padding:"10px 10px"}}>{t("HR_EMP_STATUS_LABEL")}</div>
+              <div  style={{padding:"10px 10px"}}>
               <RadioButtons
                 onSelect={setIsactive}
                 selected={isActive}
@@ -207,7 +208,8 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
                   { code: false, name: t("HR_DEACTIVATE_HEAD") },
                 ]}
               />
-              {props.type !== "mobile" && <div>
+              </div>
+              {props.type !== "mobile" && <div style={{paddingBottom:"30px"}}>
                 <SubmitBar onSubmit={() => onFilterChange(_searchParams)} label={t("HR_COMMON_APPLY")} />
               </div>}
             </div>

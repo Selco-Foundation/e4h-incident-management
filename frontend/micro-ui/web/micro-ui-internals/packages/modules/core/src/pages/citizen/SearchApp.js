@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AuditSearchApplication from "../../components/Search";
-import { Link } from "react-router-dom";
 const Search = ({ path }) => {
   const { t } = useTranslation();
   const tenantId = Digit.ULBService.getCitizenCurrentTenant()
   const [payload, setPayload] = useState({});
-  const isMobile = window.Digit.Utils.browser.isMobile();
   const convertDateToEpoch = (dateString, dayStartOrEnd = "dayend") => {
     //example input format : "2018-10-02"
     try {
@@ -17,10 +15,6 @@ const Search = ({ path }) => {
         DateObj.setHours(DateObj.getHours() + 24);
         DateObj.setSeconds(DateObj.getSeconds() - 1);
       }
-      if (dayStartOrEnd === "daystart") {
-        DateObj.setHours(DateObj.getHours());
-        DateObj.setSeconds(DateObj.getSeconds() + 1);
-      }
       return DateObj.getTime();
     } catch (e) {
       return dateString;
@@ -28,13 +22,15 @@ const Search = ({ path }) => {
   };
   function onSubmit(_data) {
     Digit.SessionStorage.set("AUDIT_APPLICATION_DETAIL", {
-      offset:0,
-      limit:10
+      offset: 0,
+      limit: 5,
+      sortBy: "commencementDate",
+      sortOrder: "DESC",
     });
-    let data = {
+    const data = {
         ..._data,
-        fromDate: convertDateToEpoch(_data?.fromDate, _data?.fromDate == _data?.toDate ? "daystart":""),
-        toDate: convertDateToEpoch(_data?.toDate, _data?.fromDate == _data?.toDate ? "dayend":""),
+        fromDate: convertDateToEpoch(_data?.fromDate),
+        toDate: convertDateToEpoch(_data?.toDate),
       };
   
       setPayload(

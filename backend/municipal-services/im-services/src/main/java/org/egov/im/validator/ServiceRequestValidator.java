@@ -98,8 +98,8 @@ public class ServiceRequestValidator {
             User reporter = request.getIncident().getReporter();
             if(reporter == null)
                 errorMap.put("INVALID_REQUEST","Reporter object cannot be null");
-            else if(reporter.getMobileNumber()==null || reporter.getName()==null)
-                errorMap.put("INVALID_REQUEST","Name and Mobile Number is mandatory in reporter object");
+//            else if(reporter.getMobileNumber()==null || reporter.getName()==null)
+//                errorMap.put("INVALID_REQUEST","Name and Mobile Number is mandatory in reporter object");
         }
 
     }
@@ -136,42 +136,42 @@ public class ServiceRequestValidator {
      * @param request
      * @param mdmsData
      */
-    private void validateDepartment(IncidentRequest request, Object mdmsData){
-
-        String serviceCode = request.getIncident().getIncidentType();
-        List<String> assignes = request.getWorkflow().getAssignes();
-
-        if(CollectionUtils.isEmpty(assignes))
-            return;
-
-        List<String> departments = hrmsUtil.getDepartment(assignes, request.getRequestInfo());
-
-        String jsonPath = MDMS_DEPARTMENT_SEARCH.replace("{SERVICEDEF}",serviceCode);
-
-        List<String> res = null;
-        String departmentFromMDMS;
-
-        try{
-            res = JsonPath.read(mdmsData,jsonPath);
-        }
-        catch (Exception e){
-            throw new CustomException("JSONPATH_ERROR","Failed to parse mdms response for department");
-        }
-
-        if(CollectionUtils.isEmpty(res))
-            throw new CustomException("PARSING_ERROR","Failed to fetch department from mdms data for serviceCode: "+serviceCode);
-        else departmentFromMDMS = res.get(0);
-
-        Map<String, String> errorMap = new HashMap<>();
-
-        if(!departments.contains(departmentFromMDMS))
-            errorMap.put("INVALID_ASSIGNMENT","The application cannot be assigned to employee of department: "+departments.toString());
-
-
-        if(!errorMap.isEmpty())
-            throw new CustomException(errorMap);
-
-    }
+//    private void validateDepartment(IncidentRequest request, Object mdmsData){
+//
+//        String serviceCode = request.getIncident().getIncidentType();
+//        List<String> assignes = request.getWorkflow().getAssignes();
+//
+//        if(CollectionUtils.isEmpty(assignes))
+//            return;
+//
+//        List<String> departments = hrmsUtil.getDepartment(assignes, request.getRequestInfo());
+//
+//        String jsonPath = MDMS_DEPARTMENT_SEARCH.replace("{SERVICEDEF}",serviceCode);
+//
+//        List<String> res = null;
+//        String departmentFromMDMS;
+//
+//        try{
+//            res = JsonPath.read(mdmsData,jsonPath);
+//        }
+//        catch (Exception e){
+//            throw new CustomException("JSONPATH_ERROR","Failed to parse mdms response for department");
+//        }
+//
+//        if(CollectionUtils.isEmpty(res))
+//            throw new CustomException("PARSING_ERROR","Failed to fetch department from mdms data for serviceCode: "+serviceCode);
+//        else departmentFromMDMS = res.get(0);
+//
+//        Map<String, String> errorMap = new HashMap<>();
+//
+//        if(!departments.contains(departmentFromMDMS))
+//            errorMap.put("INVALID_ASSIGNMENT","The application cannot be assigned to employee of department: "+departments.toString());
+//
+//
+//        if(!errorMap.isEmpty())
+//            throw new CustomException(errorMap);
+//
+//    }
 
 
     /**
@@ -210,7 +210,7 @@ public class ServiceRequestValidator {
         * */
         if( (criteria.getMobileNumber()!=null 
                 || criteria.getIncidentId()!=null || criteria.getIds()!=null
-                || criteria.getServiceCode()!=null )
+                || criteria.getIncidentType()!=null )
                 && criteria.getTenantId()==null)
             throw new CustomException("INVALID_SEARCH","TenantId is mandatory search param");
 
@@ -244,8 +244,8 @@ public class ServiceRequestValidator {
 
         List<String> allowedParams = Arrays.asList(allowedParamStr.split(","));
 
-        if(criteria.getServiceCode()!=null && !allowedParams.contains("serviceCode"))
-            throw new CustomException("INVALID SEARCH","Search on serviceCode is not allowed");
+        if(criteria.getIncidentType()!=null && !allowedParams.contains("incidentType"))
+            throw new CustomException("INVALID SEARCH","Search on incidentType is not allowed");
 
         if(criteria.getIncidentId()!=null && !allowedParams.contains("incidentId"))
             throw new CustomException("INVALID SEARCH","Search on incidentid is not allowed");
@@ -253,8 +253,8 @@ public class ServiceRequestValidator {
         if(criteria.getApplicationStatus()!=null && !allowedParams.contains("applicationStatus"))
             throw new CustomException("INVALID SEARCH","Search on applicationStatus is not allowed");
 
-        if(criteria.getMobileNumber()!=null && !allowedParams.contains("mobileNumber"))
-            throw new CustomException("INVALID SEARCH","Search on mobileNumber is not allowed");
+        if(criteria.getPhcType()!=null && !allowedParams.contains("phcType"))
+            throw new CustomException("INVALID SEARCH","Search on PHCType is not allowed");
 
         if(criteria.getIds()!=null && !allowedParams.contains("ids"))
             throw new CustomException("INVALID SEARCH","Search on ids is not allowed");

@@ -47,6 +47,7 @@ export const configEmployeeApplication = ({ t, action, selectFile, uploadedFile,
                 <UploadFile
                 id={"hrms-deactivation-doc"}
                   onUpload={selectFile}
+                  accept="image/*, .pdf, .png, .jpeg"
                   onDelete={() => {
                     setUploadedFile(null);
                   }}

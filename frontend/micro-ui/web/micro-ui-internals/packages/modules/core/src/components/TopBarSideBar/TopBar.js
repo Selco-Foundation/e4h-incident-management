@@ -5,7 +5,7 @@ import ChangeCity from "../ChangeCity";
 import ChangeLanguage from "../ChangeLanguage";
 
 const TextToImg = (props) => (
-  <span className="user-img-txt" style={{backgroundColor:"#7a2829"}} onClick={props.toggleMenu} title={props.name}>
+  <span className="user-img-txt" onClick={props.toggleMenu} title={props.name}>
     {props?.name?.[0]?.toUpperCase()}
   </span>
 );
@@ -23,7 +23,6 @@ const TopBar = ({
   handleUserDropdownSelection,
   logoUrl,
   showLanguageChange = true,
-  setSideBarScrollTop,
 }) => {
   const [profilePic, setProfilePic] = React.useState(null);
 
@@ -64,20 +63,19 @@ const TopBar = ({
   const updateSidebar = () => {
     if (!Digit.clikOusideFired) {
       toggleSidebar(true);
-      setSideBarScrollTop(true);
     } else {
       Digit.clikOusideFired = false;
     }
   };
 
   function onNotificationIconClick() {
-    history.push("/digit-ui/citizen/engagement/notifications");
+    history.push(`/${window?.contextPath}/citizen/engagement/notifications`);
   }
 
   const urlsToDisableNotificationIcon = (pathname) =>
     !!Digit.UserService?.getUser()?.access_token
       ? false
-      : ["/digit-ui/citizen/select-language", "/digit-ui/citizen/select-location"].includes(pathname);
+      : [`/${window?.contextPath}/citizen/select-language`, `/${window?.contextPath}/citizen/select-location`].includes(pathname);
 
   if (CITIZEN) {
     return (
@@ -100,8 +98,8 @@ const TopBar = ({
     );
   }
   const loggedin = userDetails?.access_token ? true : false;
-  console.log("cityDetails",cityDetails)
   return (
+    <div  style={{padding:"5px 0px"}}>
     <div className="topbar">
       {mobileView ? <Hamburger handleClick={toggleSidebar} color="#9E9E9E" /> : null}
       <img className="city" src={loggedin ? cityDetails?.logoId : stateInfo?.statelogo} />
@@ -129,7 +127,7 @@ const TopBar = ({
             </div>
             <div className="left">{showLanguageChange && <ChangeLanguage dropdown={true} />}</div>
             {userDetails?.access_token && (
-              <div className="left">
+              <div className="left" style={{width:"130px"}}>
                 <Dropdown
                   option={userOptions}
                   optionKey={"name"}
@@ -152,6 +150,7 @@ const TopBar = ({
           </div>
         )}
       </span>
+      </div>
     </div>
   );
 };

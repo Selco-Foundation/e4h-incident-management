@@ -1,9 +1,8 @@
 import { useQuery } from "react-query";
 
 const useApplicationStatusGeneral = ({ businessServices = [], tenantId }, config) => {
-  
   tenantId = tenantId || Digit.ULBService.getCurrentTenantId();
-  console.log("useApplicationStatusGeneral",tenantId)
+
   const userInfo = Digit.UserService.getUser();
   const userRoles = userInfo.info.roles.map((roleData) => roleData.code);
 

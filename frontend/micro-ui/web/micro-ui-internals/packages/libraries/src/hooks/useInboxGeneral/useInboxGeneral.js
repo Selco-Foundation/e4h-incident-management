@@ -1,16 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "react-query";
 
-
-
 import { filterFunctions } from "./filterFn";
 import { getSearchFields } from "./searchFields";
 
-
 const inboxConfig = (tenantId, filters) => ({
- 
   
- 
 });
 
 const defaultCombineResponse = ({ totalCount, ...d }, wf) => {

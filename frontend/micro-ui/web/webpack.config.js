@@ -1,18 +1,16 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const TerserPlugin = require('terser-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   // mode: 'development',
-  mode: 'production',
   entry: "./src/index.js",
-  devtool: "source-map",
+  devtool: "none",
   module: {
     rules: [
       {
         test: /\.(js)$/,
-        exclude: /node_modules/,
         use: ["babel-loader"],
       },
       {
@@ -36,10 +34,10 @@ module.exports = {
       maxAsyncRequests:30,
       maxInitialRequests:30
     },
-    minimizer: [new TerserPlugin({ /* additional options here */ })],
   },
   plugins: [
     new CleanWebpackPlugin(),
+    // new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({ inject: true, template: "public/index.html" }),
   ],
 };

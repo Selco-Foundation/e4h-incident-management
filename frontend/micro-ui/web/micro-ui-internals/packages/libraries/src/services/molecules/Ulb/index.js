@@ -30,6 +30,8 @@ export const ULBService = {
   getCurrentTenantId: () => {
     // TODO: change when setter is done.
     const user = UserService.getUser();
+    const emp= UserService.getEmployeeTenant()
+    console.log("empempemp",emp)
     if (user?.extraRoleInfo) {
       const isDsoRoute = Digit.Utils.detectDsoRoute(window.location.pathname);
       if (isDsoRoute) {
@@ -38,7 +40,7 @@ export const ULBService = {
     }
     //TODO: fix tenant id from userinfo
     const tenantId =
-      user?.info?.type === "EMPLOYEE" && user?.info?.tenantId ? user?.info?.tenantId : window?.globalConfigs.getConfig("STATE_LEVEL_TENANT_ID");
+      user?.info?.type === "EMPLOYEE" && user?.info?.tenantId ? emp : window?.globalConfigs.getConfig("STATE_LEVEL_TENANT_ID");
     return tenantId;
   },
   /**
@@ -87,26 +89,6 @@ export const ULBService = {
       return homeCity;
     }
     return homeCity|| Digit.UserService.getUser()?.info?.permanentCity || ULBService.getStateId();
-  },
-
-  /**
-   * Custom method to get citizen's current selected city
-   *
-   * @author jagankumar-egov
-   *
-   * @example
-   * Digit.ULBService.getCitizenCurrentTenant() -> will return selected home city if not loggedin users city if not state tenant
-   *
-   * Digit.ULBService.getCitizenCurrentTenant(true) -> will return selected home city
-   *
-   * @returns {String}
-   */
-  getCitizenCurrentTenant: (selectedCity = false) => {
-    const homeCity = Digit.SessionStorage.get("CITIZEN.COMMON.HOME.CITY")?.code;
-    if (selectedCity) {
-      return homeCity;
-    }
-    return homeCity || Digit.UserService.getUser()?.info?.permanentCity || ULBService.getStateId();
   },
   /**
    * Custom method to get all ulb's which the loggedin employee has access to
@@ -164,5 +146,5 @@ export const ULBService = {
       });
       return filteredArray;
     }
-  },
+  }
 };

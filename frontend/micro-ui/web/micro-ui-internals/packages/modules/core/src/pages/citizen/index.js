@@ -1,23 +1,22 @@
-import { BackButton, WhatsappIcon, Card, CitizenHomeCard, CitizenInfoLabel, PrivateRoute } from "@egovernments/digit-ui-react-components";
+import { BackButton, CitizenHomeCard, CitizenInfoLabel } from "@egovernments/digit-ui-react-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Route, Switch, useRouteMatch, useHistory, Link } from "react-router-dom";
+import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
 import ErrorBoundary from "../../components/ErrorBoundaries";
+import ErrorComponent from "../../components/ErrorComponent";
 import { AppHome, processLinkData } from "../../components/Home";
 import TopBarSideBar from "../../components/TopBarSideBar";
 import StaticCitizenSideBar from "../../components/TopBarSideBar/SideBar/StaticCitizenSideBar";
+import FAQsSection from "./FAQs/FAQs";
 import CitizenHome from "./Home";
 import LanguageSelection from "./Home/LanguageSelection";
 import LocationSelection from "./Home/LocationSelection";
-import Login from "./Login";
 import UserProfile from "./Home/UserProfile";
-import ErrorComponent from "../../components/ErrorComponent";
-import FAQsSection from "./FAQs/FAQs";
 import HowItWorks from "./HowItWorks/howItWorks";
-import StaticDynamicCard from "./StaticDynamicComponent/StaticDynamicCard";
-import AcknowledgementCF from "../../components/AcknowledgementCF";
-import CitizenFeedback from "../../components/CitizenFeedback";
+import Login from "./Login";
 import Search from "./SearchApp";
+import StaticDynamicCard from "./StaticDynamicComponent/StaticDynamicCard";
+
 const sidebarHiddenFor = [
   "digit-ui/citizen/register/name",
   "/digit-ui/citizen/select-language",
@@ -67,9 +66,8 @@ const Home = ({
       },
     }
   );
-  //console.log("linkdata", linkData)
 
-  const classname = "";
+  const classname = Digit.Hooks.useRouteSubscription(pathname);
   const { t } = useTranslation();
   const { path } = useRouteMatch();
   const history = useHistory();
@@ -91,11 +89,11 @@ const Home = ({
     let Links = Digit.ComponentRegistryService.getComponent(`${code}Links`) || (() => <React.Fragment />);
     let mdmsDataObj = isLinkDataFetched ? processLinkData(linkData, code, t) : undefined;
 
-    //if (mdmsDataObj?.header === "ACTION_TEST_WS") {
-      mdmsDataObj?.links && mdmsDataObj?.links.sort((a, b) => {
-        return a.orderNumber - b.orderNumber;
+    if (mdmsDataObj?.header === "ACTION_TEST_WS") {
+      mdmsDataObj?.links.sort((a, b) => {
+        return b.orderNumber - a.orderNumber;
       });
-    // }
+    }
     return (
       <React.Fragment>
         <Route key={index} path={`${path}/${code.toLowerCase()}-home`}>
@@ -125,7 +123,7 @@ const Home = ({
               )}
               {/* <Links key={index} matchPath={`/digit-ui/citizen/${code.toLowerCase()}`} userType={"citizen"} /> */}
             </div>
-            <StaticDynamicCard moduleCode={code?.toUpperCase()}/>
+            <StaticDynamicCard moduleCode={code?.toUpperCase()} />
           </div>
         </Route>
         <Route key={"faq" + index} path={`${path}/${code.toLowerCase()}-faq`}>
@@ -166,9 +164,6 @@ const Home = ({
             <CitizenHome />
           </Route>
 
-          <PrivateRoute path={`${path}/feedback`} component={CitizenFeedback}></PrivateRoute>
-          <PrivateRoute path={`${path}/feedback-acknowledgement`} component={AcknowledgementCF}></PrivateRoute>
-
           <Route exact path={`${path}/select-language`}>
             <LanguageSelection />
           </Route>
@@ -180,7 +175,7 @@ const Home = ({
             <ErrorComponent
               initData={initData}
               goToHome={() => {
-                history.push("/digit-ui/citizen");
+                history.push(`/${window?.contextPath}/${Digit?.UserService?.getType?.()}`);
               }}
             />
           </Route>
@@ -207,7 +202,7 @@ const Home = ({
           </Route>
 
           <Route path={`${path}/Audit`}>
-            <Search/>
+            <Search />
           </Route>
           <ErrorBoundary initData={initData}>
             {appRoutes}

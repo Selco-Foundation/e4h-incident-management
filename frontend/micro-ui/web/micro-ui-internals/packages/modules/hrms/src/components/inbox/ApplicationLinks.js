@@ -15,7 +15,7 @@ const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
   }, []);
 
   const GetLogo = () => (
-    <div className="header">
+    <div className="header" style={{paddingBottom:"0px", paddingTop:"25px"}}>
       <span className="logo">
         <PersonIcon />
       </span>{" "}
@@ -29,7 +29,7 @@ const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
         <div className="body">
           {links.map(({ link, text, hyperlink = false, accessTo = [] }, index) => {
             return (
-              <span className="link" key={index} >
+              <span className="link" style={{paddingBottom:"60px"}} key={index} >
                 {hyperlink ? <a href={link}>{t(text)}</a> : <Link to={link} style={{color:"#7a2829"}}>{t(text)}</Link>}
               </span>
             );

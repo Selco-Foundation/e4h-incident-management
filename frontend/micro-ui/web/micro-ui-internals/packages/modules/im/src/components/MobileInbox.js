@@ -12,13 +12,16 @@ const GetSlaCell = (value) => {
 
 const MobileInbox = ({ data, onFilterChange, onSearch, isLoading, searchParams }) => {
   const { t } = useTranslation();
-  const localizedData = data?.map(({ locality, tenantId, serviceRequestId, complaintSubType, sla, status, taskOwner }) => ({
-    [t("CS_COMMON_COMPLAINT_NO")]: serviceRequestId,
-    [t("CS_ADDCOMPLAINT_COMPLAINT_SUB_TYPE")]: t(`SERVICEDEFS.${complaintSubType.toUpperCase()}`),
-    [t("WF_INBOX_HEADER_LOCALITY")]: t(Digit.Utils.locale.getLocalityCode(locality, tenantId)),
-    [t("CS_COMPLAINT_DETAILS_CURRENT_STATUS")]: t(`CS_COMMON_${status}`),
+  console.log("datadatadata",data)
+  const localizedData = data?.map(({ tenantId,phcType, incidentType, incidentId, incidentSubType, sla, status, taskOwner }) => ({
+    [t("CS_COMMON_TICKET_NO")]: incidentId,
+    [t("CS_TICKET_TYPE")]: t(`SERVICEDEFS.${incidentType.toUpperCase()}`),
+    [t("CS_TICKET_SUB_TYPE")]: t(`SERVICEDEFS.${incidentSubType.toUpperCase()}`),
+    [t("CS_TICKET_DETAILS_CURRENT_STATUS")]: t(`CS_COMMON_${status}`),
+    [t("CS_COMPLAINT_PHC_TYPE")]:t(phcType),
     [t("WF_INBOX_HEADER_CURRENT_OWNER")]: taskOwner,
-    [t("WF_INBOX_HEADER_SLA_DAYS_REMAINING")]: GetSlaCell(sla),
+    [t("WF_INBOX_HEADER_SLA_DAYS_REMAINING")]: sla,
+    [t("TenantID")]:tenantId
     // status,
   }));
 

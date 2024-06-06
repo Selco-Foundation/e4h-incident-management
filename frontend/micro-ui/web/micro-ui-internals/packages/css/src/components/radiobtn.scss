@@ -27,6 +27,10 @@
   }
 
   .radio-btn-checkmark:after {
+    height: 1rem !important;
+    width: 1rem !important;
+    top:8px !important;
+    left: 8px !important; 
     content: "";
   }
 

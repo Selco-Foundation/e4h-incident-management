@@ -2,17 +2,12 @@
 # Changelog
 All notable changes to this module will be documented in this file.
 
-## 1.2.2 - 2023-01-31
+## 1.3.1 - 2023-08-11
+- Central Instance Library Integration
 
-- Changed 1.2.2-beta version to 1.2.2
+## 1.3.0 - 2023-03-15
 
-## 1.2.2-beta - 2022-09-10
-
-- Added elastic search call for privacy audit report.
-
-## 1.2.1 - 2022-08-29
-
-- Added serviceSLA for W&S inbox objects
+- Introduced event based inbox as part of v2 search API which does not depend on searcher service for fetching inbox items.
 
 ## 1.2.0 - 2022-08-18
 

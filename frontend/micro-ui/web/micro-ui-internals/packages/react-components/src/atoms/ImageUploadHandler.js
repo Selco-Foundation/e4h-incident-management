@@ -16,14 +16,22 @@ export const ImageUploadHandler = (props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
-  useEffect(() => {
-    if (imageFile && imageFile.size > 2097152) {
-      setError("File is too large");
-    } else {
-      setImage(imageFile);
+  const allowedTypes=["image/jpeg", "image/png", "image/jpg"]
+  useEffect(()=>{
+    if(imageFile){
+      if(!allowedTypes.includes(imageFile.type)){
+        setError(t("ONLY_IMAGES_ARE_ACCEPTED"));
+        setImageFile(null);
+      }
+      else if (imageFile.size > 2097152) {
+        setError("File is too large");
+        setImageFile(null);
+      }
+      else {
+        setImage(imageFile);
+      }
     }
-  }, [imageFile]);
-
+  }, [imageFile])  
   useEffect(() => {
     if (image) {
       uploadImage();
@@ -132,7 +140,7 @@ export const ImageUploadHandler = (props) => {
   return (
     <React.Fragment>
       {error && <Toast error={true} label={error} onClose={() => setError(null)} />}
-      <UploadImages onUpload={getImage} onDelete={deleteImage} thumbnails={uploadedImagesThumbs ? uploadedImagesThumbs.map((o) => o.image) : []} />
+      <UploadImages onUpload={getImage} onDelete={deleteImage} thumbnails={uploadedImagesThumbs ? uploadedImagesThumbs.map((o) => o.image) : []} disabled={props.disabled}/>
     </React.Fragment>
   );
 };

@@ -8,7 +8,6 @@ const useAccessControl = (tenantId) => {
   });
 
   const response = useQuery(["ACCESS_CONTROL", tenantId], async () => await AccessControlService.getAccessControl(roles),{enabled:roles?true:false});
-  //console.log("resroles", response)
   return response;
 };
 export default useAccessControl;

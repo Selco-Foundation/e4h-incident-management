@@ -1,8 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-
-const Details = ({ label, name, onClick }) => {
+import CitizenInfoLabel from "../atoms/CitizenInfoLabel";
+import  ActionBar from "../atoms/ActionBar";
+import SubmitBar from "../atoms/SubmitBar";
+export const Details = ({ label, name, onClick}) => {
   return (
     <div className="detail" onClick={onClick}>
       <span className="label">
@@ -13,32 +15,36 @@ const Details = ({ label, name, onClick }) => {
   );
 };
 
-const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, selectedItems, keyForSelected, handleDetailCardClick, isTwoDynamicPrefix=false,getRedirectionLink ,handleClickEnabled =true}) => {
+const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, selectedItems, keyForSelected, handleDetailCardClick, isTwoDynamicPrefix = false, getRedirectionLink, handleClickEnabled = true, t, showActionBar = true, showCitizenInfoLabel = false,submitButtonLabel }) => {
   if (linkPrefix && serviceRequestIdKey) {
     return (
       <div>
         {data.map((object, itemIndex) => {
+          let key = Object.keys(object)
+          const incidentId = object[key[0]]
           return (
             <Link
               key={itemIndex}
-              to={isTwoDynamicPrefix 
-                ?
+              to={window.location.href.includes("im/inbox") ? "/digit-ui/employee/im/complaint/details/" + incidentId + "/" + object["TenantID"]
+                : isTwoDynamicPrefix
+                  ?
                   `${linkPrefix}${typeof serviceRequestIdKey === "function"
                     ?
                     serviceRequestIdKey(object)
-                      :
-                    `${getRedirectionLink(object["Application Type"]==="BPA_STAKEHOLDER_REGISTRATION"?"BPAREG":"BPA")}/${object[object["Application Type"]==="BPA_STAKEHOLDER_REGISTRATION"?"applicationNo":"Application Number"]}`}`
-                :
+                    :
+                    `${getRedirectionLink(object["Application Type"] === "BPA_STAKEHOLDER_REGISTRATION" ? "BPAREG" : "BPA")}/${object[object["Application Type"] === "BPA_STAKEHOLDER_REGISTRATION" ? "applicationNo" : "Application Number"]}`}`
+                  :
                   `${linkPrefix}${typeof serviceRequestIdKey === "function"
                     ?
                     serviceRequestIdKey(object)
                       :
                     object[serviceRequestIdKey]}`
                 }
+                style={{textDecoration:"none", color:"black"}}
             >
               <div className="details-container">
                 {Object.keys(object).map((name, index) => {
-                  if (name === "applicationNo" || name === "Vehicle Log") return null;
+                  if (name === "applicationNo" || name === "Vehicle Log" || name == "TenantID") return null;
                   return <Details label={name} name={object[name]} key={index} />;
                 })}
               </div>
@@ -55,13 +61,23 @@ const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, sele
         return (
           <div
             key={itemIndex}
-            style={{ border: selectedItems?.includes(object[keyForSelected]) ? "2px solid #f47738" : "2px solid #fff" }}
+            style={{ border: selectedItems?.includes(object[keyForSelected]) ? "2px solid #7a2829" : "2px solid #fff" }}
             className="details-container"
             onClick={() =>handleClickEnabled && handleSelect(object)}
           >
             {Object.keys(object).filter(rowEle => !(typeof object[rowEle] == "object" && object[rowEle]?.hidden == true)).map((name, index) => {
               return <Details label={name} name={object[name]} key={index} onClick={() =>handleClickEnabled && handleDetailCardClick(object)} />;
             })}
+            {showCitizenInfoLabel ?<CitizenInfoLabel
+              style={{ margin: " 2rem 0px", padding: "10px", backgroundColor: "#FFE2B5", borderRadius: "0.25rem" }}
+              textStyle={{ color: "#CC7B2F" }}
+              info={t("ATM_INFO_LABEL")}
+              text={t(`ATM_INFO_TEXT`)}
+              fill={"#CC7B2F"}
+            />:null}
+            {showActionBar ? 
+              <SubmitBar onSubmit={() => handleDetailCardClick(object)} label={submitButtonLabel} />
+            :null}
           </div>
         );
       })}

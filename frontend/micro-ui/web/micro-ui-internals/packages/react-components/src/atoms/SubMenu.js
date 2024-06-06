@@ -58,7 +58,7 @@ const SubMenu = ({ item, t, isEmployee }) => {
 
   return (
     <React.Fragment>
-      <div className="submenu-container">
+      <div className="submenu-container" style={{marginBottom:"0px"}}>
         <div onClick={item.links && showSubnav} className={`sidebar-link ${subnav === true ? "active" : ""}`}>
           <div className="actions">
             {isEmployee ? leftIconEmployee : leftIconCitizen}
@@ -72,13 +72,14 @@ const SubMenu = ({ item, t, isEmployee }) => {
         item.links
           .sort((a, b) => a.orderNumber - b.orderNumber)
           .map((item, index) => {
-            if (item.navigationURL.indexOf("/digit-ui") === -1) {
+            if (item.navigationURL.indexOf(`/${window?.contextPath}`) === -1) {
               const getOrigin = window.location.origin;
               return (
                 <a
                   key={index + 1}
                   className={`dropdown-link ${pathname === item.link ? "active" : ""}`}
                   href={getOrigin + "/employee/" + item.navigationURL}
+                  style={{textDecoration:"none"}}
                 >
                   <div className="actions">
                     <span>{item.label || item.displayName}</span>
@@ -91,6 +92,7 @@ const SubMenu = ({ item, t, isEmployee }) => {
                 to={item.link || item.navigationURL}
                 key={index + 1}
                 className={`dropdown-link ${pathname === item.navigationURL ? "active" : ""}`}
+                style={{textDecoration:"none"}}
               >
                 <div className="actions">
                   <span>{item.label || item.displayName}</span>

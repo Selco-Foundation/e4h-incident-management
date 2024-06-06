@@ -14,6 +14,10 @@ const stringReplaceAll = (str = "", searcher = "", replaceWith = "") => {
 const ChangeCity = (prop) => {
   const [dropDownData, setDropDownData] = useState(null);
   const [selectCityData, setSelectCityData] = useState([]);
+  let sortSelectCityData=[];
+  if(selectCityData.length>0){
+    sortSelectCityData=selectCityData.sort((a, b) => a.label.localeCompare(b.label));
+  }
   const [selectedCity, setSelectedCity] = useState([]); //selectedCities?.[0]?.value
   const history = useHistory();
   const isDropdown = prop.dropdown || false;
@@ -42,8 +46,7 @@ const ChangeCity = (prop) => {
     let teantsArray = [], filteredArray = [];
     userloggedValues?.info?.roles?.forEach(role => teantsArray.push(role.tenantId));
     let unique = teantsArray.filter((item, i, ar) => ar.indexOf(item) === i);
-    console.log("")
-    unique?.forEach(uniCode => {
+    unique?.forEach((uniCode) => {
       filteredArray.push({
         label: prop?.t(`TENANT_TENANTS_${stringReplaceAll(uniCode, ".", "_")?.toUpperCase()}`),
         value: uniCode
@@ -60,10 +63,10 @@ const ChangeCity = (prop) => {
 
   // if (isDropdown) {
   return (
-    <div style={prop?.mobileView ? {color: "#767676"} : {}}>
+    <div style={prop?.mobileView ? {color: "#767676",width:"100%"} : {width:"300px"}}>
       <Dropdown
-        option={selectCityData}
-        selected={selectCityData.find((cityValue) => cityValue.value === dropDownData?.value)}
+        option={sortSelectCityData}
+        selected={sortSelectCityData.find((cityValue) => cityValue.value === dropDownData?.value)}
         optionKey={"label"}
         select={handleChangeCity}
         freeze={true}

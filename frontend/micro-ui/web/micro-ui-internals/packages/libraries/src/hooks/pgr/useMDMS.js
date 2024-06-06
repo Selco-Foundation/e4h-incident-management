@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import { MdmsService } from "../../services/elements/MDMS";
 
 const useMDMS = (tenantId, moduleCode, type, config = {}, payload = []) => {
+  console.log("HEEEEEEEEE")
   const queryConfig = { staleTime: Infinity, ...config };
 
   const _default = () => {

@@ -17,7 +17,6 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import static org.egov.im.util.IMConstants.USERTYPE_EMPLOYEE;
 
 @org.springframework.stereotype.Service
@@ -40,9 +39,9 @@ public class UserService {
      */
     public void callUserService(IncidentRequest request){
 
-        if(!StringUtils.isEmpty(request.getIncident().getAccountId()))
+        if(!StringUtils.isEmpty(request.getIncident().getReporter().getUuid()))
             enrichUser(request);
-        else if(request.getIncident().getReporter()!=null)
+        else
             upsertUser(request);
 
     }
@@ -104,8 +103,8 @@ public class UserService {
     private void enrichUser(IncidentRequest request){
 
         RequestInfo requestInfo = request.getRequestInfo();
-        String accountId = request.getIncident().getAccountId();
-        String tenantId = request.getIncident().getTenantId();
+        String accountId = request.getIncident().getReporter().getUuid();
+        String tenantId = request.getIncident().getReporter().getTenantId();
 
         UserDetailResponse userDetailResponse = searchUser(tenantId,accountId,null);
 

@@ -43,7 +43,7 @@ export const ComplaintCard = ({ data, onFilterChange, onSearch, serviceRequestId
       </Card>
     );
   } else if (data && data?.length > 0) {
-    result = <DetailsCard data={data} serviceRequestIdKey={serviceRequestIdKey} linkPrefix={"/digit-ui/employee/pgr/complaint/details/"} />;
+    result = <DetailsCard data={data} serviceRequestIdKey={serviceRequestIdKey} linkPrefix={"/digit-ui/employee/im/complaint/details/" + data["Ticket No"] + "/" + data["TenantID"]} />;
   } else {
     result = (
       <Card style={{ marginTop: 20 }}>
@@ -61,8 +61,33 @@ export const ComplaintCard = ({ data, onFilterChange, onSearch, serviceRequestId
   return (
     <React.Fragment>
       <div className="searchBox">
+      <style>
+        {`
+    .table thead th:first-child {
+      min-width: 256px;
+    }
+
+    .table thead th:nth-child(2) {
+      min-width: 200px;
+    }
+
+    .drawer-list .sidebar-list.active .menu-label {
+      color: #7a2829;
+    }
+
+    .searchBox .searchAction {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      --text-opacity: 1;
+      color: #7a2829;
+     
+      `
+    
+    }
+  </style>
         <SearchAction text="SEARCH" handleActionClick={() => handlePopupAction("SEARCH")} />
-        <FilterAction filterCount={filterCount} text="FILTER" handleActionClick={() => handlePopupAction("FILTER")} />
+        <FilterAction style={{color:"#7a2829 !important"}} filterCount={filterCount} text="FILTER" handleActionClick={() => handlePopupAction("FILTER")} />
         {/* <FilterAction text="SORT" handleActionClick={handlePopupAction} /> */}
       </div>
       {result}

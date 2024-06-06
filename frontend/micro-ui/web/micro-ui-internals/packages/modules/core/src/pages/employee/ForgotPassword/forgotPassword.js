@@ -28,7 +28,7 @@ const ForgotPassword = ({ config: propsConfig, t }) => {
 
   const onForgotPassword = async (data) => {
     if (!data.city) {
-      alert("Please select Health Care Centre");
+      alert(t("ES_SELECT_HEALTH_CARE"));
       return;
     }
     const requestData = {

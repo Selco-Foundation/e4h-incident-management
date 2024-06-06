@@ -13,14 +13,14 @@ const getThumbnails = async (ids, tenantId) => {
 const getDetailsRow = ({ id,incident, complaintType }) =>({
   CS_COMPLAINT_DETAILS_TICKET_NO: id,
   CS_COMPLAINT_DETAILS_APPLICATION_STATUS: `CS_COMMON_${incident.applicationStatus}`,
-  CS_ADDCOMPLAINT_TICKET_TYPE: complaintType === "" ? `SERVICEDEFS.OTHERS` : `SERVICEDEFS.${complaintType}`,
+  CS_ADDCOMPLAINT_TICKET_TYPE: `SERVICEDEFS.${incident.incidentType.toUpperCase()}`,
   CS_ADDCOMPLAINT_TICKET_SUB_TYPE: `SERVICEDEFS.${incident.incidentSubType.toUpperCase()}`,
-  CS_ADDCOMPLAINT_DISTRICT : incident.district.charAt(0).toUpperCase() +incident.district.slice(1).toLowerCase(),
-  CS_ADDCOMPLAINT_BLOCK: incident?.block.charAt(0).toUpperCase() + incident.block.slice(1).toLowerCase(),
-  CS_ADDCOMPLAINT_HEALTH_CARE_CENTRE: incident?.phcType,
+  CS_ADDCOMPLAINT_DISTRICT : `${incident.district}`,
+  CS_ADDCOMPLAINT_BLOCK: `${incident?.block}`,
+  CS_ADDCOMPLAINT_HEALTH_CARE_CENTRE: `TENANT_TENANTS_PG_${incident?.phcType.replace(/\s+/g,'').toUpperCase()}`,
   CS_COMPLAINT_COMMENTS: incident?.comments,
-  CS_ADDCOMPLAINT_HEALTH_CARE_SUB_TYPE: incident?.phcSubType,
-  CS_COMPLAINT_FILED_DATE: Digit.DateUtils.ConvertTimestampToDate(incident.auditDetails.createdTime),
+  CS_ADDCOMPLAINT_HEALTH_CARE_SUB_TYPE: `${incident?.phcSubType}`,
+  CS_COMPLAINT_FILED_DATE: Digit.DateUtils.ConvertEpochToDate(incident.auditDetails.createdTime),
 })
 
 const isEmptyOrNull = (obj) => obj === undefined || obj === null || Object.keys(obj).length === 0;

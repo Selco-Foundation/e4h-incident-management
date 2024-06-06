@@ -18,6 +18,31 @@ import {
 import { useTranslation } from "react-i18next";
 
 export const FormComposer = (props) => {
+  console.log("props999", props)
+  const mobileDeviceWidth = 780;
+  const [isMobileView, setIsMobileView] = React.useState(window.innerWidth <= mobileDeviceWidth);
+  const onResize = () => {
+    if (window.innerWidth <= mobileDeviceWidth) {
+      if (!isMobileView) {
+        setIsMobileView(true);
+      }
+    } else {
+      if (isMobileView) {
+        setIsMobileView(false);
+      }
+    }
+  };
+  React.useEffect(() => {
+    window.addEventListener("resize", () => {
+      onResize();
+    });
+    return () => {
+      window.addEventListener("resize", () => {
+        onResize();
+      });
+    };
+  });
+  console.log("isMobileView", isMobileView)
   const { register, handleSubmit, errors } = useForm();
   const { t } = useTranslation();
 
@@ -77,7 +102,9 @@ export const FormComposer = (props) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
+        <div style={{marginLeft: isMobileView? "-15px":"0px"}}>
         <Header>{t("NEW_TICKET")}</Header>
+        </div>
         <CardSubHeader>{props.heading}</CardSubHeader>
         {formFields}
         {props.children}

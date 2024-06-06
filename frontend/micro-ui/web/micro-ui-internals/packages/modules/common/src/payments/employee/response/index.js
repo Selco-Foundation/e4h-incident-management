@@ -19,14 +19,15 @@ export const SuccessfulPayment = (props) => {
   let { consumerCode, receiptNumber, businessService } = useParams();
   const tenantId = Digit.ULBService.getCurrentTenantId();
   receiptNumber = receiptNumber.replace(/%2F/g, "/");
-  const { data = {}, isLoading: isBpaSearchLoading, isSuccess: isBpaSuccess, error: bpaerror } = Digit.Hooks.obps.useOBPSSearch(
+  const { data = {}, isLoading: isBpaSearchLoading, isSuccess: isBpaSuccess, error: bpaerror } = Digit?.Hooks?.obps?.useOBPSSearch(
     "",
     {},
     tenantId,
     { applicationNo: consumerCode },
     {},
+
     { enabled: businessService?.includes("BPA") ? true : false }
-  );
+  )||{};
   const FSM_EDITOR = Digit.UserService.hasAccess("FSM_EDITOR_EMP") || false;
 
   function onActionSelect(action) {
@@ -41,9 +42,9 @@ export const SuccessfulPayment = (props) => {
   useEffect(() => {
     switch (selectedAction) {
       case "GO_TO_HOME":
-        return history.push("/digit-ui/employee");
+        return history.push(`/${window?.contextPath}/employee`);
       case "ASSIGN_TO_DSO":
-        return history.push(`/digit-ui/employee/fsm/application-details/${consumerCode}`);
+        return history.push(`/${window?.contextPath}/employee/fsm/application-details/${consumerCode}`);
       default:
         return null;
     }
@@ -245,7 +246,7 @@ export const SuccessfulPayment = (props) => {
         </ActionBar>
       ) : (
         <ActionBar style={{ display: "flex", justifyContent: "flex-end", alignItems: "baseline" }}>
-          <Link to="/digit-ui/employee">
+          <Link to={`/${window?.contextPath}/employee`}>
             <SubmitBar label={t("CORE_COMMON_GO_TO_HOME")} />
           </Link>
         </ActionBar>
@@ -268,7 +269,7 @@ export const FailedPayment = (props) => {
         <CardText>{t("ES_PAYMENT_FAILED_DETAILS")}</CardText>
       </Card>
       <ActionBar style={{ display: "flex", justifyContent: "flex-end", alignItems: "baseline" }}>
-        <Link to="/digit-ui/employee">
+        <Link to={`/${window?.contextPath}/employee`}>
           <SubmitBar label={t("CORE_COMMON_GO_TO_HOME")} />
         </Link>
       </ActionBar>

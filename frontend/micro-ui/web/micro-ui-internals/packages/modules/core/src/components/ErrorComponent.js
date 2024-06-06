@@ -35,6 +35,7 @@ const ErrorComponent = (props) => {
           onClick={() => {
             props.goToHome();
           }}
+          style={{backgroundColor:"#7a2829"}}
         >
           {t(config.buttonInfo)}
         </button>

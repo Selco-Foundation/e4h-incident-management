@@ -33,7 +33,6 @@ const IMModule = ({ stateCode, userType, tenants }) => {
   }
 
   Digit.SessionStorage.set("IM_TENANTS", tenants);
-console.log("IM_TENANTS",tenants)
   if (userType === "citizen") {
     return <CitizenApp />;
   } else {

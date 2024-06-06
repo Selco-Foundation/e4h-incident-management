@@ -1,4 +1,5 @@
 import { Fonts } from "./fonts";
+
 const pdfMake = require("pdfmake/build/pdfmake.js");
 // const pdfFonts = require("pdfmake/build/vfs_fonts.js");
 // pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -107,7 +108,7 @@ const jsPdfGenerator = async ({ breakPageLimit = null, tenantId, logo, name, ema
           margin: [20, 25],
           font: "Hind",
           fontSize: 14,
-          // bold: true,
+          bold: true,
         },
         {
           text: email,
@@ -139,7 +140,7 @@ const jsPdfGenerator = async ({ breakPageLimit = null, tenantId, logo, name, ema
         text: heading,
         font: "Hind",
         fontSize: 24,
-        // bold: true,
+        bold: true,
         margin: [-25, 5, 0, 0],
       },
       ...createContent(details, phoneNumber, breakPageLimit),
@@ -156,7 +157,7 @@ const jsPdfGenerator = async ({ breakPageLimit = null, tenantId, logo, name, ema
     },
   };
   pdfMake.vfs = Fonts;
-  let locale = Digit.SessionStorage.get("locale") || "en_IN";
+  let locale = Digit.SessionStorage.get("locale") || Digit.Utils.getDefaultLanguage();
   let Hind = pdfFonts[locale] || pdfFonts["Hind"];
   pdfMake.fonts = { Hind: { ...Hind } };
   const generatedPDF = pdfMake.createPdf(dd);
@@ -235,97 +236,20 @@ const jsPdfGeneratorv1 = async ({ breakPageLimit = null, tenantId, logo, name, e
   };
   
   pdfMake.vfs = Fonts;
-  let locale = Digit.SessionStorage.get("locale") || "en_IN";
+  let locale = Digit.SessionStorage.get("locale") || Digit.Utils.getDefaultLanguage();
   let Hind = pdfFonts[locale] || pdfFonts["Hind"];
   pdfMake.fonts = { Hind: { ...Hind } };
   const generatedPDF = pdfMake.createPdf(dd);
   downloadPDFFileUsingBase64(generatedPDF, "acknowledgement.pdf");
 };
 
-/**
- * Util function that can be used
- * to download WS modify connection application acknowledgement pdfs
- * Data is passed to this function from this file
- * packages\modules\ws\src\utils\getWsAckDataForModifyPdfs.js
- * @author nipunarora-egov
- *
- * @example
- * Digit.Utils.pdf.generateModifyPdf()
- *
- * @returns Downloads a pdf  
- */
-
-const jsPdfGeneratorForModifyPDF = async({tenantId,bodyDetails,headerDetails,logo}) =>{
-  //here follow an approch to render specific table for every object in bodyDetails
-  //keep the header logic same for now
-  //we are expecting the bodyDetails to be array of objects where each obj will be a table 
-  //format of each obj {title:[array of str],values:[array of obj]}
-  
-  const dd = {
-    pageMargins: [40, 40, 40, 30],
-    header: {},
-    defaultStyle: {
-      font: "Hind",
-    },
-    content:[
-      ...createHeader(headerDetails, logo, tenantId),
-      ...createBodyContent(bodyDetails)
-    ]
-  
-  }
-
-  pdfMake.vfs = Fonts;
-  let locale = Digit.SessionStorage.get("locale") || "en_IN";
-  let Hind = pdfFonts[locale] || pdfFonts["Hind"];
-  pdfMake.fonts = { Hind: { ...Hind } };
-  const generatedPDF = pdfMake.createPdf(dd);
-  downloadPDFFileUsingBase64(generatedPDF, "acknowledgement.pdf");
-}
-
-/**
- * Util function that can be used
- * to download bill amendment application acknowledgement pdfs
- * Data is passed to this function from this file
- * packages\modules\ws\src\utils\getWsAckDataForBillAmendPdf.js
- * @author nipunarora-egov
- *
- * @example
- * Digit.Utils.pdf.generateBillAmendPDF()
- *
- * @returns Downloads a pdf  
- */
-
-
-const generateBillAmendPDF = async ({ tenantId, bodyDetails, headerDetails, logo,t }) => {
-  const dd = {
-    pageMargins: [40, 40, 40, 30],
-    header: {},
-    defaultStyle: {
-      font: "Hind",
-    },
-    content: [
-      ...createHeaderBillAmend(headerDetails, logo, tenantId,t),
-      ...createBodyContentBillAmend(bodyDetails,t)
-    ]
-
-  }
-  
-
-  pdfMake.vfs = Fonts;
-  let locale = Digit.SessionStorage.get("locale") || "en_IN";
-  let Hind = pdfFonts[locale] || pdfFonts["Hind"];
-  pdfMake.fonts = { Hind: { ...Hind } };
-  const generatedPDF = pdfMake.createPdf(dd);
-  downloadPDFFileUsingBase64(generatedPDF, "acknowledgement.pdf");
-}
-
-export default { generate: jsPdfGenerator, generatev1: jsPdfGeneratorv1, generateModifyPdf: jsPdfGeneratorForModifyPDF, generateBillAmendPDF };
+export default { generate: jsPdfGenerator ,generatev1:jsPdfGeneratorv1};
 
 const createBodyContentBillAmend = (table,t) => {
   let bodyData = []
   bodyData.push({
     text: t(table?.title),
-    color: "#000000",
+    color: "#7a2829",
     style: "header",
     fontSize: 14,
     bold: true,
@@ -333,16 +257,11 @@ const createBodyContentBillAmend = (table,t) => {
   })
   bodyData.push({
     layout:{
-      color:function(rowIndex,node,columnIndex){
-        if(rowIndex === (table?.tableRows?.length)) {
-          return "#FFFFFF"
-        }
-      },
       fillColor:function(rowIndex,node,columnIndex){
         if(rowIndex === (table?.tableRows?.length)) {
-          return "#F47738"
+          return "#7a2829"
         }
-        return (rowIndex % 2 === 0) ? "#F47738" : null; 
+        return (rowIndex % 2 === 0) ? "#7a2829" : null; 
       },
       fillOpacity:function(rowIndex,node,columnIndex) {
         if (rowIndex === (table?.tableRows?.length)) {
@@ -432,7 +351,7 @@ const createHeaderBillAmend = (headerDetails, logo, tenantId,t) => {
             fontSize: 16,
             alignment: "right",
             margin: [-40, 10, 2, 0],
-            color: "#F47738"
+            color: "#7a2829"
           }
         ],
         [
@@ -443,7 +362,7 @@ const createHeaderBillAmend = (headerDetails, logo, tenantId,t) => {
             style: "header",
             // italics: true, 
             fontSize: 10,
-            bold: false
+            bold: true
           },
 
           {
@@ -452,7 +371,7 @@ const createHeaderBillAmend = (headerDetails, logo, tenantId,t) => {
             fontSize: 16,
             margin: [0, -45, 10, 0],
             alignment: "right",
-            color: "#F47738"
+            color: "#7a2829"
           }
         ],
         [
@@ -464,7 +383,7 @@ const createHeaderBillAmend = (headerDetails, logo, tenantId,t) => {
             style: "header",
             // italics: true, 
             fontSize: 10,
-            bold: false
+            bold: true
           },
           {
             text: "",
@@ -492,7 +411,7 @@ const createHeaderBillAmend = (headerDetails, logo, tenantId,t) => {
             },
             {
               text: header?.value,
-              bold: false,
+              bold: true,
               fontSize: 10,
               alignment: "left",
               margin: index == 0 ? [0, 0, 2, 10] : [0, 10, 2, 10],
@@ -599,7 +518,7 @@ const createBodyContent = (details) => {
             [
               {
                 text: table?.title,
-                color: "#000000",
+                color: "#7a2829",
                 style: "header",
                 fontSize: 14,
                 bold: true
@@ -623,7 +542,7 @@ const createBodyContent = (details) => {
           table?.title?.map(t=>{ 
             return {
             text:t,
-            color: "#F47738",
+            color: "#7a2829",
             style: "header",
             fontSize: 14,
             bold: true,
@@ -669,7 +588,7 @@ function createContentDetails(details) {
             [
               {
                 text: detail?.title,
-                color: "#F47738",
+                color: "#7a2829",
                 style: "header",
                 fontSize: 14,
                 bold: true
@@ -750,7 +669,7 @@ function createHeader(headerDetails,logo,tenantId) {
             fontSize: 16,
             alignment: "right",
             margin: [-40, 10, 2, 0],
-            color: "#F47738"
+            color: "#7a2829"
           }
         ],
         [
@@ -761,7 +680,7 @@ function createHeader(headerDetails,logo,tenantId) {
             style: "header",
             // italics: true, 
             fontSize: 10,
-            // bold: true
+            bold: true
           },
 
           {
@@ -770,7 +689,7 @@ function createHeader(headerDetails,logo,tenantId) {
             fontSize: 16,
             margin: [0, -50, 10, 0],
             alignment: "right",
-            color: "#F47738"
+            color: "#7a2829"
           }
         ],
         [
@@ -782,7 +701,7 @@ function createHeader(headerDetails,logo,tenantId) {
             style: "header",
             // italics: true, 
             fontSize: 10,
-            // bold: true
+            bold: true
           },
           {
             text: "",
@@ -810,7 +729,7 @@ function createHeader(headerDetails,logo,tenantId) {
             },
             {
               text: header?.value,
-              // bold: true,
+              bold: true,
               fontSize: 10,
               alignment: "left",
               margin: index == 0 ? [0, 0, 2, 10] : [0, 10, 2, 10],
@@ -844,7 +763,7 @@ function createContent(details, phoneNumber, breakPageLimit = null) {
         text: `${detail.title}`,
         font: "Hind",
         fontSize: 18,
-        // bold: true,
+        bold: true,
         margin: [-25, 20, 0, 20],
       });
 
@@ -883,7 +802,7 @@ function createContent(details, phoneNumber, breakPageLimit = null) {
               text: value.title,
               font: "Hind",
               fontSize: 11,
-              // bold: true,
+              bold: true,
               margin,
             });
             if (index === 1) margin = [15, 0, 0, 10];
@@ -917,7 +836,7 @@ function createContentForDetailsWithLengthOfTwo(values, data, column1, column2, 
         text: value.title,
         font: "Hind",
         fontSize: 12,
-        // bold: true,
+        bold: true,
         margin: [-25, num - 10, -25, 0],
       });
       column2.push({
@@ -933,7 +852,7 @@ function createContentForDetailsWithLengthOfTwo(values, data, column1, column2, 
         text: value.title,
         font: "Hind",
         fontSize: 12,
-        // bold: true,
+        bold: true,
         margin: [-115, num - 10, -115, 0],
       });
       column2.push({
@@ -957,7 +876,7 @@ function createContentForDetailsWithLengthOfOneAndThree(values, data, column1, c
         text: value.title,
         font: "Hind",
         fontSize: 12,
-        // bold: true,
+        bold: true,
         margin: values.length > 1 ? [-25, -5, 0, 0] : [-25, 0, 0, 0],
       });
       column2.push({
@@ -973,7 +892,7 @@ function createContentForDetailsWithLengthOfOneAndThree(values, data, column1, c
         text: value.title,
         font: "Hind",
         fontSize: 12,
-        // bold: true,
+        bold: true,
         margin: [-60, -5, 0, 0],
       });
       column2.push({
@@ -989,7 +908,7 @@ function createContentForDetailsWithLengthOfOneAndThree(values, data, column1, c
         text: value.title,
         font: "Hind",
         fontSize: 12,
-        // bold: true,
+        bold: true,
         margin: [-28, -5, 0, 0],
       });
       column2.push({

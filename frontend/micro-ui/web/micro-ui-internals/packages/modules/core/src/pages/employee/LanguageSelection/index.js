@@ -24,6 +24,18 @@ const LanguageSelection = () => {
 
   return (
     <Background>
+         <style>
+          {`
+        @media screen and (max-width: 768px) {
+            .banner .bannerCard,
+            .loginFormStyleEmployee .employeeCard {
+                min-width: 300px !important;
+                margin: 10px !important;
+            }
+        }
+        `
+      }
+    </style>
       <Card className="bannerCard removeBottomMargin">
         <div className="bannerHeader">
           <img className="bannerLogo" src={"https://selco-assets.s3.ap-south-1.amazonaws.com/logo.png"} alt="Selco Foundation" />

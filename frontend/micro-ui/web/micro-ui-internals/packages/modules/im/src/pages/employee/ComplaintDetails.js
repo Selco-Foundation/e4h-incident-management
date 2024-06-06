@@ -29,7 +29,8 @@ import {
   LinkButton,
   Modal,
   SectionalDropdown,
-  ImageUploadHandler
+  ImageUploadHandler,
+  MultiUploadWrapper
 } from "@egovernments/digit-ui-react-components";
 import { Link } from "react-router-dom";
 
@@ -60,6 +61,7 @@ const CloseBtn = (props) => {
 
 const TLCaption = ({ data, comments }) => {
   const { t } = useTranslation()
+  console.log("datadatacommentscomments",data,comments)
   return (
     <div>
       {data?.date && <p>{data?.date}</p>}
@@ -97,53 +99,43 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
   const [comments, setComments] = useState("");
   const [file, setFile] = useState(null);
   const tenantId = Digit.ULBService.getCurrentTenantId();
-  const [uploadedFile, setUploadedFile]=useState(null);
+  const [uploadedFile, setUploadedFile] = useState(Array);
+  const allowedFileTypes = /(docx|pdf|jpg|xlsx)$/i;
+  const stateId = Digit.ULBService.getStateId();
   const [uploadedImages, setUploadedImagesIds] = useState(null)
   //const [uploadedFile, setUploadedFile] = useState(null);
   const [error, setError] = useState(null);
   const cityDetails = Digit.ULBService.getCurrentUlb();
   const [selectedReopenReason, setSelectedReopenReason] = useState(null);
-  console.log("selectedReopenReason", selectedReopenReason)
 
-  useEffect(() => {
-    (async () => {
-      setError(null);
-      if (file) {
-        if (file.size >= 5242880) {
-          setError(t("CS_MAXIMUM_UPLOAD_SIZE_EXCEEDED"));
-        } else {
-          try {
-            // TODO: change module in file storage
-            const response = await Digit.UploadServices.Filestorage("property-upload", file, cityDetails.code);
-            if (response?.data?.files?.length > 0) {
-              setUploadedFile(response?.data?.files[0]?.fileStoreId);
-            } else {
-              setError(t("CS_FILE_UPLOAD_ERROR"));
-            }
-          } catch (err) {
-            setError(t("CS_FILE_UPLOAD_ERROR"));
-          }
-        }
-      }
-    })();
-  }, [file]);
-
+  
   const reopenReasonMenu = [t(`CS_REOPEN_OPTION_ONE`), t(`CS_REOPEN_OPTION_TWO`), t(`CS_REOPEN_OPTION_THREE`), t(`CS_REOPEN_OPTION_FOUR`)];
   // const uploadFile = useCallback( () => {
 
   //   }, [file]);
+  useEffect(()=>{
+    if(selectedAction==="REJECT"){
+      const uuid= JSON.parse(sessionStorage.getItem("Digit.User"))?.value?.info?.uuid
+      let name = JSON.parse(sessionStorage.getItem("Digit.User"))?.value?.info?.name;
+      setSelectedEmployee({name, uuid})
+    }
+  }, [selectedAction])
 
   function onSelectEmployee(employee) {
     setSelectedEmployee(employee);
   }
 
-  function addComment(e) {
-    setError(null);
-    setComments(e.target.value);
-  }
-
-  function selectfile(e) {
-    setFile(e.target.files[0]);
+  function addComment(e) { 
+    if(e.target.value.length>256){
+      setError(t("CS_COMMENT_LENGTH_LIMIT_EXCEED"))
+    }
+    else if(!/^[a-zA-Z0-9\s./,]*$/.test(e.target.value)){
+      setError(t("CS_COMMENT_INVALID_CHARACTERS"))
+    }
+    else{
+      setError(null);
+      setComments(e.target.value);
+    } 
   }
 
   function onSelectReopenReason(reason) {
@@ -161,15 +153,40 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
     }
 
   }, [error, clearError]);
-  const handleUpload = (ids) => {
-    console.log("idsss", ids)
-    setUploadedFile(ids?.map((ids) => ({
-      documentType: "PHOTO",
-      fileStoreId: ids,
+  function selectfile(e,newArr) {
+    if (e) {
+      const newFile={
+      documentType: e?.file?.type.includes(".sheet") ? ".xlsx":e?.file?.type,
+      fileStoreId: e?.fileStoreId?.fileStoreId,
       documentUid: "",
       additionalDetails: {},
-    })));
+      };
+      let temp = [...uploadedFile, newFile];
+      const filterFileStoreIds = newArr.map(item => item.fileStoreId.fileStoreId);
+
+      // Use a Set to remove duplicates and filter the documents array
+      const seen = new Set();
+      const filteredDocuments = temp.filter(document => {
+        if (filterFileStoreIds.includes(document.fileStoreId) && !seen.has(document.fileStoreId)) {
+          seen.add(document.fileStoreId);
+          return true;
+        }
+        return false;
+      });
+
+      console.log("filteredDocumentsfilteredDocuments",filteredDocuments);
+      setUploadedFile(filteredDocuments);
+      e && setFile(e.file);
+    }
+  }
+
+  const getData = (state) => {  
+    let data = Object.fromEntries(state);
+    let newArr = Object.values(data);
+    console.log("statestate",state,data,newArr)
+    selectfile(newArr[newArr.length - 1],newArr);
   };
+  console.log("commmmmentsss", comments, comments.length)
 console.log("employeeData", employeeData)
   return (
     <Modal
@@ -195,12 +212,16 @@ console.log("employeeData", employeeData)
           : selectedAction === "REJECT"
             ? t("CS_COMMON_REJECT")
             : selectedAction === "REOPEN"
-              ? t("CS_COMMON_REOPEN")
+              ? t("CS_ACTION_REOPEN")
               :selectedAction==="RESOLVE"? t("CS_COMMON_RESOLVE_BUTTON"): selectedAction==="CLOSE" ? t("CS_COMMON_CLOSE") : t("CS_COMMON_SENDbACK")
       }
       
+      
       actionSaveOnSubmit={() => {
-        if((selectedAction === "REJECT"||selectedAction==="SENDBACK") && !comments){
+        if((selectedAction==="REJECT") && !comments){
+          setError(t("CS_MANDATORY_COMMENTS"))
+        }
+       else if((selectedAction==="SENDBACK") && !comments){
             setError(t("CS_MANDATORY_COMMENTS"));
         }
         else if(selectedAction==="REOPEN" && selectedReopenReason===null){
@@ -209,17 +230,17 @@ console.log("employeeData", employeeData)
         else if(selectedAction==="ASSIGN" && selectedEmployee===null){
            setError(t("CS_ASSIGNEE_MANDATORY"))
         }
-        else if(selectedAction==="RESOLVE" && (!comments || uploadedFile===null) ){
+        else if(selectedAction==="RESOLVE" && (!comments || uploadedFile.length===0) ){
           setError(t("CS_MANDATORY_COMMENTS_AND_FILE_UPLOAD"));
         }
         else{
-        onAssign(selectedEmployee, comments, uploadedFile);
+        onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason);
         }
       }}
       error={error}
       setError={setError}
     >
-      <Card>
+      <Card style={{paddingTop:"0px"}}>
         {selectedAction === "REJECT" || selectedAction === "RESOLVE" || selectedAction === "REOPEN" || selectedAction==="SENDBACK" ? null : (
           <React.Fragment>
             
@@ -234,21 +255,29 @@ console.log("employeeData", employeeData)
             <Dropdown selected={selectedReopenReason} option={reopenReasonMenu} select={onSelectReopenReason} />
           </React.Fragment>
         ) : null}
-        {selectedAction !== "ASSIGN" ? (
+        {selectedAction !== "ASSIGN"  && selectedAction!=="REOPEN" ? (
         <CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}*</CardLabel>
         ):<CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}</CardLabel>}
         <TextArea name="comment" onChange={addComment} value={comments} />
-        <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}</CardLabel>
         {selectedAction==="RESOLVE" ? (
-          <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}*</CardLabelDesc>
-        ) : <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}</CardLabelDesc>}
+           <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}*</CardLabel>
+        ):  <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}</CardLabel>}
+       
+        {/* {selectedAction==="RESOLVE" ? (
+        //   <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}*</CardLabelDesc>
+        // ) : <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}</CardLabelDesc>} */}
         
-        <ImageUploadHandler
-          tenantId={tenantId}
-          uploadedImages={uploadedFile}
-          onPhotoChange={handleUpload}
-        />
-        {selectedAction === "RESOLVE" ? <div style={{marginTop:"6px"}}> {t("RESOLVE_RESOLUTION_REPORT")}</div> : <div style={{marginTop:"6px"}}> {t("CS_FILE_LIMIT")}</div>}
+        <MultiUploadWrapper 
+          t={t} 
+          module="Incident" 
+          tenantId={complaintDetails?.incident?.tenantId || tenantId} 
+          
+          getFormState={(e) => getData(e)}
+          allowedFileTypesRegex={(selectedAction==="RESOLVE") ?/(docx|pdf|xlsx)$/i : /(pdf|jpg)$/i}
+          allowedMaxSizeInMB={5}
+          acceptFiles= {(selectedAction==="RESOLVE") ? ".pdf, .xlsx, .docx": ".pdf, .jpg"}
+          />
+        {selectedAction === "RESOLVE" ? <div style={{marginTop:"6px", fontSize:"13px", color:"#36454F"}}>{t("RESOLVE_RESOLUTION_REPORT")}</div> : <CardLabelDesc style={{marginTop:"8px", fontSize:"13px"}}> {t("CS_FILE_LIMIT")}</CardLabelDesc>}
       </Card>
     </Modal>
   );
@@ -259,18 +288,40 @@ export const ComplaintDetails = (props) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState(false);
   const [imageZoom, setImageZoom] = useState(null);
+  const mobileDeviceWidth = 780;
+  const [isMobileView, setIsMobileView] = React.useState(window.innerWidth <= mobileDeviceWidth);
+  const onResize = () => {
+    if (window.innerWidth <= mobileDeviceWidth) {
+      if (!isMobileView) {
+        setIsMobileView(true);
+      }
+    } else {
+      if (isMobileView) {
+        setIsMobileView(false);
+      }
+    }
+  };
+  React.useEffect(() => {
+    window.addEventListener("resize", () => {
+      onResize();
+    });
+    return () => {
+      window.addEventListener("resize", () => {
+        onResize();
+      });
+    };
+  });
   // const [actionCalled, setActionCalled] = useState(false);
   const [toast, setToast] = useState(false);
   const tenantId = Digit.ULBService.getCurrentTenantId();
-  const tenant =  Digit.SessionStorage.get("Employee.tenantId") == "pg"?  Digit.SessionStorage.get("Tenants").map(item => item.code).join(',') :Digit.SessionStorage.get("Employee.tenantId") 
-  console.log("")
+  const tenant =  Digit.SessionStorage.get("Employee.tenantId") == "pg"?  Digit.SessionStorage.get("IM_TENANTS").map(item => item.code).join(',') :Digit.SessionStorage.get("Employee.tenantId") 
+
   const { isLoading, complaintDetails, revalidate: revalidateComplaintDetails } = Digit.Hooks.pgr.useComplaintDetails({ tenant, id });
-  console.log("cd", complaintDetails)
+
   const workflowDetails = Digit.Hooks.useWorkflowDetails({ tenant : id.split("/")[1], id :id.split("/")[0] , moduleCode: "Incident", role: "EMPLOYEE" });
-  console.log("wff", workflowDetails)
+
   const [imagesToShowBelowComplaintDetails, setImagesToShowBelowComplaintDetails] = useState([])
-  console.log("imagesToShowBelowComplaintDetails", imagesToShowBelowComplaintDetails)
-  console.log("workflowDetailsworkflowDetails",workflowDetails,complaintDetails)
+
   // RAIN-5692 PGR : GRO is assigning complaint, Selecting employee and assign. Its not getting assigned.
   // Fix for next action  assignee dropdown issue
   if (workflowDetails && workflowDetails?.data){
@@ -280,14 +331,14 @@ export const ComplaintDetails = (props) => {
     if( complaintDetails)
     {
       complaintDetails.details.CS_COMPLAINT_DETAILS_TICKET_NO =  complaintDetails?.details?.CS_COMPLAINT_DETAILS_TICKET_NO.split("/")[0]
-      console.log("workflowDetailsworkflowDetails",workflowDetails,complaintDetails)
+
     }
    
   useEffect(()=>{
     if(workflowDetails){
       const {data:{timeline: complaintTimelineData}={}} = workflowDetails
       if(complaintTimelineData){
-        console.log("complaintTimelineData", complaintTimelineData)
+
         const applyAction = complaintTimelineData.find(action => action.performedAction === "APPLY");
         const initiate = complaintTimelineData.find(action => action.performedAction === "INITIATE");
         if(!initiate)
@@ -298,13 +349,12 @@ export const ComplaintDetails = (props) => {
         }
         const actionByCitizenOnComplaintCreation = complaintTimelineData?.find( e => e?.performedAction === "APPLY")
         const { thumbnailsToShow } = actionByCitizenOnComplaintCreation
-        console.log("thumbs666", thumbnailsToShow)
+
         thumbnailsToShow ? setImagesToShowBelowComplaintDetails(thumbnailsToShow) : null
       }
     }
   },[workflowDetails])
   const [displayMenu, setDisplayMenu] = useState(false);
-  console.log("displ", displayMenu)
   const [popup, setPopup] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
   const [assignResponse, setAssignResponse] = useState(null);
@@ -318,7 +368,6 @@ export const ComplaintDetails = (props) => {
 
   useEffect(() => {
     (async () => {
-      console.log("complaintDetailscomplaintDetails",tenant)
       const assignWorkflow = await Digit?.WorkflowService?.getByBusinessId(tenant, id);
     })();
   }, [complaintDetails]);
@@ -401,9 +450,9 @@ export const ComplaintDetails = (props) => {
     }
   }
 
-  async function onAssign(selectedEmployee, comments, uploadedFile) {
+  async function onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason) {
     setPopup(false);
-    const response = await Digit.Complaint.assign(complaintDetails, selectedAction, selectedEmployee, comments, uploadedFile, tenant);
+    const response = await Digit.Complaint.assign(complaintDetails, selectedAction, selectedEmployee, comments, uploadedFile, tenant, selectedReopenReason);
     setAssignResponse(response);
     setToast(true);
     setLoader(true);
@@ -424,15 +473,23 @@ console.log("wfoo", workflowDetails)
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
+    const arr1=arr
     const {wfComment: comment, thumbnailsToShow} = checkpoint;
-    function zoomImageTimeLineWrapper(imageSource, index,thumbnailsToShow){
-      let newIndex=thumbnailsToShow.thumbs?.findIndex(link=>link===imageSource);
-      zoomImage((newIndex>-1&&thumbnailsToShow?.fullImage?.[newIndex])||imageSource);
+    function zoomImageTimeLineWrapper(imageSource, index,thumbnailsToShow,arr){
+      if(arr1[index]?.status == "RESOLVED")
+      {
+        window.open(arr1[index].thumbnailsToShow.fullImage[0], "_blank")
+      }
+      else {
+        let newIndex=thumbnailsToShow.thumbs?.findIndex(link=>link===imageSource);
+        zoomImage((newIndex>-1&&thumbnailsToShow?.fullImage?.[newIndex])||imageSource);
+      }
+      
     }
     const captionForOtherCheckpointsInTL = {
       date: checkpoint?.auditDetails?.lastModified,
-      name: checkpoint?.assigner?.name,
-      mobileNumber: checkpoint?.assigner?.mobileNumber,
+      name: checkpoint?.assignes ? checkpoint?.assignes[0].name :checkpoint?.assigner?.name,
+      mobileNumber: checkpoint?.assignes?checkpoint?.assignes[0].mobileNumber: checkpoint?.assigner?.mobileNumber,
       ...checkpoint.status === "COMPLAINT_FILED" && complaintDetails?.audit ? {
         source: complaintDetails.audit.source,
       } : {}
@@ -441,12 +498,12 @@ console.log("wfoo", workflowDetails)
     if (checkpoint.status === "PENDINGFORASSIGNMENT" && complaintDetails?.audit) {
       if(isFirstPendingForAssignment){
         const caption = {
-          date: Digit.DateUtils.ConvertTimestampToDate(complaintDetails.audit.details.createdTime),
+          date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.createdTime),
         };
         return <TLCaption data={caption} comments={checkpoint?.wfComment}/>;
       } else {
         const caption = {
-          date: Digit.DateUtils.ConvertTimestampToDate(complaintDetails.audit.details.createdTime),
+          date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.createdTime),         
         };
         return <>
           {checkpoint?.wfComment ? <div>{checkpoint?.wfComment?.map( e => 
@@ -455,9 +512,15 @@ console.log("wfoo", workflowDetails)
               <p>{e}</p>
             </div>
           )}</div> : null}
+          {checkpoint.status!=="COMPLAINT_FILED" && checkpoint.performedAction!=="SENDBACK" ? (
+            <div className="TLComments">
+              <h3>{t("WF_REOPEN_REASON")}</h3>
+              <h1>{complaintDetails?.incident?.additionalDetail?.reopenreason}</h1>
+            </div>
+          ):null}
           {checkpoint.status !== "COMPLAINT_FILED" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
             <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-            <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow)} />
+            <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
           </div> : null}
           {caption?.date ? <TLCaption data={caption}/> : null}
         </>
@@ -473,7 +536,7 @@ console.log("wfoo", workflowDetails)
       )}</div> : null}
       {checkpoint.status !== "COMPLAINT_FILED" && checkpoint?.performedAction!=="INITIATE" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
         <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-        <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow)} />
+        <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
       </div> : null}
       {captionForOtherCheckpointsInTL?.date ? <TLCaption data={captionForOtherCheckpointsInTL}/> : null}
       {(checkpoint.status == "CLOSEDAFTERRESOLUTION" && complaintDetails.workflow.action == "RATE" && index <= 1) && complaintDetails.audit.rating ? <StarRated text={t("CS_ADDCOMPLAINT_YOU_RATED")} rating={complaintDetails.audit.rating} />: null}
@@ -482,10 +545,15 @@ console.log("wfoo", workflowDetails)
 console.log("cdet", complaintDetails)
 return (
   <React.Fragment>
-     <div style={{color:"#9e1b32", marginBottom:'10px'}}>
-    <Link to={`/digit-ui/employee/im/inbox`}>{t("BACK")}</Link></div> 
+     <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+    <Link to={`/digit-ui/employee/im/inbox`}>{t("CS_COMMON_BACK")}</Link></div> 
     <Card>
+      
+      <div style={{display:"flex", flexDirection:"column", gap:"5px"}}>
       <CardSubHeader>{t(`CS_HEADER_INCIDENT_SUMMARY`)}</CardSubHeader>
+      <div style={{fontWeight:"bolder", fontSize: isMobileView ? "16px":"21px", marginTop: isMobileView? "20px": -20, marginBottom:"22px"}}>{t("CS_HEADER_TICKET_DETAILS")}</div>
+      </div>
+      
 
       {isLoading ? (
         <Loader />

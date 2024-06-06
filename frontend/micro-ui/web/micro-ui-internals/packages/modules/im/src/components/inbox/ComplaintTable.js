@@ -3,7 +3,19 @@ import { Table } from "@egovernments/digit-ui-react-components";
 
 const ComplaintTable = ({ t, columns, data, getCellProps, onNextPage, onPrevPage, currentPage, totalRecords, pageSizeLimit, onPageSizeChange }) => (
   
- 
+ <div>
+   <style>
+        {`
+          .table thead th:first-child {
+            min-width: 0px;
+          }
+        
+          .table thead th:nth-child(2) {
+            min-width: 0px;
+          }
+        `}
+      </style>
+
   <Table
     t={t}
     data={data}
@@ -16,7 +28,7 @@ const ComplaintTable = ({ t, columns, data, getCellProps, onNextPage, onPrevPage
     onPageSizeChange={onPageSizeChange}
     pageSizeLimit={pageSizeLimit}
   />
-  
+   </div>
 );
 console.log("jhi", ComplaintTable)
 export default ComplaintTable;

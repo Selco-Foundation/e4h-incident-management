@@ -29,7 +29,7 @@
   div {
     display: block;
     position: relative;
-    background-color: #fafafa;
+    background-color: theme(colors.grey.light);
     width: calc((100% - 16px) / 3);
     margin-right: 8px;
 
@@ -44,7 +44,7 @@
   }
 
   .upload-img-container {
-    border: 1px dashed #d6d5d4;
+    border: 1px dashed theme(colors.border);
     margin: 0 !important;
 
     img {
@@ -59,9 +59,10 @@
     }
 
     svg {
+      margin-top: 58px !important;
+      margin-left: calc(50% - 23px) !important;
       margin-left: auto;
       margin-right: auto;
-      top: calc(50% - 21px);
       position: relative;
     }
 
@@ -88,6 +89,9 @@
   }
   input {
     width: 160px;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    max-height:  64px !important;
     @apply absolute top-0 left-0 opacity-0 h-full;
   }
 }

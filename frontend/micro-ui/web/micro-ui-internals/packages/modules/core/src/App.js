@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { Redirect, Route, Switch, useHistory, useLocation } from "react-router-dom";
-import EmployeeApp from "./pages/employee";
 import CitizenApp from "./pages/citizen";
+import EmployeeApp from "./pages/employee";
 
-export const DigitApp = ({ stateCode, modules, appTenants, logoUrl, initData }) => {
+export const DigitApp = ({ stateCode, modules, appTenants, logoUrl, initData ,defaultLanding="citizen"}) => {
   const history = useHistory();
   const { pathname } = useLocation();
   const innerWidth = window.innerWidth;
@@ -11,6 +11,7 @@ export const DigitApp = ({ stateCode, modules, appTenants, logoUrl, initData }) 
   const userDetails = Digit.UserService.getUser();
   const { data: storeData } = Digit.Hooks.useStore.getInitData();
   const { stateInfo } = storeData || {};
+  
   const DSO = Digit.UserService.hasAccess(["FSM_DSO"]);
   let CITIZEN = userDetails?.info?.type === "CITIZEN" || !window.location.pathname.split("/").includes("employee") ? true : false;
 
@@ -72,7 +73,7 @@ export const DigitApp = ({ stateCode, modules, appTenants, logoUrl, initData }) 
         <CitizenApp {...commonProps} />
       </Route>
       <Route>
-        <Redirect to="/digit-ui/citizen" />
+        <Redirect to="/digit-ui/employee" />
       </Route>
     </Switch>
   );

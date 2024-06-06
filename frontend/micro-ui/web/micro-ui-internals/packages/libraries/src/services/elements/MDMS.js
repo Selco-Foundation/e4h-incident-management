@@ -1,5 +1,4 @@
 //HAVE TO CHANGE THI
-
 import { ApiCacheService } from "../atoms/ApiCacheService";
 import Urls from "../atoms/urls";
 import { Request, ServiceRequest } from "../atoms/Utils/Request";
@@ -683,6 +682,18 @@ const getDssDashboardCriteria = (tenantId, moduleCode) => ({
   },
 });
 
+const getMCollectBillingServiceCriteria = (tenantId, moduleCode, type, filter) => ({
+  type,
+  details: {
+    tenantId: tenantId,
+    moduleDetails: [
+      {
+        moduleName: moduleCode,
+        masterDetails: [{ name: "BusinessService", filter: filter }],
+      },
+    ],
+  },
+});
 
 const getTradeUnitsDataList = (tenantId, moduleCode, type, filter) => ({
   type,
@@ -697,7 +708,18 @@ const getTradeUnitsDataList = (tenantId, moduleCode, type, filter) => ({
   },
 });
 
-
+const getMCollectApplicationStatusCriteria = (tenantId, moduleCode, type) => ({
+  type,
+  details: {
+    tenantId: tenantId,
+    moduleDetails: [
+      {
+        moduleName: moduleCode,
+        masterDetails: [{ name: "applicationStatus" }],
+      },
+    ],
+  },
+});
 
 const getHrmsEmployeeRolesandDesignations = () => ({
   moduleDetails: [
@@ -820,11 +842,59 @@ const getFSTPORejectionReasonCriteria = (tenantId, moduleCode, type) => ({
   },
 });
 
+const getFSMPaymentTypeCriteria = (tenantId, moduleCode, type) => ({
+  type,
+  details: {
+    tenantId: tenantId,
+    moduleDetails: [
+      {
+        moduleName: moduleCode,
+        masterDetails: [
+          {
+            name: "PaymentType",
+            filter: null,
+          },
+        ],
+      },
+    ],
+  },
+});
 
+const getFSMTripNumberCriteria = (tenantId, moduleCode, type) => ({
+  type,
+  details: {
+    tenantId: tenantId,
+    moduleDetails: [
+      {
+        moduleName: moduleCode,
+        masterDetails: [
+          {
+            name: "TripNumber",
+            filter: null,
+          },
+        ],
+      },
+    ],
+  },
+});
 
-
-
-
+const getFSMReceivedPaymentTypeCriteria = (tenantId, moduleCode, type) => ({
+  type,
+  details: {
+    tenantId: tenantId,
+    moduleDetails: [
+      {
+        moduleName: moduleCode,
+        masterDetails: [
+          {
+            name: "ReceivedPaymentType",
+            filter: null,
+          },
+        ],
+      },
+    ],
+  },
+});
 
 const getWSTaxHeadMasterCritera = (tenantId, moduleCode, type) => ({
   type,
@@ -1057,7 +1127,7 @@ const getPTPropertyType = (MdmsRes) =>
   MdmsRes["PropertyTax"].UsageCategory.filter((PropertyType) => PropertyType.active).map((PTPropertyTypelist) => {
     return {
       ...UsageCategorylist,
-      i18nKey: `COMMON_PROPTYPE_${stringReplaceAll(PTPropertyTypelist.code, ".", "_")}`,
+      i18nKey: `COMMON_PROPTYPE_${Digit.Utils.locale.stringReplaceAll(PTPropertyTypelist.code, ".", "_")}`,
     };
   });
 
@@ -1065,7 +1135,7 @@ const getTLStructureType = (MdmsRes) =>
   MdmsRes["common-masters"].StructureType.filter((StructureType) => StructureType.active).map((TLStructureTypeList) => {
     return {
       ...TLStructureTypeList,
-      i18nKey: `COMMON_MASTERS_STRUCTURETYPE_${stringReplaceAll(TLStructureTypeList.code, ".", "_")}`,
+      i18nKey: `COMMON_MASTERS_STRUCTURETYPE_${Digit.Utils.locale.stringReplaceAll(TLStructureTypeList.code, ".", "_")}`,
     };
   });
 
@@ -1073,7 +1143,7 @@ const getTLAccessoriesType = (MdmsRes) =>
   MdmsRes["TradeLicense"].AccessoriesCategory.filter((AccessoriesCategory) => AccessoriesCategory.active).map((TLAccessoryTypeList) => {
     return {
       ...TLAccessoryTypeList,
-      i18nKey: `TRADELICENSE_ACCESSORIESCATEGORY_${stringReplaceAll(TLAccessoryTypeList.code, ".", "_")}`,
+      i18nKey: `TRADELICENSE_ACCESSORIESCATEGORY_${Digit.Utils.locale.stringReplaceAll(TLAccessoryTypeList.code, ".", "_")}`,
     };
   });
 
@@ -1159,7 +1229,21 @@ const HRGenderType = (MdmsRes) => {
   });
 };
 
+const GetMCollectBusinessService = (MdmsRes) =>
+  MdmsRes["BillingService"].BusinessService.map((businesServiceDetails) => {
+    return {
+      ...businesServiceDetails,
+      i18nKey: `BILLINGSERVICE_BUSINESSSERVICE_${businesServiceDetails.code}`,
+    };
+  });
 
+const GetMCollectApplicationStatus = (MdmsRes) =>
+  MdmsRes["mCollect"].applcationStatus.map((appStatusDetails) => {
+    return {
+      ...appStatusDetails,
+      i18nKey: `BILLINGSERVICE_BUSINESSSERVICE_${appStatusDetails.code}`,
+    };
+  });
 
 const getFSMGenderType = (MdmsRes) => {
   return MdmsRes["common-masters"].GenderType.map((genderDetails) => {
@@ -1216,14 +1300,13 @@ const GetPreFields = (MdmsRes) => MdmsRes["FSM"].PreFieldsConfig;
 
 const GetPostFields = (MdmsRes) => MdmsRes["FSM"].PostFieldsConfig;
 
-const GetFSTPPlantInfo = (MdmsRes) => MdmsRes["FSM"].FSTPPlantInfo;
+const GetFSTPPlantInfo = (MdmsRes) => MdmsRes["FSM"]?.FSTPPlantInfo;
 
 const GetDocumentsTypes = (MdmsRes) => MdmsRes["BPA"].DocTypeMapping;
 
 const GetChecklist = (MdmsRes) => MdmsRes["BPA"].CheckList;
 
 const transformResponse = (type, MdmsRes, moduleCode, tenantId) => {
-  console.log("modulke", moduleCode)
   switch (type) {
     case "citymodule":
       return GetCitiesWithi18nKeys(MdmsRes, moduleCode);
@@ -1289,7 +1372,10 @@ const transformResponse = (type, MdmsRes, moduleCode, tenantId) => {
       return getChargeSlabsCategory(MdmsRes);
     case "DssDashboard":
       return getDssDashboard(MdmsRes);
-    
+    case "BusinessService":
+      return GetMCollectBusinessService(MdmsRes);
+    case "applcatonStatus":
+      return GetMCollectApplicationStatus(MdmsRes);
     case "FSTPPlantInfo":
       return GetFSTPPlantInfo(MdmsRes);
     case "GenderType":
@@ -1544,7 +1630,12 @@ export const MdmsService = {
   getHelpText: (tenantId, moduleCode, type) => {
     return MdmsService.getDataByCriteria(tenantId, getGeneralCriteria(tenantId, moduleCode, type), moduleCode);
   },
-  
+  getMCollectBillingService: (tenantId, moduleCode, type, filter) => {
+    return MdmsService.getDataByCriteria(tenantId, getMCollectBillingServiceCriteria(tenantId, moduleCode, type, filter), moduleCode);
+  },
+  getMCollectApplcationStatus: (tenantId, moduleCode, type, filter) => {
+    return MdmsService.getDataByCriteria(tenantId, getMCollectApplicationStatusCriteria(tenantId, moduleCode, type, filter), moduleCode);
+  },
   getHrmsEmployeeRolesandDesignation: (tenantId) => {
     return MdmsService.call(tenantId, getHrmsEmployeeRolesandDesignations());
   },

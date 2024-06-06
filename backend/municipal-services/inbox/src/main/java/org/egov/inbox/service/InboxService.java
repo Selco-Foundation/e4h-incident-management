@@ -519,12 +519,9 @@ public class InboxService {
                 businessObjects = fetchModuleObjects(moduleSearchCriteria, businessServiceName, criteria.getTenantId(),
                         requestInfo, srvMap);
             }
-            
             Map<String, Object> businessMap = StreamSupport.stream(businessObjects.spliterator(), false)
                     .collect(Collectors.toMap(s1 -> ((JSONObject) s1).get(businessIdParam).toString(),
                             s1 -> s1, (e1, e2) -> e1, LinkedHashMap::new));
-        
-            	
             ArrayList businessIds = new ArrayList();
             businessIds.addAll(businessMap.keySet());
             processCriteria.setBusinessIds(businessIds);
@@ -561,7 +558,7 @@ public class InboxService {
 	         .collect(Collectors.toMap(s1 -> ((JSONObject) s1).get("connectionNo").toString(),
 	                s1 -> s1, (e1, e2) -> e1, LinkedHashMap::new));
 			 
-	    ProcessInstanceResponse processInstanceResponse = null;
+	    ProcessInstanceResponse processInstanceResponse;
             /*
              * In BPA, the stakeholder can able to submit applications for multiple cities
              * and in the single inbox all cities submitted applications need to show
@@ -597,19 +594,12 @@ public class InboxService {
                 }
                 processInstanceResponse = processInstanceRes;
             } else {
-            	 if(!criteria.getProcessSearchCriteria().getModuleName().equalsIgnoreCase("im-services")) 
                 processInstanceResponse = workflowService.getProcessInstance(processCriteria, requestInfo);
             }
             
-            if(processInstanceResponse!=null) {
             List<ProcessInstance> processInstances = processInstanceResponse.getProcessInstances();
-
-            Map<String, ProcessInstance> processInstanceMap = new HashMap<>();
-            if(!CollectionUtils.isEmpty(processInstances)) {
-                for (ProcessInstance processInstance : processInstances) {
-                    processInstanceMap.put(processInstance.getBusinessId(), processInstance);
-                }
-            }
+            Map<String, ProcessInstance> processInstanceMap = processInstances.stream()
+                    .collect(Collectors.toMap(ProcessInstance::getBusinessId, Function.identity()));
 
             //Adding searched Items in Inbox result object for WS and SW
             if (moduleName.equals(WS) || moduleName.equals(SW)) {
@@ -662,7 +652,6 @@ public class InboxService {
 			//When Bill Amendment objects are searched
 				for (String businessKey : businessKeys) {
 					Inbox inbox = new Inbox();
-
 					inbox.setProcessInstance(processInstanceMap.get(businessKey));
 					inbox.setBusinessObject(toMap((JSONObject) businessMap.get(businessKey)));
 					inbox.setServiceObject(toMap(
@@ -672,7 +661,7 @@ public class InboxService {
 			}
                 }
             }
-        } }else {
+        } else {
             processCriteria.setOffset(criteria.getOffset());
             processCriteria.setLimit(criteria.getLimit());
 
@@ -708,7 +697,6 @@ public class InboxService {
             }
 
         }
-        
         
        // log.info("businessServiceName.contains(FSM_MODULE) ::: " + businessServiceName.contains(FSM_MODULE));
         
@@ -838,10 +826,6 @@ public class InboxService {
 			statusCountMap=	aggregateStatusCountMap;
 			//log.info("removeStatusCountMap:: "+ new Gson().toJson(statusCountMap));
 
-            if(moduleSearchCriteria.containsKey("mobileNumber") || moduleSearchCriteria.containsKey("applicationNos"))
-            {
-                totalCount = inboxes.size();
-            }
 		}
 		log.info("statusCountMap size :::: " + statusCountMap.size());
 		
@@ -1154,7 +1138,6 @@ public class InboxService {
 			if (!param.equalsIgnoreCase("tenantId")) {
 				if (param.equalsIgnoreCase("limit"))
 				    return;
-
 				if (moduleSearchCriteria.get(param) instanceof Collection) {
 					url.append("&").append(param).append("=");
 					url.append(StringUtils

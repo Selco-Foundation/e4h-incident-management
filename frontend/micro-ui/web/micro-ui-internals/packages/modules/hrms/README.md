@@ -1,4 +1,4 @@
-
+<!-- TODO: update this -->
 
 # digit-ui-module-hrms
 
@@ -53,8 +53,6 @@ const initDigitUI = () => {
 
 ```bash
 1.8.0 workbench v1.0 release
-1.8.0-beta.3 republished due to some version issues
-1.8.0-beta.2 fixes
 1.8.0-beta.01 fixed compilation issue
 1.8.0-beta workbench base version beta release
 1.7.0 urban 2.9

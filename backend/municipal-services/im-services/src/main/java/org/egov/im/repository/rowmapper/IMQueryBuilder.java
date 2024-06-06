@@ -58,7 +58,7 @@ public class IMQueryBuilder {
             }
           
         }
-        else if (criteria.getTenantId()!=null && criteria.getTenantId().contains(","))
+        else if (criteria.getPhcType()==null && criteria.getTenantId()!=null && criteria.getTenantId().contains(","))
         {
             //String tenantId = criteria.getTenantId();
             String[] tenantIdChunks = criteria.getTenantId().split(",");
@@ -68,7 +68,7 @@ public class IMQueryBuilder {
             addToPreparedStatement(preparedStmtList, tenantIdList);
         }
         else {
-            if (criteria.getTenantId() != null) {
+            if ( criteria.getPhcType()==null && criteria.getTenantId() != null) {
                 String tenantId = criteria.getTenantId();
                 String[] tenantIdChunks = tenantId.split("\\.");
 
@@ -93,17 +93,17 @@ public class IMQueryBuilder {
             addToPreparedStatement(preparedStmtList, applicationStatus);
         }
 
-        Set<String> incidentSubType = criteria.getIncidentSubType();
-        if (!CollectionUtils.isEmpty(incidentSubType)){
+        Set<String> incidentType = criteria.getIncidentType();
+        if (!CollectionUtils.isEmpty(incidentType)){
             addClauseIfRequired(preparedStmtList, builder);
-            builder.append(" ser.incidentsubtype IN (").append(createQuery(incidentSubType)).append(")");
-            addToPreparedStatement(preparedStmtList, incidentSubType);
+            builder.append(" ser.incidenttype IN (").append(createQuery(incidentType)).append(")");
+            addToPreparedStatement(preparedStmtList, incidentType);
         }
-        Set<String> phcSubType = criteria.getPhcSubType();
-         if (!CollectionUtils.isEmpty(phcSubType)){
+        Set<String> phcType = criteria.getPhcType();
+         if (!CollectionUtils.isEmpty(phcType)){
             addClauseIfRequired(preparedStmtList, builder);
-            builder.append(" ser.phcsubtype IN (").append(createQuery(phcSubType)).append(")");
-            addToPreparedStatement(preparedStmtList, phcSubType);
+            builder.append(" ser.tenantid IN (").append(createQuery(phcType)).append(")");
+            addToPreparedStatement(preparedStmtList, phcType);
         }
 
         if (criteria.getIncidentId() != null) {

@@ -128,12 +128,11 @@ const CitizenHome = ({ modules, getCitizenMenu, fetchedCitizen, isLoading }) => 
 };
 
 const EmployeeHome = ({ modules }) => {
-console.log("modules",modules)
-const modulesNew =modules.filter(module => module.module !== "Bills");
+  console.log("modulesmodules",modules)
   return (
     <div className="employee-app-container">
       <div className="ground-container moduleCardWrapper gridModuleWrapper">
-        {modulesNew.map(({ code }, index) => {
+        {modules.map(({ code }, index) => {
           const Card = Digit.ComponentRegistryService.getComponent(`${code}Card`) || (() => <React.Fragment />);
           return <Card key={index} />;
         })}

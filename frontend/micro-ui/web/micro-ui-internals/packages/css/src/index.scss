@@ -106,6 +106,10 @@
 @import "./pages/citizen/updatePropertyNumber.scss";
 @import "./pages/citizen/citizenDocument.scss";
 @import "./pages/employee/surveys.scss";
+@import "./digitv2/index.scss";
+/* @import "./digitv2/typography.scss"; */
+@import "./components/inboxv2/index.scss";
+@import "./components//sidebar.scss";
 
 .display-none {
   display: none;
@@ -114,6 +118,11 @@
 .p-unset {
   padding: unset !important;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit; }
+
 
 .flex-one {
   @apply flex-1;
@@ -174,17 +183,24 @@
   @apply mb-sm;
 }
 
+.employeeCard {
+  /*  TODO need to revisit that we need mx-md NABEEL/ANIL
+   @apply mb-md mx-md !important;
+  */
+  @apply mb-md !important;
+}
+
 .home-link {
   margin-left: 16px;
   margin-bottom: 16px;
 
   a {
-    color: #1d70b8;
+    color: theme(colors.link.normal);
   }
 }
 
 .clear-search-label {
-  color: #f47738;
+  color: theme(colors.primary.main);
   cursor: pointer;
 }
 
@@ -197,7 +213,7 @@
   @apply flex justify-between items-center;
 
   .download-button {
-    color: #f47738;
+    color: theme(colors.primary.main);
     margin-left: 8px;
   }
 }
@@ -206,15 +222,13 @@
   @apply flex mb-sm;
 
   .download-button {
-    color: #f47738;
+    color: theme(colors.primary.main);
     margin-left: 8px;
-    white-space: nowrap;
-
   }
 }
 
 .check-page-link-button {
-  color: #f47738 !important;
+  color: theme(colors.primary.main) !important;
 }
 
 .pt-application-download-btn {
@@ -237,10 +251,10 @@
   gap: 10px;
 
   svg {
-    fill: #f47738;
+    fill: theme(colors.primary.main);
   }
 
-  color: #f47738;
+  color: theme(colors.primary.main);
 
   cursor: pointer;
   font-weight: 500;
@@ -248,7 +262,20 @@
 }
 
 .primaryColor {
-  color: #0b0c0c !important;
+  color: theme(colors.text.primary) !important;
+}
+
+input[readonly] {
+  @apply border-grey-dark !important;
+  background-color:  theme(digitv2.lightTheme.background);
+  border-color: theme(digitv2.lightTheme.text-color-secondary);
+  color: theme(digitv2.lightTheme.text-color-secondary);
+}
+
+.hide-input-type-file {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none !important;
 }
 
 @media (hover: hover) {
@@ -282,7 +309,7 @@
   width: 194px;
   height: 2.5rem;
   &__wrapper {
-    border: 2px solid #0b0c0c;
+    border: 2px solid theme(colors.text.primary);
     padding-left: 16px;
   }
   &__inputGroup__input {
@@ -308,6 +335,7 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
 
 .static {
   @apply flex flex-col;
@@ -386,7 +414,7 @@ input[type="number"] {
 
 .cheque-date {
   @apply flex items-center mb-lg;
-  border: 2px solid #0b0c0c;
+  border: 2px solid theme(colors.text.primary);
   border-radius: 2px;
 
   input {
@@ -411,7 +439,7 @@ input[type="number"] {
 
 .ifsc-field {
   @apply flex items-center mb-lg;
-  border: 2px solid #0b0c0c;
+  border: 2px solid theme(colors.text.primary);
   border-radius: 2px;
 
   input {
@@ -535,7 +563,7 @@ input[type="number"] {
       padding: 8px 24px;
       color: white;
       cursor: pointer;
-      background-color: #f47738;
+      background-color: theme(colors.primary.main);
     }
   }
 }
@@ -556,6 +584,10 @@ input[type="number"] {
 .full-employee-card-link {
   width: 100% !important;
   margin: 7px 0px;
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
 }
 .full-employee-card-height {
   height: unset !important;
@@ -603,7 +635,6 @@ input[type="number"] {
 @media (min-width: 780px) {
   .citizen-obps-wrapper,
   .selection-card-wrapper,
-  .fsm-citizen-wrapper,
   .pgr-citizen-wrapper,
   .pt-citizen,
   .bill-citizen,
@@ -700,7 +731,7 @@ input[type="number"] {
 .modal-body-ws {
   padding: 1rem;
   font-weight: 700;
-  color: #0b0c0c;
+  color: theme(colors.text.primary);
   font-size: 24px;
   margin-bottom: 1rem;
 }
@@ -728,12 +759,4 @@ input[type="number"] {
   margin-right: -27%;
   max-height: 120px;
   margin-top: 90px;
-}
-.fsm-inline-style {
-  background: #fafafa;
-  border: 1px solid #d6d5d4;
-  border-radius: 4px;
-  padding: 16px;
-  margin-bottom: 40px;
-  width: 90%;
 }

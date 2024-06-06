@@ -21,7 +21,7 @@ import {
 import TimeLine from "../../components/TimeLine";
 
 const WorkflowComponent = ({ complaintDetails, id, getWorkFlow, zoomImage }) => {
-  const tenantId =  Digit.SessionStorage.get("Employee.tenantId") == "pg"?  Digit.SessionStorage.get("Tenants").map(item => item.code).join(',') : Digit.SessionStorage.get("Employee.tenantId")  || complaintDetails.service.tenantId;
+  const tenantId =  Digit.SessionStorage.get("Employee.tenantId") == "pg"?  Digit.SessionStorage.get("IM_TENANTS").map(item => item.code).filter((item) => item.code !=="pg").join(',') : Digit.SessionStorage.get("Employee.tenantId")  || complaintDetails.service.tenantId;
   console.log("WorkflowComponent",tenantId)
   let workFlowDetails = Digit.Hooks.useWorkflowDetails({ tenantId: tenantId, id, moduleCode: "Incident" });
   const { data: ComplainMaxIdleTime, isLoading: ComplainMaxIdleTimeLoading } = Digit.Hooks.pgr.useMDMS.ComplainClosingTime(tenantId?.split(".")[0]);

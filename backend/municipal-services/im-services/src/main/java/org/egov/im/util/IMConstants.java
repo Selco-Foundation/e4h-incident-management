@@ -21,6 +21,8 @@ public class IMConstants {
     public static final String PGR_MODULENAME = "im-services";
 
     public static final String PGR_WF_REOPEN = "REOPEN";
+    
+    public static final String PGR_MODULE = "rainmaker-im";
 
     public static final String MDMS_SERVICEDEF = "ServiceDefs";
 
@@ -35,6 +37,7 @@ public class IMConstants {
     public static final String HRMS_DESIGNATION_JSONPATH = "$.Employees.*.assignments[?(@.department=='{department}')].designation";
 
     public static final String HRMS_EMP_NAME_JSONPATH = "$.Employees.*.user.name";
+    public static final String HRMS_EMP_MOBILE_JSONPATH = "$.Employees.*.user.mobileNumber";
 
     public static final String PENDING_FOR_REASSIGNMENT = "PENDINGFORREASSIGNMENT";
 
@@ -48,7 +51,9 @@ public class IMConstants {
 
     public static final String REJECT_REJECTED = "REJECT_REJECTED";
 
-    public static final String PENDINGATLME = "PENDINGATLME";
+    public static final String PENDINGATVENDOR = "PENDINGRESOLUTION";
+	
+    public static final String CLOSE = "CLOSE";
 
     public static final String REASSIGN = "REASSIGN";
 
@@ -71,6 +76,8 @@ public class IMConstants {
     public static final String CITIZEN = "CITIZEN";
 
     public static final String EMPLOYEE = "EMPLOYEE";
+    
+    public static final String CRM = "CRM";
 
     public static final String COMMENT = "COMMENT";
 
@@ -82,7 +89,7 @@ public class IMConstants {
 
     public static final String ASSIGN_EMPLOYEE_PENDINGATLME = "ASSIGN_EMPLOYEE_PENDINGATLME";
 
-    public static final String CLOSE_EMPLOYEE_CLOSED_AFTER_RESOLUTION = "CLOSE_EMPLOYEE_CLOSEDAFTERRESOLUTION";
+    public static final String CLOSE_EMPLOYEE_CLOSED_AFTER_RESOLUTION = "CLOSE_CLOSEDAFTERRESOLUTION";
 
     public static final String REASSIGN_CITIZEN_PENDINGATLME = "REASSIGN_CITIZEN_PENDINGATLME";
 
@@ -103,13 +110,14 @@ public class IMConstants {
     public static final String ASSIGN = "ASSIGN";
 
     public static final String ASSIGN_PENDING_AT_LME = "ASSIGN_PENDINGATLME";
-
+    
+    public static final String ASSIGN_PENDINGRESOLUTION = "ASSIGN_PENDINGRESOLUTION";
     public static final String RATE_CLOSED_AFTER_REJECTION = "RATE_CLOSEDAFTERREJECTION";
 
     public static final String RATE_CLOSED_AFTER_RESOLUTION = "RATE_CLOSEDAFTERRESOLUTION";
 
     public static final List<String> NOTIFICATION_ENABLE_FOR_STATUS = Collections
-            .unmodifiableList(Arrays.asList(APPLY_PENDING_FOR_REASSIGNMENT,RESOLVE_RESOLVED,REOPEN_PENDING_FOR_ASSIGNMENT,REASSIGN_PENDINGATLME,
+            .unmodifiableList(Arrays.asList(ASSIGN_PENDINGRESOLUTION,APPLY_PENDING_FOR_REASSIGNMENT,RESOLVE_RESOLVED,REOPEN_PENDING_FOR_ASSIGNMENT,REASSIGN_PENDINGATLME,
                     REJECT_REJECTED,ASSIGN_CITIZEN_PENDINGATLME,ASSIGN_EMPLOYEE_PENDINGATLME,CLOSE_EMPLOYEE_CLOSED_AFTER_RESOLUTION,
                     REASSIGN_CITIZEN_PENDINGATLME,REASSIGN_EMPLOYEE_PENDINGATLME,REJECT_CITIZEN_REJECTED,REOPEN_CITIZEN_PENDINGFORASSIGNMENT,
                     REOPEN_EMPLOYEE_PENDINGFORASSIGNMENT,RESOLVE_CITIZEN_RESOLVED,APPLY_PENDINGFORASSIGNMENT,COMMENT, COMMENT_DEFAULT, DEFAULT,
@@ -117,7 +125,6 @@ public class IMConstants {
 
     public static final String NOTIFICATION_LOCALE = "en_IN";
 
-    public static final String PGR_MODULE = "rainmaker-im";
 
     public static final String COMMON_MODULE = "rainmaker-common";
 

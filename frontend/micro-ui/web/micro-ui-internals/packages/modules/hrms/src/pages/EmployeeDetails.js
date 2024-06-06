@@ -1,8 +1,9 @@
-import { ActionBar, Card, CardSubHeader, DocumentSVG, Header, Loader, Menu, Row, StatusTable, SubmitBar } from "@egovernments/digit-ui-react-components";
+import { ActionBar, Card, CardSubHeader, DocumentSVG, Header, Loader, Row, StatusTable, SubmitBar } from "@egovernments/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import ActionModal from "../components/Modal";
+import Menu from "../../../../react-components/src/atoms/Menu"
 import { convertEpochFormateToDate, pdfDownloadLink } from "../components/Utils";
 
 const Details = () => {
@@ -52,7 +53,7 @@ const Details = () => {
       case "ACTIVATE_EMPLOYEE_HEAD":
         return setShowModal(true);
       case "COMMON_EDIT_EMPLOYEE_HEADER":
-        return history.push(`/digit-ui/employee/hrms/edit/${tenantId}/${employeeId}`);
+        return history.push(`/${window?.contextPath}/employee/hrms/edit/${tenantId}/${employeeId}`);
       default:
         break;
     }
@@ -74,9 +75,9 @@ const Details = () => {
               <Row
                 label={<CardSubHeader className="card-section-header">{t("HR_EMP_STATUS_LABEL")} </CardSubHeader>}
                 text={
-                  data?.Employees?.[0]?.isActive ? <div className="sla-cell-success"> {t("ACTIVE")} </div> : <div className="sla-cell-error">{t("INACTIVE")}</div>
+                  data?.Employees?.[0]?.isActive ? <div > {t("ACTIVE")} </div> : <div >{t("INACTIVE")}</div>
                 }
-                textStyle={{ fontWeight: "bold", maxWidth: "6.5rem" }}
+                //textStyle={{ fontWeight: "bold", maxWidth: "6.5rem" }}
               />
             </StatusTable>
             <CardSubHeader className="card-section-header">{t("HR_PERSONAL_DETAILS_FORM_HEADER")} </CardSubHeader>
@@ -87,7 +88,7 @@ const Details = () => {
               <Row label={t("HR_EMAIL_LABEL")} text={data?.Employees?.[0]?.user?.emailId || "NA"} />
               <Row label={t("HR_CORRESPONDENCE_ADDRESS_LABEL")} text={data?.Employees?.[0]?.user?.correspondenceAddress || "NA"} />
             </StatusTable>
-            <CardSubHeader className="card-section-header">{t("HR_NEW_EMPLOYEE_FORM_HEADER")}</CardSubHeader>
+            <CardSubHeader style={{marginTop:"10px"}} className="card-section-header">{t("HR_NEW_EMPLOYEE_FORM_HEADER")}</CardSubHeader>
             <StatusTable>
               <Row label={t("HR_EMPLOYMENT_TYPE_LABEL")} text={t(data?.Employees?.[0]?.employeeType ? `EGOV_HRMS_EMPLOYEETYPE_${data?.Employees?.[0]?.employeeType}` : "NA")} textStyle={{ whiteSpace: "pre" }} />
               <Row
@@ -158,7 +159,7 @@ const Details = () => {
                       marginBottom: "2rem",
                     }}
                   >
-                    <div style={{ paddingBottom: "2rem" }}>
+                    <div style={{ paddingBottom: "2rem" , marginTop:"10px"}}>
                       {" "}
                       {t("HR_JURISDICTION")} {index + 1}
                     </div>
@@ -208,12 +209,60 @@ const Details = () => {
         <ActionModal t={t} action={selectedAction} tenantId={tenantId} applicationData={data} closeModal={closeModal} submitAction={submitAction} />
       ) : null}
       <ActionBar>
+      <style>
+        {`
+    .selector-button-border h2 {
+      font-family: Roboto Condensed, sans-serif;
+      font-weight: 500;
+      font-size: 19px;
+      line-height: 23px;
+      --text-opacity: 1;
+      color: #0b0c0c;
+      color: rgba(11, 12, 12, var(--text-opacity));
+      margin: 0px
+    }
+    .selector-button-primary {
+      height: 3rem;
+      --bg-opacity: 1;
+      background-color: #7a2829;
+      background-color: rgba(122, 40, 41, var(--bg-opacity));
+      text-align: center;
+      --border-opacity: 1;
+      border-color: #464646;
+      border-bottom: 1px;
+      border-style: solid;
+      border-color: rgba(70, 70, 70, var(--border-opacity));
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .selector-button-primary-disabled {
+      height: 3rem;
+      --bg-opacity: 1;
+      background-color: #7a2829;
+      background-color: rgba(122, 40, 41, var(--bg-opacity));
+      text-align: center;
+      --border-opacity: 1;
+      border-color: #464646;
+      border-bottom: 1px;
+      border-style: solid;
+      border-color: rgba(70, 70, 70, var(--border-opacity));
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    `
+  }
+  </style>
         {displayMenu && data ? (
           <Menu
             localeKeyPrefix="HR"
             options={data?.Employees?.[0]?.isActive ? activeworkflowActions : deactiveworkflowActions}
             t={t}
             onSelect={onActionSelect}
+            style={{marginTop:"0px !important"}}
           />
         ) : null}
         <SubmitBar label={t("HR_COMMON_TAKE_ACTION")} onSubmit={() => setDisplayMenu(!displayMenu)} />

@@ -1,12 +1,15 @@
 import BrowserUtil from "./browser";
 import * as date from "./date";
-
+import * as dss from "./dss";
 import * as locale from "./locale";
-
+import * as obps from "./obps";
+import * as pt from "./pt";
 import * as privacy from "./privacy";
 import PDFUtil, { downloadReceipt ,downloadPDFFromLink,downloadBill ,getFileUrl} from "./pdf";
 import getFileTypeFromFileStoreURL from "./fileType";
-
+import preProcessMDMSConfig from "./preProcessMDMSConfig";
+import preProcessMDMSConfigInboxSearch from "./preProcessMDMSConfigInboxSearch";
+import * as parsingUtils from "../services/atoms/Utils/ParsingUtils"
 const GetParamFromUrl = (key, fallback, search) => {
   if (typeof window !== "undefined") {
     search = search || window.location.search;
@@ -80,11 +83,26 @@ const getPattern = (type) => {
       return /^[^\$\"'<>?\\\\~`!@$%^()+={}\[\]*.:;“”‘’]{1,50}$/i;
     case "OldLicenceNo":
       return /^[a-zA-Z0-9-/]{0,64}$/;
+    case "bankAccountNo":
+      return /^\d{9,18}$/;
+    case "IFSC":
+      return /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    case "ApplicationNo":
+      return /^[a-zA-z0-9\s\\/\-]$/i;
   }
 };
-
+/*  
+Digit.Utils.getUnique()
+get unique elements from an array */
 const getUnique = (arr) => {
   return arr.filter((value, index, self) => self.indexOf(value) === index);
+};
+
+/*  
+Digit.Utils.createFunction()
+get function from a string */
+const createFunction = (functionAsString) => {
+  return Function("return " + functionAsString)();
 };
 
 const getStaticMapUrl = (latitude, longitude) => {
@@ -92,8 +110,49 @@ const getStaticMapUrl = (latitude, longitude) => {
   return `https://maps.googleapis.com/maps/api/staticmap?markers=${latitude},${longitude}&zoom=15&size=400x400&key=${key}&style=element:geometry%7Ccolor:0xf5f5f5&style=element:labels.icon%7Cvisibility:off&style=element:labels.text.fill%7Ccolor:0x616161&style=element:labels.text.stroke%7Ccolor:0xf5f5f5&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0xbdbdbd&style=feature:poi%7Celement:geometry%7Ccolor:0xeeeeee&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x757575&style=feature:poi.park%7Celement:geometry%7Ccolor:0xe5e5e5&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x9e9e9e&style=feature:road%7Celement:geometry%7Ccolor:0xffffff&style=feature:road.arterial%7Celement:labels.text.fill%7Ccolor:0x757575&style=feature:road.highway%7Celement:geometry%7Ccolor:0xdadada&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0x616161&style=feature:road.local%7Celement:labels.text.fill%7Ccolor:0x9e9e9e&style=feature:transit.line%7Celement:geometry%7Ccolor:0xe5e5e5&style=feature:transit.station%7Celement:geometry%7Ccolor:0xeeeeee&style=feature:water%7Celement:geometry%7Ccolor:0xc9c9c9&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x9e9e9e`;
 };
 
+/**
+ * Custom util to get the default region
+ *
+ * @author jagankumar-egov
+ *
+ * @example
+ *   Digit.Hooks.Utils.getLocaleRegion()
+ *
+ * @returns {string} 
+ */
+const getLocaleRegion = () => {
+  return window?.globalConfigs?.getConfig("LOCALE_REGION") || "IN";
+};
+/**
+ * Custom util to get the default locale
+ *
+ * @author jagankumar-egov
+ *
+ * @example
+ *   Digit.Hooks.Utils.getLocaleDefault()
+ *
+ * @returns {string} 
+ */
+const getLocaleDefault = () => {
+  return globalConfigs?.getConfig("LOCALE_DEFAULT")  || "en";
+};
+
+/**
+ * Custom util to get the default language
+ *
+ * @author jagankumar-egov
+ *
+ * @example
+ *   Digit.Hooks.Utils.getDefaultLanguage()
+ *
+ * @returns {string} 
+ */
+const getDefaultLanguage = () => {
+  return  `${getLocaleDefault()}_${getLocaleRegion()}`;
+};
+
 const detectDsoRoute = (pathname) => {
-  const employeePages = ["search", "inbox", "dso-dashboard", "dso-application-details", "user", "Audit"];
+  const employeePages = ["search", "inbox", "dso-dashboard", "dso-application-details", "user"];
 
   return employeePages.some((url) => pathname.split("/").includes(url));
 };
@@ -108,42 +167,134 @@ const routeSubscription = (pathname) => {
   }
 };
 
-const didEmployeeHasRole = (role) => {
+
+/* to check the employee (loggedin user ) has given role  */
+const didEmployeeHasRole = (role = "") => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const userInfo = Digit.UserService.getUser();
   const rolearray = userInfo?.info?.roles.filter((item) => {
-    if (item.code == role && item.tenantId === tenantId) return true;
+    if (item.code === role && item.tenantId === tenantId) return true;
   });
-  return rolearray?.length;
+  return rolearray?.length > 0;
+};
+
+/* to check the employee (loggedin user ) has given roles  */
+const didEmployeeHasAtleastOneRole = (roles = []) => {
+  return roles.some((role) => didEmployeeHasRole(role));
 };
 
 const pgrAccess = () => {
   const userInfo = Digit.UserService.getUser();
   const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
-  const pgrRoles = ["COMPLAINT_RESOLVER", "COMPLAINT_ASSESSOR", "SUPERUSER","COMPLAINANT","COMPLAINT_CLOSER","COMPLAINT"];
+  const pgrRoles = ["COMPLAINT_RESOLVER", "COMPLAINT_ASSESSOR","COMPLAINANT","COMPLAINT_CLOSER","COMPLAINT"];
 
   const PGR_ACCESS = userRoles?.filter((role) => pgrRoles.includes(role));
-  console.log("pgraccess", PGR_ACCESS)
 
   return PGR_ACCESS?.length > 0;
 };
 
-
-const hrmsRoles = ["HRMS_ADMIN"];
-const hrmsAccess = () => {
+const fsmAccess = () => {
   const userInfo = Digit.UserService.getUser();
   const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
-  const HRMS_ACCESS = userRoles?.filter((role) => hrmsRoles?.includes(role));
-  return HRMS_ACCESS?.length > 0;
+  const fsmRoles = [
+    "FSM_CREATOR_EMP",
+    "FSM_EDITOR_EMP",
+    "FSM_VIEW_EMP",
+    "FSM_REPORT_VIEWER",
+    "FSM_DASHBOARD_VIEWER",
+    "FSM_ADMIN",
+    "FSM_DSO",
+    "FSM_DRIVER",
+    "FSM_EMP_FSTPO",
+    "FSM_COLLECTOR",
+  ];
+
+  const FSM_ACCESS = userRoles?.filter((role) => fsmRoles?.includes(role));
+
+  return FSM_ACCESS?.length > 0;
 };
 
+const NOCAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
 
+  const NOC_ROLES = [
+    "FIRE_NOC_APPROVER"
+  ]
 
+  const NOC_ACCESS = userRoles?.filter((role) => NOC_ROLES?.includes(role));
 
+  return NOC_ACCESS?.length > 0;
+};
 
+const BPAREGAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
 
+  const BPAREG_ROLES = ["BPAREG_APPROVER", "BPAREG_DOC_VERIFIER"];
 
+  const BPAREG_ACCESS = userRoles?.filter((role) => BPAREG_ROLES?.includes(role));
 
+  return BPAREG_ACCESS?.length > 0;
+};
+
+const BPAAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+
+  const BPA_ROLES = [
+    "BPA_VERIFIER",
+    "CEMP",
+    "BPA_APPROVER",
+    "BPA_FIELD_INSPECTOR",
+    "BPA_NOC_VERIFIER",
+    "AIRPORT_AUTHORITY_APPROVER",
+    "FIRE_NOC_APPROVER",
+    "NOC_DEPT_APPROVER",
+    "BPA_NOC_VERIFIER",
+    "BPA_TOWNPLANNER",
+    "BPA_ENGINEER",
+    "BPA_BUILDER",
+    "BPA_STRUCTURALENGINEER",
+    "BPA_SUPERVISOR",
+    "BPA_DOC_VERIFIER",
+    "EMPLOYEE",
+  ];
+
+  const BPA_ACCESS = userRoles?.filter((role) => BPA_ROLES?.includes(role));
+
+  return BPA_ACCESS?.length > 0;
+};
+
+const ptAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const ptRoles = ["PT_APPROVER", "PT_CEMP", "PT_DOC_VERIFIER", "PT_FIELD_INSPECTOR"];
+
+  const PT_ACCESS = userRoles?.filter((role) => ptRoles?.includes(role));
+
+  return PT_ACCESS?.length > 0;
+};
+
+const tlAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const tlRoles = ["TL_CEMP", "TL_APPROVER", "TL_FIELD_INSPECTOR", "TL_DOC_VERIFIER"];
+
+  const TL_ACCESS = userRoles?.filter((role) => tlRoles?.includes(role));
+
+  return TL_ACCESS?.length > 0;
+};
+
+const mCollectAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const mCollectRoles = ["UC_EMP"];
+
+  const MCOLLECT_ACCESS = userRoles?.filter((role) => mCollectRoles?.includes(role));
+
+  return MCOLLECT_ACCESS?.length > 0;
+};
 
 const receiptsAccess = () => {
   const userInfo = Digit.UserService.getUser();
@@ -152,9 +303,41 @@ const receiptsAccess = () => {
   const RECEIPTS_ACCESS = userRoles?.filter((role) => receiptsRoles?.includes(role));
   return RECEIPTS_ACCESS?.length > 0;
 };
+const hrmsRoles = ["HRMS_ADMIN"];
+const hrmsAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const HRMS_ACCESS = userRoles?.filter((role) => hrmsRoles?.includes(role));
+  return HRMS_ACCESS?.length > 0;
+};
 
+const wsAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const waterRoles = ["WS_CEMP", "WS_APPROVER", "WS_FIELD_INSPECTOR", "WS_DOC_VERIFIER","WS_CLERK"];
+
+  const WS_ACCESS = userRoles?.filter((role) => waterRoles?.includes(role));
+
+  return WS_ACCESS?.length > 0;
+};
+
+const swAccess = () => {
+  const userInfo = Digit.UserService.getUser();
+  const userRoles = userInfo?.info?.roles?.map((roleData) => roleData?.code);
+  const sewerageRoles = ["SW_CEMP", "SW_APPROVER", "SW_FIELD_INSPECTOR", "SW_DOC_VERIFIER","SW_CLERK"];
+
+  const SW_ACCESS = userRoles?.filter((role) => sewerageRoles?.includes(role));
+
+  return SW_ACCESS?.length > 0;
+};
+
+/* to get the MDMS config module name */
+const getConfigModuleName = () => {
+  return window?.globalConfigs?.getConfig("UICONFIG_MODULENAME") || "commonUiConfig";
+};
 export default {
   pdf: PDFUtil,
+  createFunction,
   downloadReceipt,
   downloadBill,
   downloadPDFFromLink,
@@ -169,11 +352,31 @@ export default {
   detectDsoRoute,
   routeSubscription,
   pgrAccess,
-  hrmsAccess,
-  hrmsRoles,
+  fsmAccess,
+  BPAREGAccess,
+  BPAAccess,
+  dss,
+  obps,
+  pt,
+  ptAccess,
+  NOCAccess,
+  mCollectAccess,
   receiptsAccess,
   didEmployeeHasRole,
+  didEmployeeHasAtleastOneRole,
+  hrmsAccess,
   getPattern,
+  hrmsRoles,
   getUnique,
-  ...privacy
+  tlAccess,
+  wsAccess,
+  swAccess,
+  getConfigModuleName,
+  preProcessMDMSConfig,
+  preProcessMDMSConfigInboxSearch,
+  parsingUtils,
+  ...privacy,
+  getDefaultLanguage,
+  getLocaleDefault,
+  getLocaleRegion
 };

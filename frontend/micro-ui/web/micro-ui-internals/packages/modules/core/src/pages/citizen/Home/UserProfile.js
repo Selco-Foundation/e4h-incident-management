@@ -10,6 +10,7 @@ import {
   BreadCrumb,
   BackButton,
   Loader,
+  SubmitBar
 } from "@egovernments/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,6 +52,9 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
   const [email, setEmail] = useState(userInfo?.emailId ? userInfo.emailId : "");
   const [gender, setGender] = useState(userDetails?.gender);
   const [city, setCity] = useState(userInfo?.permanentCity ? userInfo.permanentCity : cityDetails.name);
+  if(city==="State"){
+    setCity("All")
+  }
   const [mobileNumber, setMobileNo] = useState(userInfo?.mobileNumber ? userInfo.mobileNumber : "");
   const [profilePic, setProfilePic] = useState(null);
   const [profileImg, setProfileImg] = useState("");
@@ -108,7 +112,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
     setName(value);
 
     if(!new RegExp(/^[a-zA-Z ]+$/i).test(value) || value.length === 0 || value.length > 50){
-      setErrors({...errors, userName : {type: "pattern", message: t("CORE_COMMON_PROFILE_NAME_INVALID")}});
+      setErrors({...errors, userName : {type: "pattern", message: "CORE_COMMON_PROFILE_NAME_INVALID"}});
     }else{
       setErrors({...errors, userName : null})
     }
@@ -129,7 +133,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
     } else {
       setErrors({ ...errors, emailAddress: null });
     }
-  }
+  };
 
   const setUserMobileNumber = (value) => {
     setMobileNo(value);
@@ -145,7 +149,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
     setCurrentPassword(value);
 
     if (!new RegExp(/^([a-zA-Z0-9@#$%]{8,15})$/i).test(value)) {
-      setErrors({...errors, currentPassword: {type: "pattern", message: t("CORE_COMMON_PROFILE_PASSWORD_INVALID")}})
+      setErrors({...errors, currentPassword: {type: "pattern", message: "CORE_COMMON_PROFILE_PASSWORD_INVALID"}})
     }else{
       setErrors({...errors, currentPassword: null});
     }
@@ -155,7 +159,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
     setNewPassword(value);
 
     if (!new RegExp(/^([a-zA-Z0-9@#$%]{8,15})$/i).test(value)) {
-      setErrors({...errors, newPassword: {type: "pattern", message: t("CORE_COMMON_PROFILE_PASSWORD_INVALID")}})
+      setErrors({...errors, newPassword: {type: "pattern", message: "CORE_COMMON_PROFILE_PASSWORD_INVALID"}})
     }else{
       setErrors({...errors, newPassword: null});
     }
@@ -165,7 +169,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
     setConfirmPassword(value);
 
     if (!new RegExp(/^([a-zA-Z0-9@#$%]{8,15})$/i).test(value)) {
-      setErrors({...errors, confirmPassword: {type: "pattern", message: t("CORE_COMMON_PROFILE_PASSWORD_INVALID")}})
+      setErrors({...errors, confirmPassword: {type: "pattern", message: "CORE_COMMON_PROFILE_PASSWORD_INVALID"}})
     }else{
       setErrors({...errors, confirmPassword: null});
     }
@@ -202,7 +206,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
         throw JSON.stringify({ type: "error", message: t("CORE_COMMON_PROFILE_MOBILE_NUMBER_INVALID") });
       }
 
-      if (email.length && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+      if (email.length && !(email.includes("@") && email.includes("."))) {
         throw JSON.stringify({ type: "error", message: t("CORE_COMMON_PROFILE_EMAIL_INVALID") });
       }
 
@@ -256,17 +260,18 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
             const { responseInfo: changePasswordResponseInfo } = res;
             if (changePasswordResponseInfo?.status && changePasswordResponseInfo.status === "200") {
               showToast("success", t("CORE_COMMON_PROFILE_UPDATE_SUCCESS_WITH_PASSWORD"), 5000);
+              setTimeout(() => Digit.UserService.logout(), 2000);
             } else {
               throw "";
             }
           } catch (error) {
             throw JSON.stringify({
               type: "error",
-              message: error.Errors?.at(0)?.description ? error.Errors.at(0).description : t("CORE_COMMON_PROFILE_UPDATE_ERROR_WITH_PASSWORD"),
+              message: error.Errors?.at(0)?.description ? error.Errors.at(0).description : "CORE_COMMON_PROFILE_UPDATE_ERROR_WITH_PASSWORD",
             });
           }
         } else {
-          throw JSON.stringify({ type: "error", message: t("CORE_COMMON_PROFILE_ERROR_PASSWORD_NOT_MATCH") });
+          throw JSON.stringify({ type: "error", message: "CORE_COMMON_PROFILE_ERROR_PASSWORD_NOT_MATCH" });
         }
       } else if (responseInfo?.status && responseInfo.status === "200") {
         showToast("success", t("CORE_COMMON_PROFILE_UPDATE_SUCCESS"), 5000);
@@ -280,24 +285,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
   };
 
   let menu = [];
-  const Menu  = [
-    {
-        "code": "MALE",
-        "active": true
-    },
-    {
-        "code": "FEMALE",
-        "active": true
-    },
-    {
-        "code": "TRANSGENDER",
-        "active": true
-    },
-    {
-        "code": "OTHERS",
-        "active": false
-    }
-];
+  const { data: Menu } = Digit.Hooks.useGenderMDMS(stateId, "common-masters", "GenderType");
   Menu &&
     Menu.map((genderDetails) => {
       menu.push({ i18nKey: `PT_COMMON_GENDER_${genderDetails.code}`, code: `${genderDetails.code}`, value: `${genderDetails.code}` });
@@ -329,6 +317,18 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
 
   return (
     <div className="user-profile">
+        <style>{
+          `
+        @media (min-width: 780px) {
+            .user-profile {
+                width: 100%;
+                margin-left: 16px;
+                margin-right: 16px;
+            }
+        }
+        `
+      }
+    </style>
       <section style={{ margin: userType === "citizen" ? "8px" : "24px" }}>
         {userType === "citizen" ? (
           <BackButton></BackButton>
@@ -342,7 +342,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
               },
               {
                 path: "/digit-ui/employee/user/profile",
-                content: t("ES_COMMON_PAGE_1"),
+                
                 show: url.includes("/user/profile"),
               },
             ]}
@@ -360,6 +360,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
           background: userType === "citizen" ? "white" : "",
           borderRadius: userType === "citizen" ? "4px" : "",
           maxWidth: userType === "citizen" ? "960px" : "",
+          paddingBottom:"50px"
         }}
       >
         <section
@@ -412,7 +413,9 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
             boxShadow: userType === "citizen" ? "" : "1px 1px 4px 0px rgba(0,0,0,0.2)",
             background: "white",
             padding: userType === "citizen" ? "8px" : "24px",
-            paddingBottom : "20px",
+            paddingBottom : "12px",
+            marginRight:"20px",
+            marginBottom:"20px"
           }}
         >
           {userType === "citizen" ? (
@@ -436,7 +439,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                     })}
                     disable={editScreen}
                   />
-                  {errors?.userName && <CardLabelError> {errors?.userName?.message} </CardLabelError>}
+                  {errors?.userName && <CardLabelError> {t(errors?.userName?.message)} </CardLabelError>}
                 </div>
               </LabelFieldPair>
 
@@ -470,7 +473,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                     onChange={(e)=>setUserEmailAddress(e.target.value)}
                     disable={editScreen}
                   />
-                  {errors?.emailAddress && <CardLabelError> {errors?.emailAddress?.message} </CardLabelError>}
+                  {errors?.emailAddress && <CardLabelError> {t(errors?.emailAddress?.message)} </CardLabelError>}
                 </div>
               </LabelFieldPair>
               
@@ -478,7 +481,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                 onClick={updateProfile}
                 style={{
                   marginTop: "24px",
-                  backgroundColor: "#F47738",
+                  backgroundColor: "#7a2829",
                   width: "100%",
                   height: "40px",
                   color: "white",
@@ -513,7 +516,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                     })}
                     disable={editScreen}
                   />
-                  {errors?.userName && <CardLabelError style={{margin: 0, padding: 0}}> {errors?.userName?.message} </CardLabelError>}
+                  {errors?.userName && <CardLabelError style={{margin: 0, padding: 0}}> {t(errors?.userName?.message)} </CardLabelError>}
                 </div>
               </LabelFieldPair>
 
@@ -571,7 +574,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                     disable={true}
                     {...{ required: true, pattern: "[6-9]{1}[0-9]{9}", type: "tel", title: t("CORE_COMMON_PROFILE_MOBILE_NUMBER_INVALID") }}
                   />
-                  {errors?.mobileNumber && <CardLabelError style={{margin: 0, padding: 0}}> {errors?.mobileNumber?.message} </CardLabelError>}
+                  {errors?.mobileNumber && <CardLabelError style={{margin: 0, padding: 0}}> {t(errors?.mobileNumber?.message)} </CardLabelError>}
                 </div>
               </LabelFieldPair>
               
@@ -584,20 +587,20 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                     t={t}
                     type={"email"}
                     isMandatory={false}
-                    placeholder="Enter a valid Email"
+                    placeholder={t("EMAIL_VALIDATION")}
                     optionKey="i18nKey"
                     name="email"
                     value={email}
                     onChange={(e)=>setUserEmailAddress(e.target.value)}
                     disable={editScreen}
                   />
-                  {errors?.emailAddress && <CardLabelError> {errors?.emailAddress?.message} </CardLabelError>}
+                  {errors?.emailAddress && <CardLabelError> {t(errors?.emailAddress?.message)} </CardLabelError>}
                 </div>
               </LabelFieldPair>
 
               <LabelFieldPair>
                 <div>
-                  <a style={{ color: "orange", cursor: "default", marginBottom: "5", cursor: "pointer" }} onClick={TogleforPassword}>
+                  <a style={{ color: "#7a2829", cursor: "default", marginBottom: "5", cursor: "pointer" }} onClick={TogleforPassword}>
                     {t("CORE_COMMON_CHANGE_PASSWORD")}
                   </a>
                   {changepassword ? (
@@ -616,7 +619,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                             onChange={(e) => setUserCurrentPassword(e.target.value)}
                             disable={editScreen}
                           />
-                          {errors?.currentPassword && <CardLabelError>{errors?.currentPassword?.message}</CardLabelError>}
+                          {errors?.currentPassword && <CardLabelError>{t(errors?.currentPassword?.message)}</CardLabelError>}
                         </div>
                       </LabelFieldPair>
 
@@ -634,7 +637,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                             onChange={(e) => setUserNewPassword(e.target.value)}
                             disable={editScreen}
                           />
-                          {errors?.newPassword && <CardLabelError>{errors?.newPassword?.message}</CardLabelError>}
+                          {errors?.newPassword && <CardLabelError>{t(errors?.newPassword?.message)}</CardLabelError>}
                       </div>
                       </LabelFieldPair>
 
@@ -652,7 +655,7 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
                             onChange={(e) => setUserConfirmPassword(e.target.value)}
                             disable={editScreen}
                           />
-                          {errors?.confirmPassword && <CardLabelError>{errors?.confirmPassword?.message}</CardLabelError>}
+                          {errors?.confirmPassword && <CardLabelError>{t(errors?.confirmPassword?.message)}</CardLabelError>}
                         </div>
                       </LabelFieldPair>
                     </div>
@@ -667,14 +670,14 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
       </div>
 
       {userType === "employee" ? (
-        <div
-          style={{ height: "88px", backgroundColor: "#FFFFFF", display: "flex", justifyContent: "flex-end", marginTop: "64px", alignItems: "center" }}
-        >
-          <button
+        <div className="action-bar-wrap">
+      
+          <SubmitBar t={t} label={t("CORE_COMMON_SAVE")} onSubmit={updateProfile} />
+          {/* <button
             onClick={updateProfile}
             style={{
               marginTop: "24px",
-              backgroundColor: "#F47738",
+              backgroundColor: "#7a2829",
               width: windowWidth < 768 ? "100%" : "248px",
               height: "40px",
               float: "right",
@@ -685,7 +688,8 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
             }}
           >
             {t("CORE_COMMON_SAVE")}
-          </button>
+          </button> */}
+     
         </div>
       ) : (
         ""

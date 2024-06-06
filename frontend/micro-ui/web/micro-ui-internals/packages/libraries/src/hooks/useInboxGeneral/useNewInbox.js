@@ -1,14 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "react-query";
 
-
 import { filterFunctions } from "./newFilterFn";
 import { getSearchFields } from "./searchFields";
 import { InboxGeneral } from "../../services/elements/InboxService";
 
 const inboxConfig = (tenantId, filters) => ({
-  
- 
+
 });
 
 const callMiddlewares = async (data, middlewares) => {
