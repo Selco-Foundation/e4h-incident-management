@@ -1,6 +1,6 @@
 # Swagger generated server
 
-Spring Boot Server 
+Spring Boot Server
 
 
 ## Overview  
