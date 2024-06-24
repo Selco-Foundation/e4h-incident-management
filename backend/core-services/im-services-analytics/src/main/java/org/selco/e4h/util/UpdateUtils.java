@@ -66,7 +66,7 @@ public class UpdateUtils {
 						final HttpEntity entity = new HttpEntity(headers);
 						response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, Map.class);
 					} catch (Exception e) {
-						log.error("ES is DOWN..");
+						log.error("ES is DOWN..", e);
 					}
 					if (response != null) {
 						log.info("ES is UP!");
