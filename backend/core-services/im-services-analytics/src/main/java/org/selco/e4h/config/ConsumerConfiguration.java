@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 @Data
 @Import({TracerConfiguration.class})
 @NoArgsConstructor
