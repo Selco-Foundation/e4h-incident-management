@@ -1,4 +1,4 @@
-# Swagger generated server
+# Swagger-Generated Spring Boot Server for IM Services Analytics
 
 Spring Boot Server
 
