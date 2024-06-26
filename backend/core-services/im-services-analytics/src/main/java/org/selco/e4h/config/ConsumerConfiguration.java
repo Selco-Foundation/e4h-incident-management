@@ -3,14 +3,15 @@ package org.selco.e4h.config;
 import lombok.*;
 import org.egov.tracer.config.TracerConfiguration;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
-@Data
 @Import({TracerConfiguration.class})
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class ConsumerConfiguration {
 
 	//Kafka Config
@@ -42,4 +43,3 @@ public class ConsumerConfiguration {
 	@Value("${egov.statelevel.tenantId}")
 	private String stateLevelTenantId;
 }
-
