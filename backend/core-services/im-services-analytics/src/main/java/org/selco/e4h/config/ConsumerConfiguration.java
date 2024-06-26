@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Import({TracerConfiguration.class})
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
 public class ConsumerConfiguration {
 
 	//Kafka Config
