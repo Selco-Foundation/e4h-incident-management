@@ -35,7 +35,6 @@ def push_data_to_es(excel_path, es_host, es_user, es_password, index_name):
             "_id": tenant_id,  # Set the document ID to tenant_id
             "_source": {
                 "Data": {
-                    "accountCreationTime": int(time.time() * 1000),  # Current timestamp in milliseconds
                     "block": row['Block'],  # Adjust column name if necessary
                     "code": row['NIN (username)'],
                     "district": row['District'],  # Adjust column name if necessary
