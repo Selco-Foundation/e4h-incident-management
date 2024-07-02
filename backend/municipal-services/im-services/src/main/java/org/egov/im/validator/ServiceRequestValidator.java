@@ -180,7 +180,7 @@ public class ServiceRequestValidator {
      */
     private void validateReOpen(IncidentRequest request){
 
-        if(!request.getWorkflow().getAction().equalsIgnoreCase(PGR_WF_REOPEN))
+        if(!request.getWorkflow().getAction().equalsIgnoreCase(IM_WF_REOPEN))
             return;
 
 

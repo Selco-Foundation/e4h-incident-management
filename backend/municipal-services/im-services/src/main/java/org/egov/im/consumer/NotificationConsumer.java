@@ -37,7 +37,7 @@ public class NotificationConsumer {
      * @param topic
      */
 
-    @KafkaListener(topicPattern = "${im.kafka.notification.topic.pattern}")
+    @KafkaListener(topics = {"${im.kafka.create.topic}","${im.kafka.update.topic}","${im.autoescalate.topic}"})
     public void listen(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         try {
         	IncidentRequest request = mapper.convertValue(record, IncidentRequest.class);

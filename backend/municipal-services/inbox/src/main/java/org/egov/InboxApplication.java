@@ -1,6 +1,11 @@
 package org.egov;
 
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
+import org.springframework.web.client.RestTemplate;
+
+import javax.net.ssl.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import org.egov.common.utils.MultiStateInstanceUtil;
 import org.egov.encryption.config.EncryptionConfiguration;
 import org.egov.tracer.config.TracerConfiguration;
@@ -28,6 +33,36 @@ public class InboxApplication {
 
 	@Value("${cache.expiry.minutes}")
 	private int cacheExpiry;
+	
+
+	public static void trustSelfSignedSSL() {
+		try {
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			X509TrustManager tm = new X509TrustManager() {
+				public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+				}
+
+				public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+				}
+
+				public X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+			};
+			ctx.init(null, new TrustManager[]{tm}, null);
+			SSLContext.setDefault(ctx);
+
+			// Disable hostname verification
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+				public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+					return true;
+				}
+			});
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 
 	@Bean
 	@Profile("!test")
@@ -36,5 +71,11 @@ public class InboxApplication {
 				.entryCapacity(10)).addCaches(b->b.name("inboxConfiguration").expireAfterWrite(cacheExpiry, TimeUnit.MINUTES)
 				.entryCapacity(10));
 	}
+	@Bean
+	public RestTemplate restTemplate() {
+		trustSelfSignedSSL();
+		return new RestTemplate();
+	}
+
 
 }

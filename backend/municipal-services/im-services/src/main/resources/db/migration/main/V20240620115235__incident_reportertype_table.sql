@@ -1,0 +1,1 @@
+ALTER TABLE eg_incident_v2 ADD COLUMN reportertype CHARACTER VARYING(256);

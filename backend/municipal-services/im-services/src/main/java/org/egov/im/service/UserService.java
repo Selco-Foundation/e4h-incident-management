@@ -14,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static org.egov.im.util.IMConstants.USERTYPE_EMPLOYEE;
 
 @org.springframework.stereotype.Service
+@Slf4j
 public class UserService {
 
 
@@ -40,7 +43,7 @@ public class UserService {
     public void callUserService(IncidentRequest request){
 
         if(!StringUtils.isEmpty(request.getIncident().getReporter().getUuid()))
-            enrichUser(request);
+        		enrichUser(request);
         else
             upsertUser(request);
 
@@ -182,6 +185,7 @@ public class UserService {
         if(!StringUtils.isEmpty(userName))
             userSearchRequest.setUserName(userName);
 
+        log.info(stateLevelTenant+","+accountId);        
         StringBuilder uri = new StringBuilder(config.getUserHost()).append(config.getUserSearchEndpoint());
         return userUtils.userCall(userSearchRequest,uri);
 

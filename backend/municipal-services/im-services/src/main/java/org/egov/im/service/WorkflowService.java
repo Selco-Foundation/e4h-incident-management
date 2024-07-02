@@ -25,13 +25,16 @@ public class WorkflowService {
     private ServiceRequestRepository repository;
 
     private ObjectMapper mapper;
+    
+    private NotificationService notificationService;
 
 
     @Autowired
-    public WorkflowService(IMConfiguration imConfiguration, ServiceRequestRepository repository, ObjectMapper mapper) {
+    public WorkflowService(IMConfiguration imConfiguration, ServiceRequestRepository repository, ObjectMapper mapper,NotificationService notificationService) {
         this.imConfiguration = imConfiguration;
         this.repository = repository;
         this.mapper = mapper;
+        this.notificationService=notificationService;
     }
 
     /*
@@ -41,7 +44,7 @@ public class WorkflowService {
      * */
     public BusinessService getBusinessService(IncidentRequest incidentRequest) {
         String tenantId = incidentRequest.getIncident().getTenantId();
-        StringBuilder url = getSearchURLWithParams(tenantId, PGR_BUSINESSSERVICE);
+        StringBuilder url = getSearchURLWithParams(tenantId, IM_BUSINESSSERVICE);
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(incidentRequest.getRequestInfo()).build();
         Object result = repository.fetchResult(url, requestInfoWrapper);
         BusinessServiceResponse response = null;
@@ -52,7 +55,7 @@ public class WorkflowService {
         }
 
         if (CollectionUtils.isEmpty(response.getBusinessServices()))
-            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + PGR_BUSINESSSERVICE + " is not found");
+            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + IM_BUSINESSSERVICE + " is not found");
 
         return response.getBusinessServices().get(0);
     }
@@ -100,12 +103,6 @@ public class WorkflowService {
     }
 
 
-    public void enrichmentForSendBackToCititzen() {
-        /*
-         * If send bac to citizen action is taken assignes should be set to accountId
-         *
-         * */
-    }
 
 
     public List<IncidentWrapper> enrichWorkflow(RequestInfo requestInfo, List<IncidentWrapper> incidentWrappers) {
@@ -177,11 +174,17 @@ public class WorkflowService {
 
         Incident incident = request.getIncident();
         Workflow workflow = request.getWorkflow();
-
+        if(request.getWorkflow().getAction().equalsIgnoreCase("RESOLVE") || request.getWorkflow().getAction().equalsIgnoreCase("REJECT"))
+        {
+        	workflow.setAssignes(null);
+        	Map<String, String> reassigneeDetails  = notificationService.getHRMSEmployee(request,"COMPLAINANT");
+        	List<String> assignee=Arrays.asList(reassigneeDetails.get("employeeUUID"));
+        	workflow.setAssignes(assignee);
+        }
         ProcessInstance processInstance = new ProcessInstance();
         processInstance.setBusinessId(incident.getIncidentId());
         processInstance.setAction(request.getWorkflow().getAction());
-        processInstance.setModuleName(PGR_MODULENAME);
+        processInstance.setModuleName(IM_MODULENAME);
         processInstance.setTenantId(incident.getTenantId());
         processInstance.setBusinessService(getBusinessService(request).getBusinessService());
         processInstance.setDocuments(request.getWorkflow().getVerificationDocuments());

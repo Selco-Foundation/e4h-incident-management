@@ -41,6 +41,11 @@ public class Incident   {
         private String incidentSubType = null;
 		
 		
+		
+	    @SafeHtml
+	    @JsonProperty("reporterType")
+	    private String reporterType = null;
+		
         @SafeHtml
         @JsonProperty("id")
         private String id = null;
@@ -60,6 +65,10 @@ public class Incident   {
         @JsonProperty("accountId")
         private String accountId = null;
 
+        
+        @SafeHtml
+        @JsonProperty("reporterTenant")
+        private String reporterTenant = null;
 
         @CharacterConstraint(size = 600)
         @JsonProperty("additionalDetail")

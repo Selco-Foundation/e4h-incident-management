@@ -26,8 +26,8 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 
 import static org.egov.im.util.IMConstants.IMAGE_DOCUMENT_TYPE;
-import static org.egov.im.util.IMConstants.PGR_BUSINESSSERVICE;
-import static org.egov.im.util.IMConstants.PGR_MODULENAME;
+import static org.egov.im.util.IMConstants.IM_BUSINESSSERVICE;
+import static org.egov.im.util.IMConstants.IM_MODULENAME;
 
 @ConditionalOnProperty(
         value="migration.enabled",
@@ -369,9 +369,9 @@ public class MigrationService {
                 .action(action)
                 .comment(comments)
                 .businessId(businessId)
-                .moduleName(PGR_MODULENAME)
+                .moduleName(IM_MODULENAME)
                 .state(state)
-                .businessService(PGR_BUSINESSSERVICE)
+                .businessService(IM_BUSINESSSERVICE)
                 .businesssServiceSla(actionUuidToSlaMap.get(actionInfo.getUuid()))
                 .auditDetails(auditDetails)
                 .build();

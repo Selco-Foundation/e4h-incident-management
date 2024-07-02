@@ -391,6 +391,7 @@ public class WorkflowService {
                 HashSet<String> roles = new HashSet<>();
                 if(!CollectionUtils.isEmpty(state.getActions())){
                     state.getActions().forEach(action -> {
+                    	if(action.isActive())
                         roles.addAll(action.getRoles());
                     });
                 }

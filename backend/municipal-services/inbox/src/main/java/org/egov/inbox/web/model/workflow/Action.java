@@ -65,7 +65,6 @@ public class Action   {
         private AuditDetails auditDetails;
 
         @JsonProperty("active")
-        @JsonIgnore
         private boolean active;
 
         public Action addRolesItem(String rolesItem) {

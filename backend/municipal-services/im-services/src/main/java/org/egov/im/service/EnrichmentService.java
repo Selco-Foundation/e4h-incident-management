@@ -50,27 +50,26 @@ public class EnrichmentService {
         Workflow workflow = incidentRequest.getWorkflow();
         String tenantId = incident.getTenantId();
 
-//        // Enrich accountId of the logged in citizen
-//        if(requestInfo.getUserInfo().getType().equalsIgnoreCase(USERTYPE_CITIZEN))
-//        	incidentRequest.getIncident().setAccountId(requestInfo.getUserInfo().getUuid());
+        incident.setAccountId(incidentRequest.getIncident().getReporter().getUuid());        
+        incident.setReporterTenant(incidentRequest.getIncident().getReporter().getTenantId());
 
         userService.callUserService(incidentRequest);
 
-
+        if(incident.getReporterTenant().equalsIgnoreCase("pg"))
+        	incident.setReporterType("CRM");
+        else
+        	incident.setReporterType("HCR");
+        
         AuditDetails auditDetails = utils.getAuditDetails(requestInfo.getUserInfo().getUuid(), incident,true);
 
         incident.setAuditDetails(auditDetails);
         incident.setId(UUID.randomUUID().toString());
-        //incident.setActive(true);
 
         if(workflow.getVerificationDocuments()!=null){
             workflow.getVerificationDocuments().forEach(document -> {
                 document.setId(UUID.randomUUID().toString());
             });
         }
-
-//        if(StringUtils.isEmpty(incident.getAccountId()))
-//        	incident.setAccountId(incident.getReporter().getUuid());
 
         List<String> customIds = getIdList(requestInfo,tenantId,config.getServiceRequestIdGenName(),config.getServiceRequestIdGenFormat(),1);
 

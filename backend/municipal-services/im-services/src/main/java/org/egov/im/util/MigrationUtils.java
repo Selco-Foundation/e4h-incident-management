@@ -89,7 +89,7 @@ public class MigrationUtils {
 
 
     public Map<String,String> getStatusToUUIDMap(String tenantId) {
-        StringBuilder url = getSearchURLWithParams(tenantId, PGR_BUSINESSSERVICE);
+        StringBuilder url = getSearchURLWithParams(tenantId, IM_BUSINESSSERVICE);
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(new RequestInfo()).build();
         Object result = repository.fetchResult(url, requestInfoWrapper);
         BusinessServiceResponse response = null;
@@ -100,7 +100,7 @@ public class MigrationUtils {
         }
 
         if (CollectionUtils.isEmpty(response.getBusinessServices()))
-            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + PGR_BUSINESSSERVICE + " is not found");
+            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + IM_BUSINESSSERVICE + " is not found");
 
         Map<String,String> statusToUUIDMap = response.getBusinessServices().get(0).getStates().stream()
                 .collect(Collectors.toMap(State::getState,State::getUuid));

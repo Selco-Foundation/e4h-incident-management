@@ -27,7 +27,7 @@ public class IMQueryBuilder {
 	}
 
 
-    private static final String QUERY_ALIAS =   "ser.id as ser_id," +
+    private static final String QUERY_ALIAS =   "ser.id as ser_id,ser.accountId as ser_accountid,ser.reporterTenant as ser_reportertenant," +
                                                 "ser.tenantId as ser_tenantId," +
                                                 "ser.additionaldetails as ser_additionaldetails," +
                                                 "ser.createdby as ser_createdby,ser.createdtime as ser_createdtime," +
