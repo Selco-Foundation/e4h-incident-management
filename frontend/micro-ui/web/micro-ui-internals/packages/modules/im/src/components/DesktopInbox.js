@@ -163,7 +163,7 @@ const DesktopInbox = ({
   }
 
   return (
-    <div className="inbox-container">
+    <div className="inbox-container" style={{overflowX: "scroll"}}>
       <div className="filters-container">
         <ComplaintsLink />
         <div style={{paddingTop:"5px", paddingBottom:"0px"}}>

@@ -21,7 +21,6 @@ const encodedSvg = encodeURIComponent(svgString);
 const dataUrl = `data:image/svg+xml;charset=UTF-8,${encodedSvg}`;
 
   let type = Digit.Utils.getFileTypeFromFileStoreURL(source)
-  console.log("typetype",type)
   return Digit.Utils.getFileTypeFromFileStoreURL(source) === "pdf" ?
   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-start", alignContent: "center" }}>
     <a target="_blank" href={source} style={{ minWidth: "100px", marginRight: "10px", maxWidth: "100px", height: "auto" }} key={index}>
@@ -31,7 +30,7 @@ const dataUrl = `data:image/svg+xml;charset=UTF-8,${encodedSvg}`;
     </a>
   </div>
   :
-  <img key={index} src={source.includes(".xlsx")?dataUrl:source} style={{cursor:"pointer"}}{...last ? {className:"last"} : {}} alt="issue thumbnail" onClick={() => onClick(source, index)}></img>
+  <img key={index} src={source.includes(".xlsx") || source.includes(".docx") || source.includes(".doc")?dataUrl:source} style={{cursor:"pointer"}}{...last ? {className:"last"} : {}} alt="issue thumbnail" onClick={() => onClick(source, index)}></img>
 }
 
 const DisplayPhotos = (props) => {

@@ -79,12 +79,23 @@ export const ApplicationCard = ({
       </Card>
     );
   } else if (data && data?.length > 0) {
+    console.log("datadata",data)
     result = (
+      <div>
+               <style>
+      {`
+        a{
+          text-decoration: none;
+        }
+      `}
+      </style>
       <DetailsCard
         data={data}
         serviceRequestIdKey={serviceRequestIdKey}
+        style={{textDecoration:"none"}}
         linkPrefix={linkPrefix ? linkPrefix : DSO ?  `/${window?.contextPath}/employee/fsm/application-details/` : `/${window?.contextPath}/employee/fsm/`}
       />
+      </div>
     );
   }
 

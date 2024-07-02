@@ -1,4 +1,7 @@
 .details-container {
+  a{
+text-decoration: 'none';
+  }
   @apply flex flex-col m-sm pt-md pb-md pl-sm pr-sm bg-white rounded;
   .detail {
     @apply grid grid-cols-2 gap-2 items-baseline;
@@ -7,6 +10,7 @@
       @apply font-bold text-heading-s text-text-primary mb-md;
     }
     .name {
+      color: black;
       @apply pt-md;
     }
   }

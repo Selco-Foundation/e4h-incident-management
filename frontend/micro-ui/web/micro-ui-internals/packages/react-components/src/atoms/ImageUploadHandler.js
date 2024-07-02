@@ -19,15 +19,19 @@ export const ImageUploadHandler = (props) => {
   const allowedTypes=["image/jpeg", "image/png", "image/jpg"]
   useEffect(()=>{
     if(imageFile){
+      console.log("imageFileimageFile",imageFile)
       if(!allowedTypes.includes(imageFile.type)){
+        console.log("imageFileimageFile1",imageFile)
         setError(t("ONLY_IMAGES_ARE_ACCEPTED"));
         setImageFile(null);
       }
       else if (imageFile.size > 2097152) {
+        console.log("imageFileimageFile2",imageFile)
         setError("File is too large");
         setImageFile(null);
       }
       else {
+        console.log("imageFileimageFile3",imageFile)
         setImage(imageFile);
       }
     }
@@ -79,14 +83,14 @@ export const ImageUploadHandler = (props) => {
   );
 
   function getImage(e) {
-    
+    console.log("eeeeee",e.target.files)
     setImageFile(e.target.files[0]);
     }
  
 
   const uploadImage = useCallback(async () => {
     try{
-    const response = await Digit.UploadServices.Filestorage("property-upload", image, props.tenantId);
+    const response = await Digit.UploadServices.Filestorage("Incident", image, props.tenantId);
     if(response){
       setError("")
       setUploadedImagesIds(addUploadedImageIds(response));

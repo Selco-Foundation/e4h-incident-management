@@ -233,16 +233,21 @@ const Sidebar = ({ data }) => {
 `
 .citizen .sidebar .sidebar-link:hover, .employee .sidebar .sidebar-link:hover {
   color: white !important;
-  background-color: #0b4b65ab;
+  background-color: #7a282973;
   cursor: pointer;
   margin-left:0px;
   margin-right:0px;
   font-weight:bold;
 }
 .citizen .sidebar .dropdown-link:hover, .employee .sidebar .dropdown-link:hover {
-  background-color: #0b4b65ab;
+  background-color: #7a282973;
   opacity: .8;
   cursor: pointer;
+}
+.citizen .sidebar .sidebar-link.level-0.select-level, .employee .sidebar .sidebar-link.level-0.select-level:hover {
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  background-color: #0b4b65;
 }
 `
 }
@@ -359,6 +364,24 @@ const Sidebar = ({ data }) => {
             }
             const isChildActive = selectedChild === subItems.item.path;
             return (
+              <div>
+              <style>
+                {
+                `
+              .trimModuleName {
+                
+                  transition: all 0.3s ease;
+                  padding: 5px;
+                  border-radius: 3px;
+              }
+      
+              .trimModuleName:hover {
+                 
+                  color: white; /* White text on hover */
+                  
+              }
+            `}
+          </style>
               <a
                 key={index}
                 className={`dropdown-link new-dropdown-link ${
@@ -385,7 +408,7 @@ const Sidebar = ({ data }) => {
                   data-for={`jk-side-${key}`}
                 >
                   {flag && <div className="link-icon">{leftIcon}</div>}
-                  <span> {trimModuleName} </span>
+                  <span className="trimModuleName"> {trimModuleName} </span>
                   {trimModuleName?.includes("...") && (
                     <ReactTooltip
                       textColor="white"
@@ -404,6 +427,7 @@ const Sidebar = ({ data }) => {
                   )}
                 </div>
               </a>
+              </div>
             );
           }
         })}
@@ -417,6 +441,7 @@ const Sidebar = ({ data }) => {
       onMouseEnter={openSidebar}
       onMouseLeave={closeSidebar}
     >
+
       {renderSidebarItems(data)}
       <div className="submenu-container" style={{marginBottom:"0px"}}>
           <div onClick={""} className={`sidebar-link`}>

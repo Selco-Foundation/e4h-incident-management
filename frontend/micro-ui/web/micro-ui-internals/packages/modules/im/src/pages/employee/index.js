@@ -46,7 +46,6 @@ const Complaint = () => {
   }
 
   let location = "/digit-ui/employee/im/incident/create";
-  console.log("locatio", location)
 
   const CreateComplaint = Digit?.ComponentRegistryService?.getComponent('PGRCreateComplaintEmp');
   const ComplaintDetails = Digit?.ComponentRegistryService?.getComponent('PGRComplaintDetails');

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo,useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Dropdown, ImageUploadHandler, Toast, TextInput, UploadFile, CardLabel } from "@egovernments/digit-ui-react-components";
+import { DatePicker, Dropdown, ImageUploadHandler, Toast, TextInput,MultiUploadWrapper, UploadFile, CardLabel } from "@egovernments/digit-ui-react-components";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { FormComposer } from "../../../components/FormComposer";
@@ -19,7 +19,7 @@ export const CreateComplaint = ({ parentUrl }) => {
   const [districtMenu, setDistrictMenu]=useState([]);
   const [file, setFile]=useState(null);
   const [showToast, setShowToast] = useState(null);
-  const [uploadedFile, setUploadedFile]=useState(null);
+  const [uploadedFile, setUploadedFile]=useState([]);
   const [uploadedImages, setUploadedImagesIds] = useState(null)
   const [district, setDistrict]=useState(null);
   const [block, setBlock]=useState(null);
@@ -33,6 +33,7 @@ export const CreateComplaint = ({ parentUrl }) => {
   const [subTypeMenu, setSubTypeMenu] = useState([]);
   const [phcSubTypeMenu, setPhcSubTypeMenu]=useState([]);
   const [disbaled, setDisable] = useState(true)
+  const [disbaledUpload, setDisableUpload] = useState(true)
   const [phcMenuNew, setPhcMenu] = useState([])
   const dropdownRefs = useRef([]); // Create refs array for dropdowns
   const [errors, setErrors] = useState(Array(6).fill(""));
@@ -148,7 +149,7 @@ useEffect(async () => {
             try {
               const response = await Digit.UploadServices.Filestorage("Incident", file, tenantId);
               if (response?.data?.files?.length > 0) {
-                setUploadedFile(response?.data?.files[0]?.fileStoreId);
+                //setUploadedFile(response?.data?.files[0]?.fileStoreId);
               } else {
                 setError(t("CS_FILE_UPLOAD_ERROR"));
               }
@@ -173,6 +174,7 @@ useEffect(async () => {
     }
   },[complaintType, subType,healthcentre,healthCareType,district,block])
   async function selectedType(value) {
+    setDisableUpload(false)
     if (value.key !== complaintType.key) {
       if (value.key === "Others") {
         setSubType({ name: "" });
@@ -215,6 +217,7 @@ useEffect(async () => {
     setHealthCentre(value);
     setPhcSubTypeMenu([value])
     setHealthCareType(value);
+    setDisableUpload(false)
     setDisable(false)
     setTenant(value?.city?.districtTenantCode)
     centerTypeRef.current.clearError()
@@ -264,6 +267,7 @@ useEffect(async () => {
     setFile(e.target.files[0]);
   }
   const handleUpload = (ids) => {
+
     console.log("disbaleddisbaled",disbaled)
     if(disbaled)
     {
@@ -284,11 +288,12 @@ useEffect(async () => {
     if (!canSubmit) return;
     const { key } = subType;
     //const complaintType = key;
+    console.log("ddddddd",uploadedFile)
     let uploadImages=[]
-    if(uploadedImages!==null){
-     uploadImages = uploadedImages?.map((url) => ({
+    if(uploadedFile!==null){
+     uploadImages = uploadedFile?.map((url) => ({
       documentType: "PHOTO",
-      fileStoreId: url,
+      fileStoreId: url?.fileStoreId,
       documentUid: "",
       additionalDetails: {},
     }));
@@ -312,6 +317,16 @@ useEffect(async () => {
     { field: complaintType, ref: ticketTypeRef },
     { field: subType, ref: ticketSubTypeRef }
   ];
+  const getData = (state) => {  
+
+    let data = Object.fromEntries(state);
+    const mappedArray = state.map(item => {
+      return  item[1];
+    })
+    let newArr = Object.values(data);
+    console.log("statestate",state,data,newArr,mappedArray)
+    selectfile(newArr[newArr.length - 1],mappedArray);
+  };
   const handleButtonClick = () => {
     const hasEmptyFields = fieldsToValidate.some(({ field }) => field === null || Object.keys(field).length === 0);
     console.log("hasEmptyFields",hasEmptyFields)
@@ -330,7 +345,49 @@ useEffect(async () => {
     }
    
   };
+  function selectfile(arr,newArr) {
+    console.log("selectfileselectfile",arr,newArr)
+    let file=[]
+    if (arr) {
+      if(newArr.length >0)
+      {
+        console.log
+        file= newArr.map((e) =>{
+          const newFile={
+            documentType: e?.file?.type.includes(".sheet") ? ".xlsx": e?.file?.type.includes(".document")? ".docs": e?.file?.type,
+            fileStoreId: e?.fileStoreId?.fileStoreId,
+            documentUid: "",
+            additionalDetails: {},
+            };
+          return newFile
+        })
+      }
+      // const newFile={
+      // documentType: e?.file?.type.includes(".sheet") ? ".xlsx": e?.file?.type.includes(".document")? ".docs": e?.file?.type,
+      // fileStoreId: e?.fileStoreId?.fileStoreId,
+      // documentUid: "",
+      // additionalDetails: {},
+      // };
+      console.log("filefile",file,uploadedFile)
 
+      console.log("temptemp",file)
+      const filterFileStoreIds = file.map(item => item.fileStoreId);
+
+      // Use a Set to remove duplicates and filter the documents array
+      const seen = new Set();
+      const filteredDocuments = file.filter(document => {
+        if (filterFileStoreIds.includes(document.fileStoreId) && !seen.has(document.fileStoreId)) {
+          seen.add(document.fileStoreId);
+          return true;
+        }
+        return false;
+      });
+
+      console.log("filteredDocumentsfilteredDocuments",filteredDocuments);
+      setUploadedFile(filteredDocuments);
+      //arr && setFile(arr.file);
+    }
+  }
   const config = [
     
     {
@@ -420,7 +477,19 @@ useEffect(async () => {
           label:t("INCIDENT_UPLOAD_FILE"),
           populators:
           <div>
-          <ImageUploadHandler tenantId={tenant} uploadedImages={uploadedImages} onPhotoChange={handleUpload} disabled={disbaled}/>
+                    <MultiUploadWrapper 
+          t={t} 
+          module="Incident" 
+          tenantId={tenantId} 
+          getFormState={(e) => getData(e)}
+          allowedFileTypesRegex={/(jpg|jpeg|png|image)$/i}
+          allowedMaxSizeInMB={5}
+          maxFilesAllowed={5}
+          disabled={disbaledUpload}
+          ulb={Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Employee.tenantId"  ):healthcentre?.code}
+          acceptFiles= {".png, .image, .jpg, .jpeg"}
+          />
+               {/* <ImageUploadHandler tenantId={tenant} uploadedImages={uploadedImages} onPhotoChange={handleUpload} disabled={disbaled}/> */}
           <div style={{marginLeft:'20px', marginTop:"10px", fontSize:'12px'}}>{t("CS_IMAGE_BASED_FILES_ARE_ACCEPTED")}</div>
           </div>
          },

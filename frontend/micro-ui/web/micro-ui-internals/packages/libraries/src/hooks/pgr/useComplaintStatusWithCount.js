@@ -5,8 +5,9 @@ const useComplaintStatusCount = (complaints,tenant) => {
   const [complaintStatusWithCount, setcomplaintStatusWithCount] = useState([]);
   let complaintStatus = useComplaintStatus();
   let tenantId = Digit.ULBService.getCurrentTenantId();
-
+console.log("tenanttenanttenant",tenant)
   const getCount = async (value) => {
+    console.log("tenanttenanttenanttenanttenant",tenant)
     let response = await Digit.PGRService.count(tenant, { applicationStatus: value });
     return response?.count || "";
   };

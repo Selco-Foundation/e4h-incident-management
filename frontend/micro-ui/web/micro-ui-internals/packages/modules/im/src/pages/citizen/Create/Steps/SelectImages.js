@@ -11,13 +11,14 @@ const SelectImages = ({ t, config, onSelect, onSkip, value }) => {
   });
 
   const handleUpload = (ids) => {
+    console.log("idsids")
     setUploadedImagesIds(ids);
     // Digit.SessionStorage.set("PGR_CREATE_IMAGES", ids);
   };
 
   // const onSkip = () => onSelect();
   const handleSubmit = () => {
-    if (!uploadedImages || uploadedImages.length === 0) return onSkip();
+   //if (!uploadedImages || uploadedImages.length === 0) return onSkip();
     // const _uploadImages = uploadedImages.map((url) => ({
     //   documentType: "PHOTO",
     //   fileStore: url,

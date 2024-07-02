@@ -16,14 +16,27 @@ const IMCard = () => {
     return null;
   }
 
-
+  const isCodePresent = (array, codeToCheck) =>{
+    return array.some(item => item.code === codeToCheck);
+  }
   const [total, setTotal] = useState("-");
   console.log("total", total)
-  const tenantId = window.Digit.SessionStorage.get("Employee.tenantId");
+  let tenantId = window.Digit.SessionStorage.get("Employee.tenantId");
+  let newTenant = window.Digit.SessionStorage.get("Tenants")
   useEffect(() => {
     (async () => {
-      let response = await Digit.PGRService.count(tenantId,  {} );
-      console.log("res", response)
+      const userRoles = Digit.SessionStorage.get("User")?.info?.roles || [];
+      if (isCodePresent(userRoles, "COMPLAINT_RESOLVER")) {
+        const tenantCode = Digit.SessionStorage.get("citizen.userRequestObject").info.roles.map((ulb) => {
+          return ulb.tenantId
+        })
+        const uniqueTenant = Array.from(new Set(tenantCode))
+        const codes = uniqueTenant.filter(item => item !== "pg")
+          .map(item => item)
+          .join(',');
+        tenantId = tenantId == "pg" ? codes : tenantId
+      }
+      let response = await Digit.PGRService.count(tenantId, {});
       if (response?.count) {
         setTotal(response.count);
       }

@@ -21,9 +21,13 @@ const Filter = (props) => {
     [t]
   );
 
-  const [selectAssigned, setSelectedAssigned] = useState(isAssignedToMe ? assignedToOptions[0] : assignedToOptions[1]);
+const isCodePresent = (array, codeToCheck) =>{
+  return array.some(item => item.code === codeToCheck);
+}
+console.log("vvvvv",isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER"))
+  const [selectAssigned, setSelectedAssigned] = useState(isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER") ? assignedToOptions[0] : assignedToOptions[1]);
 
-  useEffect(() => setSelectedAssigned(isAssignedToMe ? assignedToOptions[0] : assignedToOptions[1]), [t]);
+  useEffect(() => setSelectedAssigned(isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER") ? assignedToOptions[0] : assignedToOptions[1]), [t]);
 
   const [selectedComplaintType, setSelectedComplaintType] = useState(null);
   const [selectedHealthCare, setSelectedHealthCare] = useState(null);
@@ -36,13 +40,18 @@ const Filter = (props) => {
       applicationStatus: [],
     }
   );
+  let healthcareTenant = Digit.SessionStorage.get("Tenants").filter(item => item.code !== "pg")
 
   const [wfFilters, setWfFilters] = useState(
-    searchParams?.filters?.wfFilters || {
+    isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER") ? searchParams?.filters?.wfFilters:searchParams?.filters?.wfFilters?.["assignee"]?.[{"code":""}] || isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER") ? {
       assignee: [{ code: uuid }],
     }
+    :
+    {
+      assignee: [{ code: "" }],
+    }
   );
-
+  console.log("DIGIT",searchParams)
   const tenantId = Digit.ULBService.getCurrentTenantId();
   // let localities = Digit.Hooks.pgr.useLocalities({ city: tenantId });
   const { data: localities } = Digit.Hooks.useBoundaryLocalities(tenantId, "admin", {}, t);
@@ -67,7 +76,7 @@ const convertedData = Digit.SessionStorage.get("IM_TENANTS").map(item => ({
   name: item.label,
   code: item.value
 }));
-const healthcareMenu=Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants"):Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg")
+const healthcareMenu=Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants") : Digit.SessionStorage.get("Employee.tenantId") == "pg" ? isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER")?  healthcareTenant: Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg"): Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg")
 console.log("healthcare", healthcareMenu)
 let sortedHealthCaremenu=[];
 if(healthcareMenu.length>0){
@@ -186,6 +195,7 @@ console.log("pgrfilters", pgrfilters)
 
   const GetSelectOptions = (lable, options, selected = null, select, optionKey, onRemove, key) => {
     selected = selected || { [optionKey]: " ", code: "" };
+    console.log("optionsoptionsoptions",options)
     return (
       <div>
         <div className="filter-label">{lable}</div>

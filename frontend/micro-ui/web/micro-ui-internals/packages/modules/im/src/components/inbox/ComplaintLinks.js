@@ -50,8 +50,8 @@ const ComplaintsLink = ({ isMobile, data }) => {
   );
 
   return (
-    <Card className="employeeCard filter inboxLinks">
-      <div className="complaint-links-container" style={{padding:"16px",height:"115px",margin:"auto"}}>
+    <Card className="employeeCard filter inboxLinks" style={{width:"270px !important"}}>
+      <div className="complaint-links-container" style={{padding:"16px",height:"115px",margin:"auto",width:!isMobile?"250px":""}}>
       <style>
         {`
         .complaint-links-container .header .logo {

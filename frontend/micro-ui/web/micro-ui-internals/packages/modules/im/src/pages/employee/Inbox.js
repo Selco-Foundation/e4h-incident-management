@@ -13,15 +13,30 @@ const Inbox = () => {
   const [pageOffset, setPageOffset] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [searchParams, setSearchParams] = useState({ filters: { wfFilters: { assignee: [{ code: uuid }] } }, search: "", sort: {} });
-
+  const userRoles = Digit.SessionStorage.get("User")?.info?.roles || [];
+  const isCodePresent = (array, codeToCheck) =>{
+    return array.some(item => item.code === codeToCheck);
+  }
+  const [searchParams, setSearchParams] = useState({ filters: { wfFilters: { assignee: [{ code: isCodePresent(userRoles, "COMPLAINT_RESOLVER") ? uuid :"" }] } }, search: "", sort: {} });
+ 
   useEffect(() => {
     (async () => {
+      const userRoles = Digit.SessionStorage.get("User")?.info?.roles || [];
       const applicationStatus = searchParams?.filters?.pgrfilters?.applicationStatus?.map(e => e.code).join(",")
       if(searchParams?.filters?.pgrQuery?.phcType)
       {
         tenantId= searchParams?.filters?.pgrQuery?.phcType
       }
+      else if (isCodePresent(userRoles, "COMPLAINT_RESOLVER") && (!searchParams?.filters?.pgrQuery || searchParams?.filters?.pgrfilters?.phcType.length ==0) && Digit.SessionStorage.get("Employee.tenantId") == "pg")
+      {
+        const codes = Digit.SessionStorage.get("Tenants").filter(item => item.code !== "pg")
+        .map(item => item.code)
+        .join(',');
+        tenantId = codes
+      }
+
+      console.log("searchParamssearchParamsNew",searchParams,userRoles,tenantId)
+
       let response = await Digit.PGRService.count(tenantId, applicationStatus?.length > 0  ? {applicationStatus} : {} );
       console.log("STEP6",response,searchParams?.filters?.pgrQuery?.phcType,tenantId)
       if (response?.count) {
@@ -58,11 +73,12 @@ const Inbox = () => {
   {
     tenant = searchParams?.search?.phcType
   }
+  let isMobile = Digit.Utils.browser.isMobile();
   console.log("tenant",tenant)
-  let { data: complaints, isLoading } = Digit.Hooks.pgr.useInboxData({ ...searchParams,offset: pageOffset, limit: pageSize }) ;
+  let { data: complaints, isLoading } =isMobile? Digit.Hooks.pgr.useInboxData({ ...searchParams }):Digit.Hooks.pgr.useInboxData({ ...searchParams,offset: pageOffset, limit: pageSize }) ;
   console.log("complai", complaints)
 
-  let isMobile = Digit.Utils.browser.isMobile();
+
 console.log("totalRecords",totalRecords)
   if (complaints?.length !== null) {
     if (isMobile) {

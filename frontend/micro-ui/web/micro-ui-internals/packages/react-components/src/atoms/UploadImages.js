@@ -38,7 +38,7 @@ const UploadImages = (props) => {
             </div>
           );
         })}
-        {props.thumbnails.length < 5 ? <MiniUpload onUpload={props.onUpload} /> : null}
+        {props.thumbnails.length < 3 ? <MiniUpload onUpload={props.onUpload} /> : null}
       </div>
     );
   } else {

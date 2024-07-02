@@ -61,7 +61,6 @@ const CloseBtn = (props) => {
 
 const TLCaption = ({ data, comments }) => {
   const { t } = useTranslation()
-  console.log("datadatacommentscomments",data,comments)
   return (
     <div>
       {data?.date && <p>{data?.date}</p>}
@@ -154,14 +153,30 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
 
   }, [error, clearError]);
   function selectfile(e,newArr) {
+    console.log("selectfileselectfile",e,newArr)
+    let file=[]
     if (e) {
-      const newFile={
-      documentType: e?.file?.type.includes(".sheet") ? ".xlsx":e?.file?.type,
-      fileStoreId: e?.fileStoreId?.fileStoreId,
-      documentUid: "",
-      additionalDetails: {},
-      };
-      let temp = [...uploadedFile, newFile];
+      if(newArr.length >0)
+      {
+        file= newArr.map((e) =>{
+          const newFile={
+            documentType: e?.file?.type.includes(".sheet") ? ".xlsx": e?.file?.type.includes(".document")? ".docs": e?.file?.type,
+            fileStoreId: e?.fileStoreId?.fileStoreId,
+            documentUid: "",
+            additionalDetails: {},
+            };
+          return newFile
+        })
+      }
+      // const newFile={
+      // documentType: e?.file?.type.includes(".sheet") ? ".xlsx": e?.file?.type.includes(".document")? ".docs": e?.file?.type,
+      // fileStoreId: e?.fileStoreId?.fileStoreId,
+      // documentUid: "",
+      // additionalDetails: {},
+      // };
+      console.log("filefile",file)
+      let temp = [...uploadedFile, ...file];
+      console.log("temptemp",temp)
       const filterFileStoreIds = newArr.map(item => item.fileStoreId.fileStoreId);
 
       // Use a Set to remove duplicates and filter the documents array
@@ -234,6 +249,7 @@ console.log("employeeData", employeeData)
           setError(t("CS_MANDATORY_COMMENTS_AND_FILE_UPLOAD"));
         }
         else{
+          console.log("selectedEmployeeselectedEmployee",selectedEmployee, comments, uploadedFile, selectedReopenReason)
         onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason);
         }
       }}
@@ -246,7 +262,8 @@ console.log("employeeData", employeeData)
             
             <CardLabel>{t("CS_COMMON_EMPLOYEE_NAME")}*</CardLabel>
             
-            {employeeData && <SectionalDropdown selected={selectedEmployee} menuData={employeeData} displayKey="name" select={onSelectEmployee} />}
+            {employeeData &&  <Dropdown  option={employeeData?.[0]?.options} optionKey="name" id="employee" selected={selectedEmployee} select={onSelectEmployee} required={true}/>}
+           
           </React.Fragment>
         )}
         {selectedAction === "REOPEN" ? (
@@ -271,11 +288,12 @@ console.log("employeeData", employeeData)
           t={t} 
           module="Incident" 
           tenantId={complaintDetails?.incident?.tenantId || tenantId} 
-          
+          requestSpecifcFileRemoval={uploadedFile?.[0]}
           getFormState={(e) => getData(e)}
-          allowedFileTypesRegex={(selectedAction==="RESOLVE") ?/(docx|pdf|xlsx)$/i : /(pdf|jpg)$/i}
+          allowedFileTypesRegex={(selectedAction==="RESOLVE") ?/(docx|doc|pdf|xlsx)$/i : /(pdf|jpg|jpeg|png)$/i}
           allowedMaxSizeInMB={5}
-          acceptFiles= {(selectedAction==="RESOLVE") ? ".pdf, .xlsx, .docx": ".pdf, .jpg"}
+          acceptFiles= {(selectedAction==="RESOLVE") ? ".pdf, .xlsx, .docx, .doc": ".pdf, .jpg, .jpeg, .png"}
+          ulb={complaintDetails?.incident?.tenantId || tenantId}
           />
         {selectedAction === "RESOLVE" ? <div style={{marginTop:"6px", fontSize:"13px", color:"#36454F"}}>{t("RESOLVE_RESOLUTION_REPORT")}</div> : <CardLabelDesc style={{marginTop:"8px", fontSize:"13px"}}> {t("CS_FILE_LIMIT")}</CardLabelDesc>}
       </Card>
@@ -409,6 +427,7 @@ export const ComplaintDetails = (props) => {
     setImageZoom(imageSource);
   }
   function zoomImageWrapper(imageSource, index){
+    console.log("imageSourceimageSourceimageSource",index)
     zoomImage(imagesToShowBelowComplaintDetails?.fullImage[index]);
   }
   function onCloseImageZoom() {
@@ -469,13 +488,26 @@ export const ComplaintDetails = (props) => {
   if (isLoading || workflowDetails.isLoading || loader) {
     return <Loader />;
   }
-console.log("wfoo", workflowDetails)
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
+    let reopenCount = 0;
+    let arrNew= arr.map((abc) => {
+      if(abc.performedAction === "REOPEN")
+      {
+        let reopen=complaintDetails?.incident?.additionalDetail?.reopenreason
+        let obj ={...abc, reopenreason:reopen?.reverse()[reopenCount]}
+        reopen?.reverse()
+        reopenCount +=1
+        return obj
+      }
+      else return abc
+      
+    })
     const arr1=arr
     const {wfComment: comment, thumbnailsToShow} = checkpoint;
     function zoomImageTimeLineWrapper(imageSource, index,thumbnailsToShow,arr){
+      console.log("imageSource, index,thumbnailsToShow,arr",imageSource, index,thumbnailsToShow,arr)
       if(arr1[index]?.status == "RESOLVED")
       {
         window.open(arr1[index].thumbnailsToShow.fullImage[0], "_blank")
@@ -488,8 +520,8 @@ console.log("wfoo", workflowDetails)
     }
     const captionForOtherCheckpointsInTL = {
       date: checkpoint?.auditDetails?.lastModified,
-      name: checkpoint?.assignes ? checkpoint?.assignes[0].name :checkpoint?.assigner?.name,
-      mobileNumber: checkpoint?.assignes?checkpoint?.assignes[0].mobileNumber: checkpoint?.assigner?.mobileNumber,
+      name: checkpoint?.assigner?.name,
+      mobileNumber: checkpoint?.assigner?.mobileNumber,
       ...checkpoint.status === "COMPLAINT_FILED" && complaintDetails?.audit ? {
         source: complaintDetails.audit.source,
       } : {}
@@ -515,7 +547,7 @@ console.log("wfoo", workflowDetails)
           {checkpoint.status!=="COMPLAINT_FILED" && checkpoint.performedAction!=="SENDBACK" ? (
             <div className="TLComments">
               <h3>{t("WF_REOPEN_REASON")}</h3>
-              <h1>{complaintDetails?.incident?.additionalDetail?.reopenreason}</h1>
+              <h1>{arrNew[index]?.reopenreason}</h1>
             </div>
           ):null}
           {checkpoint.status !== "COMPLAINT_FILED" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">

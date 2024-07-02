@@ -31,7 +31,6 @@ export const ULBService = {
     // TODO: change when setter is done.
     const user = UserService.getUser();
     const emp= UserService.getEmployeeTenant()
-    console.log("empempemp",emp)
     if (user?.extraRoleInfo) {
       const isDsoRoute = Digit.Utils.detectDsoRoute(window.location.pathname);
       if (isDsoRoute) {

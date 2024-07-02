@@ -160,6 +160,13 @@ const EmployeeAction = ({ t, action, tenantId, closeModal, submitAction, applica
       formId="modal-action"
       isDisabled={!selectedReason}
     >
+      <style>
+        {
+          `.employeeCard {
+            margin-bottom: 0px !important;
+        }`
+        }
+      </style>
       <FormComposer config={config?.form} noBoxShadow inline disabled={true} childrenAtTheBottom onSubmit={submit} formId="modal-action" />
     </Modal>
   ) : (

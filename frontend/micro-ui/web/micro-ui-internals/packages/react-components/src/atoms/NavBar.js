@@ -175,6 +175,15 @@ const NavBar = ({ open, toggleSidebar, profileItem, menuItems, onClose, Footer, 
           }}
         >
           {profileItem}
+          <img className="bannerLogo" src={"https://selco-assets.s3.ap-south-1.amazonaws.com/TwoClr_horizontal_4X.png"} alt="Selco Foundation" style={{
+  height: '70px',
+  width: '130px',
+  textAlign: 'center',
+  marginRight: '70px',
+  marginLeft: '70px',
+  marginTop: '-30px',
+  marginBottom: '-30px'
+}} />
           <div className="drawer-list">
             {isEmployee ? renderSearch() : null}
             {menuItems?.map((item, index) => (

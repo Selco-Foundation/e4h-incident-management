@@ -228,7 +228,6 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
 
       if (responseInfo && responseInfo.status === "200") {
         const user = Digit.UserService.getUser();
-
         if (user) {
           Digit.UserService.setUser({
             ...user,
@@ -240,6 +239,15 @@ const UserProfile = ({ stateCode, userType, cityDetails }) => {
               permanentCity: city,
             },
           });
+          //to persist saved changes over browser refresh
+          localStorage.setItem("Employee.user-info", JSON.stringify({
+              ...user.info,
+              name,
+              mobileNumber,
+              emailId: email,
+              permanentCity: city,
+    
+          }));
         }
       }
 

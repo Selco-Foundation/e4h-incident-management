@@ -110,11 +110,20 @@ const EmployeeApp = ({
                 <AppModules stateCode={stateCode} userType="employee" modules={modules} appTenants={appTenants} />
               </ErrorBoundary>
             </div>
-            <div className="employee-home-footer">
+            
+            <div style={window.location.href.includes("/im/inbox")  ?{textAlign:"center",marginBottom:"15px",marginTop:"10px"}:{textAlign:"center",marginBottom:"58px",marginTop:"-26px"}}>
+        <img className="bannerLogo" src={"https://selco-assets.s3.ap-south-1.amazonaws.com/powered-by-nhm-ka.png"} alt="Selco Foundation"  style={{ height: "3rem",width:"3rem", cursor: "pointer", marginRight:"15px",marginLeft:"15px" }} />
+        <img className="bannerLogo" src={"https://selco-assets.s3.ap-south-1.amazonaws.com/powered-by-ka_govt.svg"} alt="Selco Foundation"  style={{ height: "3rem", width:"3rem", cursor: "pointer" ,marginRight:"15px" }}/>
+        <img className="bannerLogo" src={"https://selco-assets.s3.ap-south-1.amazonaws.com/logo.png"} alt="Selco Foundation"  style={{ height: "3rem", cursor: "pointer",width:"3rem", marginRight:"15px"  }} />
+        </div>
+        <div className="employee-home-footer" style={window.location.href.includes("/im/inbox") ?{padding:"0px",height:"auto",marginBottom:"30px"}:{  padding: '0px',
+    height: 'auto',
+    marginBottom: '73px',
+    marginTop: '-43px'}}>
               <img
                 alt="Powered by DIGIT"
                 src={window?.globalConfigs?.getConfig?.("DIGIT_FOOTER")}
-                style={{ height: "1.1em", cursor: "pointer" }}
+                style={{ height: "1.1rem", cursor: "pointer" }}
                 onClick={() => {
                   window.open(window?.globalConfigs?.getConfig?.("DIGIT_HOME_URL"), "_blank").focus();
                 }}

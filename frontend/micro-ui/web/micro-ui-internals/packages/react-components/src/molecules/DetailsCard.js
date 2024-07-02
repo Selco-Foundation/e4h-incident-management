@@ -10,7 +10,7 @@ export const Details = ({ label, name, onClick}) => {
       <span className="label">
         <h2>{label}</h2>
       </span>
-      <span className="name" style={{overflowWrap:"break-word"}}>{name}</span>
+      <span className="name" style={{overflowWrap:"break-word", color:"black", paddingTop: "16px"}}>{name}</span>
     </div>
   );
 };
@@ -19,6 +19,13 @@ const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, sele
   if (linkPrefix && serviceRequestIdKey) {
     return (
       <div>
+      <style>
+      {`
+        a{
+          text-decoration:none
+        }
+      `}
+      </style>
         {data.map((object, itemIndex) => {
           let key = Object.keys(object)
           const incidentId = object[key[0]]
@@ -40,7 +47,7 @@ const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, sele
                       :
                     object[serviceRequestIdKey]}`
                 }
-                style={{textDecoration:"none", color:"black"}}
+                style={{textDecoration:"none !important", color:"black"}}
             >
               <div className="details-container">
                 {Object.keys(object).map((name, index) => {
@@ -57,6 +64,7 @@ const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, sele
 
   return (
     <div>
+  
       {data.map((object, itemIndex) => {
         return (
           <div

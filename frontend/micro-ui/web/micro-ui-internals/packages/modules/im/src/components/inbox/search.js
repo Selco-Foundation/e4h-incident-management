@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { TextInput, Label, SubmitBar, LinkLabel, ActionBar, CloseSvg, Dropdown } from "@egovernments/digit-ui-react-components";
-
+export const isCodePresent = (array, codeToCheck) =>{
+  return array.some(item => item.code === codeToCheck);
+}
 const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   console.log("searchparams", searchParams)
   const [complaintNo, setComplaintNo] = useState(searchParams?.search?.serviceRequestId || "");
+  let healthcareTenant = Digit.SessionStorage.get("Tenants").filter(item => item.code !== "pg")
   const [phcType, setPhcType]=useState()
   console.log("ccc", complaintNo)
   const state = Digit.ULBService.getStateId();
   const { isMdmsLoading, data: mdmsData } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["District","Block"]);
   const {  data: phcMenu  } = Digit.Hooks.pgr.useMDMS(state, "tenant", ["tenants"]);
-  const phcMenus=Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants"):Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg")
+  const phcMenus=Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Tenants") : Digit.SessionStorage.get("Employee.tenantId") == "pg" ? isCodePresent(Digit.SessionStorage.get("User")?.info?.roles, "COMPLAINT_RESOLVER")?  healthcareTenant: Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg"): Digit.SessionStorage.get("IM_TENANTS").filter((item) => item.code !=="pg")
   let sortedPhcMenu=[];
   if(phcMenus.length>0){
     sortedPhcMenu=phcMenus.sort((a, b) => a.name.localeCompare(b.name));
@@ -19,7 +22,7 @@ const SearchComplaint = ({ onSearch, type, onClose, searchParams }) => {
   const [mobileNo, setMobileNo] = useState(searchParams?.search?.mobileNumber || "");
   const { register, errors, handleSubmit, reset } = useForm();
   const { t } = useTranslation();
-
+ 
   const onSubmitInput = (data) => {
     console.log("subdatra", data,phcType)
     if (!Object.keys(errors).filter((i) => errors[i]).length) {

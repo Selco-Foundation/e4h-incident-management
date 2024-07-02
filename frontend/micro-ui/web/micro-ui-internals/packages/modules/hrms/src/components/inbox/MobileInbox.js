@@ -66,6 +66,7 @@ const GetSlaCell = (value) => {
             sortParams={sortParams}
             filterComponent={filterComponent}
             serviceRequestIdKey={serviceRequestIdKey}
+            style={{textDecoration:"none"}}
           />
         </div>
       </div>

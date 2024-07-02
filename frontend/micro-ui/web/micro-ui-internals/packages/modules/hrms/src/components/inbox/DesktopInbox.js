@@ -138,7 +138,7 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
   }
 
   return (
-    <div className="inbox-container" style={{overflow: "auto", scrollbarWidth:"none", msOverflowStyle:"none"}}>
+    <div className="inbox-container" style={{overflowX: "scroll"}}>
       {!props.isSearch && (
         <div className="filters-container" style={{ paddingBottom:"80px"}}>
           <InboxLinks

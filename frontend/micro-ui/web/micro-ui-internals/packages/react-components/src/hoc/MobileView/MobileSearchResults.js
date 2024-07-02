@@ -116,7 +116,7 @@ const MobileSearchResults = ({ config, data, isLoading, isFetching,fullConfig })
 
     const rows = propsMobileInboxCards.map((row) => {
       return {
-        _searchResults : <Link to={Digit?.Customizations?.[apiDetails?.masterName]?.[apiDetails?.moduleName]?.MobileDetailsOnClick(row.mapping, tenantId)}>
+        _searchResults : <Link to={Digit?.Customizations?.[apiDetails?.masterName]?.[apiDetails?.moduleName]?.MobileDetailsOnClick(row.mapping, tenantId)} style={{textDecoration:"none"}}>
         <div className="details-container">
           {Object.keys(row.mapping).map(key => {
             let toRender;

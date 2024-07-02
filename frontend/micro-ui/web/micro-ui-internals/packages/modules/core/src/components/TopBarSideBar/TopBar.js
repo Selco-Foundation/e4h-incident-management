@@ -102,7 +102,14 @@ const TopBar = ({
     <div  style={{padding:"5px 0px"}}>
     <div className="topbar">
       {mobileView ? <Hamburger handleClick={toggleSidebar} color="#9E9E9E" /> : null}
-      <img className="city" src={loggedin ? cityDetails?.logoId : stateInfo?.statelogo} />
+        {mobileView ? <img className="city" style={{ width: "100px", height: "120px", marginBottom: '-50px', marginTop: '-50px', marginLeft: '-30px', marginRight: '-30px', zIndex: "-10" }} src={"https://selco-assets.s3.ap-south-1.amazonaws.com/Icon_white.svg"} /> : <img className="city" style={{
+          width: '140px',
+          height: '100px',
+          marginBottom: '-30px',
+          marginTop: '-30px',
+          marginRight: '-40px',
+          marginLeft:"-60px"
+        }} src={"https://selco-assets.s3.ap-south-1.amazonaws.com/Icon_twoclr.png"} />}
       <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
         {loggedin &&
           (cityDetails?.city ? (
@@ -146,7 +153,7 @@ const TopBar = ({
                 />
               </div>
             )}
-       <img className="city" src={loggedin ? cityDetails?.logoId : stateInfo?.statelogo} />
+       
           </div>
         )}
       </span>

@@ -33,6 +33,7 @@ export const Complaint = {
        block:block?.key,
         additionalDetail: {
           fileStoreId: uploadedFile,
+          reopenreason:[]
         },
         source: Digit.Utils.browser.isWebview() ? "mobile" : "web",
        
@@ -50,37 +51,58 @@ export const Complaint = {
     }
 
     if (Digit.SessionStorage.get("user_type") === "employee") {
+      let userInfo=Digit.SessionStorage.get("User")
       defaultData.incident.reporter= {
 
-        name:reporterName,
-        type: "EMPLOYEE",
-        mobileNumber: mobileNumber,
-        roles: [
-          {
-            id: null,
-            name: "Citizen",
-            code: "CITIZEN",
-            tenantId: tenantId,
-          },
-        ],
-        tenantId: tenantIdNew,
+        uuid:userInfo.info.uuid,
+        tenantId: userInfo.info.tenantId,
+        // name:reporterName,
+        // type: "EMPLOYEE",
+        // mobileNumber: mobileNumber,
+        // roles: [
+        //   {
+        //     id: null,
+        //     name: "Citizen",
+        //     code: "CITIZEN",
+        //     tenantId: tenantId,
+        //   },
+       // ],
       };
     }
     const response = await Digit.PGRService.create(defaultData, cityCode);
     return response;
   },
 
-  assign: async (complaintDetails, action, employeeData, comments, uploadedDocument, tenantId, selectedReopenReason) => {
+  assign: async (complaintDetails, action, employeeData, comments, uploadedDocument, tenantId, selectedReopenReason) => {   
     complaintDetails.workflow.action = action;
     complaintDetails.workflow.assignes = employeeData ? [employeeData.uuid] : null;
     complaintDetails.workflow.comments = comments;
-    complaintDetails.incident.additionalDetail.reopenreason=selectedReopenReason
+    complaintDetails.workflow.reopenreason=selectedReopenReason;
+    if(selectedReopenReason)
+    {
+      if(!complaintDetails.incident.additionalDetail.reopenreason)
+      {
+        complaintDetails.incident.additionalDetail.reopenreason=[]
+        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason)
+      }
+      else {
+        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason)
+      }
+      
+    }
+   
     uploadedDocument
       ? (complaintDetails.workflow.verificationDocuments = uploadedDocument)
       : null;
 
     if (!uploadedDocument) complaintDetails.workflow.verificationDocuments = [];
-    
+   // let userInfo=Digit.SessionStorage.get("User")
+    // complaintDetails.incident.reporter = {
+
+    //   uuid:userInfo.info.uuid,
+    //   tenantId: userInfo.info.tenantId,
+    // };
+    //console.log("assignassign",complaintDetails)
     //TODO: get tenant id
     const response = await Digit.PGRService.update(complaintDetails, tenantId);
     return response;

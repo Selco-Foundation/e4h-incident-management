@@ -3,7 +3,7 @@ import ButtonSelector from "./ButtonSelector";
 import { Close } from "./svgindex";
 import { useTranslation } from "react-i18next";
 import RemoveableTag from "./RemoveableTag";
-
+import { DeleteBtn } from "./svgindex";
 const getRandomId = () => {
   return Math.floor((Math.random() || 1) * 139);
 };
@@ -214,9 +214,9 @@ const UploadFile = (props) => {
               const fileDetailsData = file[1]
               return <div className="tag-container" style={extraStyles ? extraStyles?.tagContainerStyles : null}>
                 <RemoveableTag extraStyles={extraStyles} key={index} text={file[0]} onClick={(e) => props?.removeTargetedFile(fileDetailsData, e)} />
-              </div>
+            </div>
             })}
-          {props?.uploadedFiles.length === 0 && <h2 className="file-upload-status">{props.message}</h2>}
+          {props?.uploadedFiles?.length === 0 && <h2 className="file-upload-status">{props.message}</h2>}
         </div>
         <input
           className={props.disabled ? "disabled" : "" + "input-mirror-selector-button"}

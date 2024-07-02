@@ -135,7 +135,7 @@ const EmployeeSideBar = () => {
           .citizen .sidebar .sidebar-link:hover,
           .employee .sidebar .sidebar-link:hover {
             color: #7a2829 !important;
-            background-color: #486480;
+            background-color: #7a282973;
             cursor: pointer;
           }
           .citizen .sidebar .sidebar-link:hover svg,
@@ -144,15 +144,12 @@ const EmployeeSideBar = () => {
           }
           .citizen .sidebar .sidebar-link.active, 
         .employee .sidebar .sidebar-link.active {
-            color: #7a2829 !important;
-            border-right: 4px solid #7a2829;
+            
+            
         }
-        .citizen .sidebar .dropdown-link.active, .employee .sidebar .dropdown-link.active {
-          color: #7a2829 !important;
-          border-right: 4px solid #7a2829;
-        }
+       
         .citizen .sidebar .dropdown-link:hover, .employee .sidebar .dropdown-link:hover {
-          color: #7a2829 !important;
+         
           cursor: pointer;
         }
         .citizen .sidebar .dropdown-link:hover svg, .employee .sidebar .dropdown-link:hover svg {

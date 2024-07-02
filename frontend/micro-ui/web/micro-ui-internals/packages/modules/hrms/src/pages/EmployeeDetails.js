@@ -75,28 +75,28 @@ const Details = () => {
               <Row
                 label={<CardSubHeader className="card-section-header">{t("HR_EMP_STATUS_LABEL")} </CardSubHeader>}
                 text={
-                  data?.Employees?.[0]?.isActive ? <div > {t("ACTIVE")} </div> : <div >{t("INACTIVE")}</div>
+                  data?.Employees?.[0]?.isActive ? <div style={{paddingLeft: isMobile ? "40px": "0px"}}> {t("ACTIVE")} </div> : <div >{t("INACTIVE")}</div>
                 }
                 //textStyle={{ fontWeight: "bold", maxWidth: "6.5rem" }}
               />
             </StatusTable>
             <CardSubHeader className="card-section-header">{t("HR_PERSONAL_DETAILS_FORM_HEADER")} </CardSubHeader>
             <StatusTable>
-              <Row label={t("HR_NAME_LABEL")} text={data?.Employees?.[0]?.user?.name || "NA"} textStyle={{ whiteSpace: "pre" }} />
-              <Row label={t("HR_MOB_NO_LABEL")} text={data?.Employees?.[0]?.user?.mobileNumber || "NA"} textStyle={{ whiteSpace: "pre" }} />
-              <Row label={t("HR_GENDER_LABEL")} text={t(data?.Employees?.[0]?.user?.gender) || "NA"} />
-              <Row label={t("HR_EMAIL_LABEL")} text={data?.Employees?.[0]?.user?.emailId || "NA"} />
-              <Row label={t("HR_CORRESPONDENCE_ADDRESS_LABEL")} text={data?.Employees?.[0]?.user?.correspondenceAddress || "NA"} />
+              <Row label={t("HR_NAME_LABEL")} text={data?.Employees?.[0]?.user?.name || "NA"} textStyle={{ paddingLeft : isMobile ? "40px":"0px", whiteSpace: "pre" }} />
+              <Row label={t("HR_MOB_NO_LABEL")} text={data?.Employees?.[0]?.user?.mobileNumber || "NA"} textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}/>
+              <Row label={t("HR_GENDER_LABEL")} text={t(data?.Employees?.[0]?.user?.gender) || "NA"} textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}/>
+              <Row label={t("HR_EMAIL_LABEL")} text={data?.Employees?.[0]?.user?.emailId || "NA"} textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}/>
+              <Row label={t("HR_CORRESPONDENCE_ADDRESS_LABEL")} text={data?.Employees?.[0]?.user?.correspondenceAddress || "NA"} textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }} />
             </StatusTable>
             <CardSubHeader style={{marginTop:"10px"}} className="card-section-header">{t("HR_NEW_EMPLOYEE_FORM_HEADER")}</CardSubHeader>
             <StatusTable>
-              <Row label={t("HR_EMPLOYMENT_TYPE_LABEL")} text={t(data?.Employees?.[0]?.employeeType ? `EGOV_HRMS_EMPLOYEETYPE_${data?.Employees?.[0]?.employeeType}` : "NA")} textStyle={{ whiteSpace: "pre" }} />
+              <Row label={t("HR_EMPLOYMENT_TYPE_LABEL")} text={t(data?.Employees?.[0]?.employeeType ? `EGOV_HRMS_EMPLOYEETYPE_${data?.Employees?.[0]?.employeeType}` : "NA")} textStyle={{ paddingLeft :isMobile ? "40px": "0px", whiteSpace: "pre" }}/>
               <Row
                 label={t("HR_APPOINTMENT_DATE_LABEL")}
                 text={convertEpochFormateToDate(data?.Employees?.[0]?.dateOfAppointment) || "NA"}
-                textStyle={{ whiteSpace: "pre" }}
+                textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}
               />
-              <Row label={t("HR_EMPLOYEE_ID_LABEL")} text={data?.Employees?.[0]?.code} />
+              <Row label={t("HR_EMPLOYEE_ID_LABEL")} text={data?.Employees?.[0]?.code} textStyle={{ paddingLeft : isMobile ? "40px" : "0px", whiteSpace: "pre" }}/>
             </StatusTable>
             {data?.Employees?.[0]?.isActive == false ? (
               <StatusTable>
@@ -105,6 +105,7 @@ const Details = () => {
                   text={convertEpochFormateToDate(
                     data?.Employees?.[0]?.deactivationDetails?.sort((a, b) => new Date(a.effectiveFrom) - new Date(b.effectiveFrom))[0]?.effectiveFrom
                   )}
+                  textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}
                 />
                 <Row
                   label={t("HR_DEACTIVATION_REASON")}
@@ -112,17 +113,21 @@ const Details = () => {
                     t("EGOV_HRMS_DEACTIVATIONREASON_" + data?.Employees?.[0]?.deactivationDetails?.sort((a, b) => new Date(a.effectiveFrom) - new Date(b.effectiveFrom))[0]
                       .reasonForDeactivation) || "NA"
                   }
+                  textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}
+                  
                 />
                   <Row
                   label={t("HR_REMARKS")}
                   text={
                    data?.Employees?.[0]?.deactivationDetails?.sort((a, b) => new Date(a.effectiveFrom) - new Date(b.effectiveFrom))[0].remarks || "NA"
                   }
+                  textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}
                 />
                 
                 <Row
                   label={t("HR_ORDER_NO")}
                   text={data?.Employees?.[0]?.deactivationDetails?.sort((a, b) => new Date(a.effectiveFrom) - new Date(b.effectiveFrom))[0]?.orderNo || "NA"}
+                  textStyle={{ paddingLeft : isMobile ? "40px": "0px", whiteSpace: "pre" }}
                 />
               </StatusTable>
             ) : null}
