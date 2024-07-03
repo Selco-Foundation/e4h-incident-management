@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, helpers
 import time
 import ssl
 
+
 def push_data_to_es(excel_path, es_host, es_user, es_password, index_name):
     # Read the Excel file
     df = pd.read_excel(excel_path)
@@ -28,7 +29,7 @@ def push_data_to_es(excel_path, es_host, es_user, es_password, index_name):
 
     actions = []
     for _, row in df.iterrows():
-        tenant_id = "pg." + row['Health Care Centre Name'].replace(" ", "")
+        tenant_id = row['Health Care Centre Name'].replace(" ", "")
 
         action = {
             "_index": index_name,
@@ -40,8 +41,8 @@ def push_data_to_es(excel_path, es_host, es_user, es_password, index_name):
                     "district": row['District'],  # Adjust column name if necessary
                     "geo-point": [row['Longitude'], row['Latitude']],  # Directly store latitude and longitude as array
                     "isLive": False,  # Assuming all records are live, adjust as needed
-                    "name": row['Health Care Centre Name'],
-                    "phcType": row['Health Care Centre Name'],
+                    "name": row['Name'],
+                    "phcType": row['Name'],
                     "tenantId": tenant_id,
                     "type": row['Type of HC']
                 }
@@ -52,13 +53,13 @@ def push_data_to_es(excel_path, es_host, es_user, es_password, index_name):
     # Bulk push to Elasticsearch
     helpers.bulk(es, actions)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # Collect input from the user
     excel_path = input("Enter the path to the Excel file: ")
-    es_host = input("Enter the Elasticsearch host URL: ")
-    es_user = input("Enter the Elasticsearch username: ")
-    es_password = input("Enter the Elasticsearch password: ")
-    index_name = input("Enter the Elasticsearch index name: ")
+    es_host = input("Enter the ES Host: ")
+    es_user = input("Enter the username: ")
+    es_password = input("Enter the password: ")
+    index_name = input("Enter the index: ")
 
     push_data_to_es(excel_path, es_host, es_user, es_password, index_name)
