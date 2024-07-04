@@ -52,6 +52,8 @@ public class EnrichmentService {
 
         incident.setAccountId(incidentRequest.getIncident().getReporter().getUuid());        
         incident.setReporterTenant(incidentRequest.getIncident().getReporter().getTenantId());
+		incident.setBlock(toCamelCase(incident.getBlock()));
+        incident.setDistrict(toCamelCase(incident.getDistrict()));
 
         userService.callUserService(incidentRequest);
 
@@ -88,7 +90,8 @@ public class EnrichmentService {
         RequestInfo requestInfo = incidentRequest.getRequestInfo();
         Incident incident = incidentRequest.getIncident();
         AuditDetails auditDetails = utils.getAuditDetails(requestInfo.getUserInfo().getUuid(), incident,false);
-
+		incident.setBlock(toCamelCase(incident.getBlock()));
+        incident.setDistrict(toCamelCase(incident.getDistrict()));
         incident.setAuditDetails(auditDetails);
 
         userService.callUserService(incidentRequest);
@@ -147,6 +150,33 @@ public class EnrichmentService {
         return idResponses.stream()
                 .map(IdResponse::getId).collect(Collectors.toList());
     }
+	
+	
+	public static String toCamelCase(String str)
+	{
+	    if (str == null || str.isEmpty()) {
+        return str;
+	    }
+		str = new String (str.trim());
+		StringBuilder converted = new StringBuilder();
+
+        boolean convertNext = true;
+            
+        for (char ch : str.toCharArray()) {
+        	if (Character.isSpaceChar(ch)){
+            convertNext = true;
+        	} 
+        	else if (convertNext) {
+            ch = Character.toTitleCase(ch);
+            convertNext = false;
+        	} 
+        	else {
+            ch = Character.toLowerCase(ch);
+        	}
+        converted.append(ch);
+        }
+        return converted.toString();
+	}
 
 
 }
