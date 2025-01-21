@@ -31,7 +31,7 @@ import {
   SectionalDropdown,
   ImageUploadHandler,
   MultiUploadWrapper
-} from "@egovernments/digit-ui-react-components";
+} from "@selco/digit-ui-react-components";
 import { Link } from "react-router-dom";
 
 import { Close } from "../../Icons";
@@ -78,7 +78,6 @@ const TLCaption = ({ data, comments }) => {
 };
 
 const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup, selectedAction, onAssign, tenant, t }) => {
-  console.log("empcom", complaintDetails)
   
   // RAIN-5692 PGR : GRO is assigning complaint, Selecting employee and assign. Its not getting assigned.
   // Fix for next action  assignee dropdown issue
@@ -106,9 +105,12 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
   const [error, setError] = useState(null);
   const cityDetails = Digit.ULBService.getCurrentUlb();
   const [selectedReopenReason, setSelectedReopenReason] = useState(null);
-
-  
+  const [selectedRejectReason, setSelectedRejectReason] = useState(null);
+  const state = Digit.ULBService.getStateId();
   const reopenReasonMenu = [t(`CS_REOPEN_OPTION_ONE`), t(`CS_REOPEN_OPTION_TWO`), t(`CS_REOPEN_OPTION_THREE`), t(`CS_REOPEN_OPTION_FOUR`)];
+  const { isMdmsLoading, data: rejectReasons } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["RejectReasons"]);
+  const [dataState, setDataState] = useState({ newArr: [], mappedArray: [] });
+  console.log("rejectedreason", rejectReasons)
   // const uploadFile = useCallback( () => {
 
   //   }, [file]);
@@ -128,9 +130,9 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
     if(e.target.value.length>256){
       setError(t("CS_COMMENT_LENGTH_LIMIT_EXCEED"))
     }
-    else if(!/^[a-zA-Z0-9\s./,]*$/.test(e.target.value)){
-      setError(t("CS_COMMENT_INVALID_CHARACTERS"))
-    }
+    // else if(!/^[a-zA-Z0-9\s./,]*$/.test(e.target.value)){
+    //   setError(t("CS_COMMENT_INVALID_CHARACTERS"))
+    // }
     else{
       setError(null);
       setComments(e.target.value);
@@ -139,6 +141,9 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
 
   function onSelectReopenReason(reason) {
     setSelectedReopenReason(reason);
+  }
+  function onSelectRejectReason(reason) {
+    setSelectedRejectReason(reason);
   }
   const clearError=useCallback(()=>{
     setError("");
@@ -153,7 +158,6 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
 
   }, [error, clearError]);
   function selectfile(e,newArr) {
-    console.log("selectfileselectfile",e,newArr)
     let file=[]
     if (e) {
       if(newArr.length >0)
@@ -174,9 +178,9 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
       // documentUid: "",
       // additionalDetails: {},
       // };
-      console.log("filefile",file)
+      
       let temp = [...uploadedFile, ...file];
-      console.log("temptemp",temp)
+      
       const filterFileStoreIds = newArr.map(item => item.fileStoreId.fileStoreId);
 
       // Use a Set to remove duplicates and filter the documents array
@@ -189,20 +193,26 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
         return false;
       });
 
-      console.log("filteredDocumentsfilteredDocuments",filteredDocuments);
+      
       setUploadedFile(filteredDocuments);
       e && setFile(e.file);
     }
   }
+  useEffect(() => {
+    
+    if (dataState.newArr && dataState.mappedArray) {
+      selectfile(dataState.newArr, dataState.mappedArray);
+    }
+  }, [dataState]);
 
   const getData = (state) => {  
     let data = Object.fromEntries(state);
+    const mappedArray = state.map(item => {
+      return  item[1];
+    })
     let newArr = Object.values(data);
-    console.log("statestate",state,data,newArr)
-    selectfile(newArr[newArr.length - 1],newArr);
+    setDataState({ newArr, mappedArray });
   };
-  console.log("commmmmentsss", comments, comments.length)
-console.log("employeeData", employeeData)
   return (
     <Modal
       headerBarMain={
@@ -233,8 +243,11 @@ console.log("employeeData", employeeData)
       
       
       actionSaveOnSubmit={() => {
-        if((selectedAction==="REJECT") && !comments){
-          setError(t("CS_MANDATORY_COMMENTS"))
+        if(selectedAction==="REJECT" && !selectedRejectReason){
+          setError(t("CS_MANDATORY_REJECT_REASON"))
+        }
+        else if(selectedAction==="REJECT" && !comments){
+          setError(t("CS_MANDATORY_COMMENTS"));
         }
        else if((selectedAction==="SENDBACK") && !comments){
             setError(t("CS_MANDATORY_COMMENTS"));
@@ -245,18 +258,37 @@ console.log("employeeData", employeeData)
         else if(selectedAction==="ASSIGN" && selectedEmployee===null){
            setError(t("CS_ASSIGNEE_MANDATORY"))
         }
-        else if(selectedAction==="RESOLVE" && (!comments || uploadedFile.length===0) ){
-          setError(t("CS_MANDATORY_COMMENTS_AND_FILE_UPLOAD"));
+        else if(selectedAction==="RESOLVE" && !comments){
+          setError(t("CS_MANDATORY_COMMENTS"));
+        }
+        else if(selectedAction==="RESOLVE" && uploadedFile.length===0) {
+          setError(t("CS_MANDATORY_FILE_UPLOAD"));
         }
         else{
-          console.log("selectedEmployeeselectedEmployee",selectedEmployee, comments, uploadedFile, selectedReopenReason)
-        onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason);
+          
+        onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason, selectedRejectReason);
         }
       }}
       error={error}
       setError={setError}
     >
       <Card style={{paddingTop:"0px"}}>
+      {selectedAction === "REJECT" ? (
+          <React.Fragment>
+            <CardLabel>{t("CS_REJECT_COMPLAINT")}*</CardLabel>
+            <Dropdown 
+  selected={selectedRejectReason} 
+  option={rejectReasons?.Incident?.RejectReasons?.map(reason => ({
+    ...reason,
+    localizedCode: t(reason.code) // Use localized text if available, otherwise fallback to default name
+  }))} 
+  optionKey={"localizedCode"} 
+  select={onSelectRejectReason}
+/>
+
+          </React.Fragment>
+        ) : null}
+
         {selectedAction === "REJECT" || selectedAction === "RESOLVE" || selectedAction === "REOPEN" || selectedAction==="SENDBACK" ? null : (
           <React.Fragment>
             
@@ -307,16 +339,19 @@ export const ComplaintDetails = (props) => {
   const [fullscreen, setFullscreen] = useState(false);
   const [imageZoom, setImageZoom] = useState(null);
   const mobileDeviceWidth = 780;
-  const [isMobileView, setIsMobileView] = React.useState(window.innerWidth <= mobileDeviceWidth);
+  const iPadMaxWidth=1024;
+  const iPadMinWidth=768
+  const isMobile = window.Digit.Utils.browser.isMobile();
+  const [isIpadView, setIsIpadView] = React.useState(window.innerWidth <= iPadMaxWidth && window.innerWidth>=iPadMinWidth);
   const onResize = () => {
-    if (window.innerWidth <= mobileDeviceWidth) {
-      if (!isMobileView) {
-        setIsMobileView(true);
+    
+      if (window.innerWidth <= iPadMaxWidth && window.innerWidth>=iPadMinWidth) {
+        setIsIpadView(true);
       }
-    } else {
-      if (isMobileView) {
-        setIsMobileView(false);
-      }
+    else {
+      
+        setIsIpadView(false);
+      
     }
   };
   React.useEffect(() => {
@@ -328,15 +363,25 @@ export const ComplaintDetails = (props) => {
         onResize();
       });
     };
-  });
+  }, []);
   // const [actionCalled, setActionCalled] = useState(false);
   const [toast, setToast] = useState(false);
+  const [error, setError]=useState("");
+  //console.log("error111", error)
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const tenant =  Digit.SessionStorage.get("Employee.tenantId") == "pg"?  Digit.SessionStorage.get("IM_TENANTS").map(item => item.code).join(',') :Digit.SessionStorage.get("Employee.tenantId") 
 
   const { isLoading, complaintDetails, revalidate: revalidateComplaintDetails } = Digit.Hooks.pgr.useComplaintDetails({ tenant, id });
 
   const workflowDetails = Digit.Hooks.useWorkflowDetails({ tenant : id.split("/")[1], id :id.split("/")[0] , moduleCode: "Incident", role: "EMPLOYEE" });
+  let currentOwner='';
+  let currentLoginUser = JSON.parse(sessionStorage.getItem("Digit.User"))?.value?.info?.uuid;
+  if(workflowDetails && workflowDetails?.data &&  workflowDetails?.data?.processInstances && workflowDetails?.data?.processInstances[0]?.assignes && workflowDetails?.data?.processInstances[0]?.assignes[0] ){
+    currentOwner=workflowDetails?.data?.processInstances[0]?.assignes[0]?.uuid;
+  }
+  else{
+    currentOwner=currentLoginUser;
+  }
 
   const [imagesToShowBelowComplaintDetails, setImagesToShowBelowComplaintDetails] = useState([])
 
@@ -383,10 +428,17 @@ export const ComplaintDetails = (props) => {
     setDisplayMenu(false);
     setPopup(true);
   }
+  useEffect(()=>{
+    setTimeout(() => setError(""), 10000);
+  })
 
   useEffect(() => {
     (async () => {
-      const assignWorkflow = await Digit?.WorkflowService?.getByBusinessId(tenant, id);
+      if(complaintDetails!==undefined){
+        let fetchedTenantId=complaintDetails?.incident?.tenantId;
+        let fetchedId=complaintDetails?.incident?.incidentId;
+        const assignWorkflow = await Digit?.WorkflowService?.getByBusinessId(fetchedTenantId, fetchedId);
+      } 
     })();
   }, [complaintDetails]);
 
@@ -427,8 +479,12 @@ export const ComplaintDetails = (props) => {
     setImageZoom(imageSource);
   }
   function zoomImageWrapper(imageSource, index){
-    console.log("imageSourceimageSourceimageSource",index)
-    zoomImage(imagesToShowBelowComplaintDetails?.fullImage[index]);
+      if(imageSource.includes("jpeg") || imageSource.includes("jpg") || imageSource.includes("jpeg") || imageSource.includes("png")){
+        zoomImage(imagesToShowBelowComplaintDetails?.fullImage[index]);
+      }
+      else{
+        window.open(imagesToShowBelowComplaintDetails?.fullImage[index]);
+      }   
   }
   function onCloseImageZoom() {
     setImageZoom(null);
@@ -469,10 +525,16 @@ export const ComplaintDetails = (props) => {
     }
   }
 
-  async function onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason) {
+  async function onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason, selectedRejectReason) {
     setPopup(false);
-    const response = await Digit.Complaint.assign(complaintDetails, selectedAction, selectedEmployee, comments, uploadedFile, tenant, selectedReopenReason);
-    setAssignResponse(response);
+    const response = await Digit.Complaint.assign(complaintDetails, selectedAction, selectedEmployee, comments, uploadedFile, tenant, selectedReopenReason, selectedRejectReason);
+    if(response?.IncidentWrappers){
+      setAssignResponse(response);
+    }else{
+      setError(response)
+      //setTimeout(() => setError(false), 10000);
+    }
+    
     setToast(true);
     setLoader(true);
     await refreshData();
@@ -491,7 +553,9 @@ export const ComplaintDetails = (props) => {
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
+
     let reopenCount = 0;
+    let rejectCount = 0;
     let arrNew= arr.map((abc) => {
       if(abc.performedAction === "REOPEN")
       {
@@ -501,13 +565,21 @@ export const ComplaintDetails = (props) => {
         reopenCount +=1
         return obj
       }
+      else if(abc.performedAction === "REJECT")
+      {
+        let rejectreason=complaintDetails?.incident?.additionalDetail?.rejectReason
+        let obj ={...abc, rejectReason:rejectreason?.reverse()[rejectCount]}
+        rejectreason?.reverse()
+        rejectCount +=1
+        return obj
+      }
       else return abc
       
     })
     const arr1=arr
     const {wfComment: comment, thumbnailsToShow} = checkpoint;
     function zoomImageTimeLineWrapper(imageSource, index,thumbnailsToShow,arr){
-      console.log("imageSource, index,thumbnailsToShow,arr",imageSource, index,thumbnailsToShow,arr)
+      
       if(arr1[index]?.status == "RESOLVED")
       {
         window.open(arr1[index].thumbnailsToShow.fullImage[0], "_blank")
@@ -533,9 +605,10 @@ export const ComplaintDetails = (props) => {
           date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.createdTime),
         };
         return <TLCaption data={caption} comments={checkpoint?.wfComment}/>;
-      } else {
+      } 
+      else {
         const caption = {
-          date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.createdTime),         
+          date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.lastModifiedTime),         
         };
         return <>
           {checkpoint?.wfComment ? <div>{checkpoint?.wfComment?.map( e => 
@@ -550,13 +623,25 @@ export const ComplaintDetails = (props) => {
               <h1>{arrNew[index]?.reopenreason}</h1>
             </div>
           ):null}
+          {checkpoint.status==="REJECT" ? (
+            <div className="TLComments">
+              <h3>{t("WF_REJECT_REASON")}</h3>
+              <h1>{arrNew[index]?.rejectReason}</h1>
+            </div>
+          ):null}
           {checkpoint.status !== "COMPLAINT_FILED" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
             <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-            <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
+            <DisplayPhotos srcs={thumbnailsToShow.fullImage} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
           </div> : null}
           {caption?.date ? <TLCaption data={caption}/> : null}
         </>
       }
+    }
+   else if(checkpoint.status === "CLOSEDAFTERRESOLUTION")
+    {      
+      
+    return <TLCaption data={""} comments={checkpoint?.wfComment}/>;
+
     }
     // return (checkpoint.caption && checkpoint.caption.length !== 0) || checkpoint?.wfComment?.length > 0 ? <TLCaption data={checkpoint?.caption?.[0]} comments={checkpoint?.wfComment} /> : null;
     return <>
@@ -568,22 +653,27 @@ export const ComplaintDetails = (props) => {
       )}</div> : null}
       {checkpoint.status !== "COMPLAINT_FILED" && checkpoint?.performedAction!=="INITIATE" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
         <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-        <DisplayPhotos srcs={thumbnailsToShow.thumbs} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
+        <DisplayPhotos srcs={thumbnailsToShow.fullImage} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
       </div> : null}
+      {checkpoint.status==="REJECTED" ? (
+        <div className="TLComments">
+           <h3>{t("WF_REJECT_REASON")}</h3>
+            <h1>{arrNew[index]?.rejectReason}</h1>
+        </div>
+      ):null}
       {captionForOtherCheckpointsInTL?.date ? <TLCaption data={captionForOtherCheckpointsInTL}/> : null}
       {(checkpoint.status == "CLOSEDAFTERRESOLUTION" && complaintDetails.workflow.action == "RATE" && index <= 1) && complaintDetails.audit.rating ? <StarRated text={t("CS_ADDCOMPLAINT_YOU_RATED")} rating={complaintDetails.audit.rating} />: null}
     </>
   }
-console.log("cdet", complaintDetails)
 return (
   <React.Fragment>
-     <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+     <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"15px"}}>
     <Link to={`/digit-ui/employee/im/inbox`}>{t("CS_COMMON_BACK")}</Link></div> 
     <Card>
       
       <div style={{display:"flex", flexDirection:"column", gap:"5px"}}>
       <CardSubHeader>{t(`CS_HEADER_INCIDENT_SUMMARY`)}</CardSubHeader>
-      <div style={{fontWeight:"bolder", fontSize: isMobileView ? "16px":"21px", marginTop: isMobileView? "20px": -20, marginBottom:"22px"}}>{t("CS_HEADER_TICKET_DETAILS")}</div>
+      <div style={{fontWeight:"bolder", fontSize: isMobile ? "16px":"21px", marginTop: isMobile || isIpadView? "20px": -20, marginBottom:"22px"}}>{t("CS_HEADER_TICKET_DETAILS")}</div>
       </div>
       
 
@@ -616,7 +706,7 @@ return (
       {imagesToShowBelowComplaintDetails?.thumbs ? (
         <div>
         <CardLabel style={{marginTop:'18px', fontWeight:'bolder'}}>{t("CS_TICKET_ADDITIONAL_DETAILS")}</CardLabel>
-        <DisplayPhotos srcs={imagesToShowBelowComplaintDetails?.thumbs} onClick={(source, index) => zoomImageWrapper(source, index)} />
+        <DisplayPhotos srcs={imagesToShowBelowComplaintDetails?.fullImage} onClick={(source, index) => zoomImageWrapper(source, index)} />
         </div>
       ) : null}
       <BreakLine />
@@ -670,15 +760,18 @@ return (
         t={t}
       />
     ) : null}
-    {toast && <Toast label={t(assignResponse ? `CS_ACTION_${selectedAction}_TEXT` : "CS_ACTION_ASSIGN_FAILED")} onClose={closeToast} />}
-    {!workflowDetails?.isLoading && workflowDetails?.data?.nextActions?.length > 0 && (
-      <ActionBar>
+    {toast && assignResponse && assignResponse?.IncidentWrappers && <Toast label={t(`CS_ACTION_${selectedAction}_TEXT`)} onClose={closeToast} /> }
+    {!workflowDetails?.isLoading && workflowDetails?.data?.nextActions?.length > 0 && currentOwner===currentLoginUser && (
+      <ActionBar style={{marginLeft: isIpadView? "250px":"none"}}>
         {displayMenu && workflowDetails?.data?.nextActions ? (
           <Menu options={workflowDetails?.data?.nextActions.map((action) => action.action)} t={t} onSelect={onActionSelect} />
         ) : null}
         <SubmitBar label={t("WF_TAKE_ACTION")} onSubmit={() => setDisplayMenu(!displayMenu)} />
       </ActionBar>
     )}
+    {
+      error && error[0].message && <Toast error={error[0].message} label={error[0].message} onClose={closeToast}/>
+    }
   </React.Fragment>
 );
 };

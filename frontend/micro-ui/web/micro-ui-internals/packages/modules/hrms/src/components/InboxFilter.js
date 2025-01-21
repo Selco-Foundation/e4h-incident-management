@@ -1,4 +1,4 @@
-import { ActionBar, ApplyFilterBar, CloseSvg, Dropdown, RadioButtons, RemoveableTag, SubmitBar } from "@egovernments/digit-ui-react-components";
+import { ActionBar, ApplyFilterBar, CloseSvg, Dropdown, RadioButtons, RemoveableTag, SubmitBar } from "@selco/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getCityThatUserhasAccess } from "./Utils";
@@ -163,7 +163,7 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
           </div>
           <div>
             <div>
-              <div className="filter-label">{t("HR_ULB_LABEL")}</div>
+             <div className="filter-label">{t("HR_ULB_LABEL")}</div>
               <Dropdown
                 option={[...getCityThatUserhasAccess(tenantIds)?.sort((x, y) => x?.name?.localeCompare(y?.name)).map(city => { return { ...city, i18text: Digit.Utils.locale.getCityLocale(city.code) } })]}
                 selected={tenantId}

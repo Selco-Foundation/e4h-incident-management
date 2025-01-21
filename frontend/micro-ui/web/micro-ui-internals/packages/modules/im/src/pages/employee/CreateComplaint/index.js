@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo,useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Dropdown, ImageUploadHandler, Toast, TextInput,MultiUploadWrapper, UploadFile, CardLabel } from "@egovernments/digit-ui-react-components";
+import { DatePicker, Dropdown, ImageUploadHandler, Toast, TextInput,MultiUploadWrapper, UploadFile, CardLabel } from "@selco/digit-ui-react-components";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { FormComposer } from "../../../components/FormComposer";
 import { createComplaint } from "../../../redux/actions/index";
-import { Loader, Header } from "@egovernments/digit-ui-react-components";
+import { Loader, Header } from "@selco/digit-ui-react-components";
 import { Link } from "react-router-dom";
 
 export const CreateComplaint = ({ parentUrl }) => {
@@ -20,7 +20,7 @@ export const CreateComplaint = ({ parentUrl }) => {
   const [file, setFile]=useState(null);
   const [showToast, setShowToast] = useState(null);
   const [uploadedFile, setUploadedFile]=useState([]);
-  const [uploadedImages, setUploadedImagesIds] = useState(null)
+    const [uploadedImages, setUploadedImagesIds] = useState(null)
   const [district, setDistrict]=useState(null);
   const [block, setBlock]=useState(null);
   const [error, setError] = useState(null);
@@ -38,6 +38,7 @@ export const CreateComplaint = ({ parentUrl }) => {
   const dropdownRefs = useRef([]); // Create refs array for dropdowns
   const [errors, setErrors] = useState(Array(6).fill(""));
   const [subType, setSubType]=useState(JSON?.parse(sessionStorage.getItem("subType")) || {});
+  const [dataState, setDataState] = useState({ newArr: [], mappedArray: [] });
   let sortedSubMenu=[];
   if(subTypeMenu!==null){
     sortedSubMenu=subTypeMenu.sort((a,b)=>a.name.localeCompare(b.name))
@@ -73,6 +74,7 @@ let  sortedMenu=[];
 const { isMdmsLoading, data: mdmsData } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["District","Block"]);
 const {  data: phcMenu  } = Digit.Hooks.pgr.useMDMS(state, "tenant", ["tenants"]);
 let blockNew =mdmsData?.Incident?.Block
+
 useEffect(()=>{
   const fetchDistrictMenu=async()=>{
     const response=phcMenu?.Incident?.District;
@@ -89,7 +91,7 @@ useEffect(()=>{
           setDistrictMenu(
             districts.map(def=>({
            
-           key:t(def.code), 
+           key:(def.code), 
             name:t(def.name) 
          }))
           );
@@ -105,8 +107,8 @@ let tenants =Digit.SessionStorage.get("Employee.tenantId")
 setSelectTenant(tenants)
 if(selectTenant !== "pg")
 {
-  ticketTypeRef.current.validate()
-  ticketSubTypeRef.current.validate()
+  ticketTypeRef?.current?.validate()
+  ticketSubTypeRef?.current?.validate()
 }
 else {
   handleButtonClick()
@@ -121,12 +123,19 @@ useEffect(async () => {
     const selectedTenantData = tenant.find(item => item.code === selectTenant);
     const selectedDistrict = {
       key: t(selectedTenantData.city.districtCode),
-      name: t(selectedTenantData.city.districtCode.charAt(0).toUpperCase() + selectedTenantData.city.districtCode.slice(1).toLowerCase()),
+      codeNew: selectedTenantData.city.districtCode,
+      name: t(selectedTenantData.city.districtName),
+    }; 
+    const selectedTenantBlock = blockNew!== undefined ? blockNew.find(item => item.code=== selectedTenantData.city.blockCode):"";
+    let selectedBlock=""
+    if(selectedTenantBlock!==undefined && selectedTenantBlock.length!==0){ 
+    selectedBlock = {
+      key: t(selectedTenantBlock.code.split(".")[1].toUpperCase()),
+      name: t(selectedTenantBlock.name),
+      codeNew : selectedTenantBlock.code,
+      codeKey:selectedTenantBlock.code.split(".")[1].toUpperCase()
     };
-    const selectedBlock = {
-      key: t(selectedTenantData.city.blockCode.split(".")[1].toUpperCase()),
-      name: t(selectedTenantData.city.blockCode.split(".").pop().charAt(0).toUpperCase() + selectedTenantData.city.blockCode.split(".").pop().slice(1))
-    };
+  }
       handleDistrictChange(selectedDistrict);
       handleBlockChange(selectedBlock)
      
@@ -181,23 +190,24 @@ useEffect(async () => {
         setComplaintType(value);
         sessionStorage.setItem("complaintType",JSON.stringify(value))
         setSubTypeMenu([{ key: "Others", name: t("SERVICEDEFS.OTHERS") }]);
-        ticketSubTypeRef.current.validate()
+        ticketSubTypeRef?.current?.validate()
 
       } else {
         setSubType({ name: "" });
         setComplaintType(value);
         sessionStorage.setItem("complaintType",JSON.stringify(value))
         setSubTypeMenu(await serviceDefinitions.getSubMenu(tenantId, value, t));
-        ticketSubTypeRef.current.validate()
+        ticketSubTypeRef?.current?.validate()
       }
     }
   }
   const handleDistrictChange = async (selectedDistrict) => {
-    console.log("selectedDistrict", selectedDistrict);
+   
     setDistrict(selectedDistrict);
     const response=mdmsData?.Incident?.Block;
     if(response){
       const blocks=response.filter((def)=>def.districtCode===selectedDistrict.key);
+      
       blocks.sort((a,b)=>a.name.localeCompare(b.name))
       setBlockMenuNew(blocks)
       setBlockMenu(
@@ -220,9 +230,8 @@ useEffect(async () => {
     setDisableUpload(false)
     setDisable(false)
     setTenant(value?.city?.districtTenantCode)
-    centerTypeRef.current.clearError()
+    centerTypeRef?.current?.clearError()
     setShowToast(null);
-    console.log("setHealthCareType",phcSubTypeMenu,value)
    
   }
   const handleBlockChange= (selectedBlock)=>{
@@ -231,13 +240,24 @@ useEffect(async () => {
     setHealthCentre({})
     if (selectTenant && selectTenant !== "pg")
     {
-      const block  = blockNew?.find(item => item?.name.toUpperCase() === selectedBlock?.key.toUpperCase())
-      const phcMenuType= phcMenu?.tenant?.tenants.filter(centre => centre?.city?.blockCode === block?.code)
-      setPhcMenu(phcMenuType)
+      
+      const block  = blockNew?.find(item => item?.name.toUpperCase() === selectedBlock?.codeNew.split(".")[1].toUpperCase())
+      
+      const phcMenuType= phcMenu?.tenant?.tenants.filter(centre => centre?.city?.blockCode === selectedBlock?.codeNew)
+      const translatedPhcMenu=phcMenuType?.map(item=>({
+        ...item,
+        key:item?.name,
+        name:t(item?.name),
+        centreTypeKey:item?.centreType,
+        centreType:t(item?.centreType)
+      }))
+      setPhcMenu(translatedPhcMenu)
       setBlock(selectedBlock);
+      
       let tenant = Digit.SessionStorage.get("Employee.tenantId")
-      console.log("phcMenuType",phcMenuType,tenant)
-      const filtereddata = phcMenuType?.filter((code)=> code.code == tenant)
+      
+      const filtereddata = phcMenuType?.filter((codeNew)=> codeNew.code == tenant)
+      
       if(filtereddata)
       {
         selectedHealthCentre(filtereddata?.[0])
@@ -247,8 +267,15 @@ useEffect(async () => {
     else {
       const block  = blockMenuNew.find(item => item?.name.toUpperCase() === selectedBlock?.key.toUpperCase())
       const phcMenuType= phcMenu?.tenant?.tenants.filter(centre => centre?.city?.blockCode === block?.code)
-      setPhcMenu(phcMenuType)
-      console.log("phcMenuTypephcMenuTypephcMenuType",phcMenuType)
+      const translatedPhcMenu=phcMenuType?.map(item=>({
+        ...item,
+        key:item?.name,
+        name:t(item?.name),
+        centreTypeKey:item?.centreType,
+        centreType:t(item?.centreType)
+      }))
+      setPhcMenu(translatedPhcMenu)
+      
       setBlock(selectedBlock);
 
     }
@@ -264,11 +291,11 @@ useEffect(async () => {
   //   setBlockMenu([value]);
   // };
   async function selectFile(e){
-    setFile(e.target.files[0]);
+  setFile(e.target.files[0]);
   }
   const handleUpload = (ids) => {
 
-    console.log("disbaleddisbaled",disbaled)
+    
     if(disbaled)
     {
       setShowToast({ key: true, label: "PLEASE_SELECT_PHC_TYPE"});
@@ -279,7 +306,7 @@ useEffect(async () => {
 
    const wrapperSubmit = (data) => {
     const abc = handleButtonClick()
-    console.log("vvvv",abc,!canSubmit)
+    
     if (!canSubmit) return;
     setSubmitted(true);
     !submitted && !abc && onSubmit(data);
@@ -288,7 +315,7 @@ useEffect(async () => {
     if (!canSubmit) return;
     const { key } = subType;
     //const complaintType = key;
-    console.log("ddddddd",uploadedFile)
+   
     let uploadImages=[]
     if(uploadedFile!==null){
      uploadImages = uploadedFile?.map((url) => ({
@@ -298,7 +325,7 @@ useEffect(async () => {
       additionalDetails: {},
     }));
   }
-    const formData = { ...data,complaintType, subType, district, block, healthCareType, healthcentre, reporterName, uploadedFile,uploadImages, tenantId:healthcentre?.code};
+      const formData = { ...data,complaintType, subType, district, block, healthCareType, healthcentre, reporterName, uploadedFile,uploadImages, tenantId:healthcentre?.code};
     await dispatch(createComplaint(formData));
     await client.refetchQueries(["fetchInboxData"]);
     history.push(parentUrl + "/incident/response");
@@ -323,19 +350,19 @@ useEffect(async () => {
     const mappedArray = state.map(item => {
       return  item[1];
     })
-    let newArr = Object.values(data);
-    console.log("statestate",state,data,newArr,mappedArray)
-    selectfile(newArr[newArr.length - 1],mappedArray);
+        let newArr = Object.values(data);
+
+    setDataState({ newArr, mappedArray });
   };
   const handleButtonClick = () => {
     const hasEmptyFields = fieldsToValidate.some(({ field }) => field === null || Object.keys(field).length === 0);
-    console.log("hasEmptyFields",hasEmptyFields)
+    
     if (hasEmptyFields) {
       fieldsToValidate.forEach(({ field, ref }) => {
-        console.log("field",field)
+        
         if (field === null || field === undefined || Object.keys(field).length === 0) {
           
-          ref.current.validate();
+          ref?.current?.validate();
         }
       });
       
@@ -346,12 +373,11 @@ useEffect(async () => {
    
   };
   function selectfile(arr,newArr) {
-    console.log("selectfileselectfile",arr,newArr)
     let file=[]
     if (arr) {
       if(newArr.length >0)
       {
-        console.log
+        
         file= newArr.map((e) =>{
           const newFile={
             documentType: e?.file?.type.includes(".sheet") ? ".xlsx": e?.file?.type.includes(".document")? ".docs": e?.file?.type,
@@ -359,7 +385,7 @@ useEffect(async () => {
             documentUid: "",
             additionalDetails: {},
             };
-          return newFile
+                      return newFile
         })
       }
       // const newFile={
@@ -368,9 +394,7 @@ useEffect(async () => {
       // documentUid: "",
       // additionalDetails: {},
       // };
-      console.log("filefile",file,uploadedFile)
 
-      console.log("temptemp",file)
       const filterFileStoreIds = file.map(item => item.fileStoreId);
 
       // Use a Set to remove duplicates and filter the documents array
@@ -383,11 +407,16 @@ useEffect(async () => {
         return false;
       });
 
-      console.log("filteredDocumentsfilteredDocuments",filteredDocuments);
+      
       setUploadedFile(filteredDocuments);
       //arr && setFile(arr.file);
     }
   }
+  useEffect(() => { 
+    if (dataState.newArr && dataState.mappedArray) {
+      selectfile(dataState.newArr, dataState.mappedArray);
+    }
+  }, [dataState]);
   const config = [
     
     {
@@ -421,7 +450,7 @@ useEffect(async () => {
           isMandatory:true,
           type: "dropdown",
           populators: (
-            <Dropdown ref={healthCareRef} option={phcMenuNew} optionKey="name" id="healthCentre" selected={healthcentre} select={selectedHealthCentre} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
+            <Dropdown ref={healthCareRef} t={t} option={phcMenuNew} optionKey="name" id="healthCentre" selected={healthcentre} select={selectedHealthCentre} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
             
           ),
            
@@ -431,7 +460,7 @@ useEffect(async () => {
           isMandatory:true,
           type: "dropdown",
           populators: (
-            <Dropdown ref={centerTypeRef} option={sortedphcSubMenu} optionKey="centreType" id="healthcaretype" selected={healthCareType} select={handlePhcSubType} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
+            <Dropdown ref={centerTypeRef} t={t} option={sortedphcSubMenu} optionKey="centreType" id="healthcaretype" selected={healthCareType} select={handlePhcSubType} disable={selectTenant && selectTenant !== "pg"?true:false}  required={true}/>
              
           ),
            
@@ -470,6 +499,12 @@ useEffect(async () => {
           isMandatory:false,
           populators: {
             name: "comments",
+           // maxLength: 256,
+            validation : {
+              minLength: 0,
+              maxLength:256,
+            },
+            error: t("CS_LENGTH_EXCEED")
             
           },
         },
@@ -484,7 +519,7 @@ useEffect(async () => {
           getFormState={(e) => getData(e)}
           allowedFileTypesRegex={/(jpg|jpeg|png|image)$/i}
           allowedMaxSizeInMB={5}
-          maxFilesAllowed={5}
+          maxFilesAllowed={3}
           disabled={disbaledUpload}
           ulb={Digit.SessionStorage.get("Employee.tenantId") !== "pg" ? Digit.SessionStorage.get("Employee.tenantId"  ):healthcentre?.code}
           acceptFiles= {".png, .image, .jpg, .jpeg"}
@@ -509,7 +544,9 @@ useEffect(async () => {
         `}
       </style>
        <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+       <div style={{marginRight:"15px"}}>
     <Link to={`/digit-ui/employee`}>{t("CS_COMMON_BACK")}</Link></div> 
+    </div>
     <FormComposer
       heading={t("")}
       config={config}

@@ -53,6 +53,18 @@ const Download = {
     const wb = XLSX.utils.book_new();
     let ws = null;
     ws = XLSX.utils.json_to_sheet(data)
+    const coulmncount= Object.keys(data[0]).length;
+    const uniformWidths={ wch: 20};
+    const coulmnWidths=new Array(coulmncount).fill(uniformWidths)
+    ws['!cols']= coulmnWidths;
+    const header=Object.keys(data[0]);
+    header.forEach((header, index)=>{
+      const cellAddress=XLSX.utils.encode_cell({c: index, r: 0});
+      if(!ws[cellAddress]) ws[cellAddress]={ t: 's', v:header};
+      ws[cellAddress].s={
+        font: { bold: true},
+      }
+    });
     wb.SheetNames.push(file);
     wb.Sheets[file] = ws;
     XLSX.writeFile(wb, `${file}.xlsx`);

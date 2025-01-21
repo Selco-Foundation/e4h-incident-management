@@ -1,4 +1,4 @@
-import { ActionBar, Card, CardSubHeader, DocumentSVG, Header, Loader, Row, StatusTable, SubmitBar } from "@egovernments/digit-ui-react-components";
+import { ActionBar, Card, CardSubHeader, DocumentSVG, Header, Loader, Row, StatusTable, SubmitBar } from "@selco/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
@@ -22,13 +22,14 @@ const Details = () => {
   const [mutationHappened, setMutationHappened, clear] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [successData, setsuccessData, clearSuccessData] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_SUCCESS_DATA", false);
   const isMobile = window.Digit.Utils.browser.isMobile();
-
   useEffect(() => {
     setMutationHappened(false);
     clearSuccessData();
     clearError();
   }, []);
-
+ 
+  
+ 
   function onActionSelect(action) {
     setSelectedAction(action);
     setDisplayMenu(false);
@@ -149,9 +150,10 @@ const Details = () => {
             {data?.Employees?.[0]?.jurisdictions.length > 0 ? (
               <CardSubHeader className="card-section-header">{t("HR_JURIS_DET_HEADER")}</CardSubHeader>
             ) : null}
-
+            
             {data?.Employees?.[0]?.jurisdictions?.length > 0
               ? data?.Employees?.[0]?.jurisdictions.map((element, index) => {
+               
                 return (
                   <StatusTable
                     key={index}
@@ -169,6 +171,7 @@ const Details = () => {
                       {t("HR_JURISDICTION")} {index + 1}
                     </div>
                     <Row label={t("HR_HIERARCHY_LABEL")} text={t(element?.hierarchy ? `EGOV_LOCATION_TENANTBOUNDARY_${element?.hierarchy}` : "NA")} textStyle={{ whiteSpace: "pre" }} />
+                    
                     <Row label={t("HR_BOUNDARY_TYPE_LABEL")} text={t(Digit.Utils.locale.convertToLocale(element?.boundaryType, 'EGOV_LOCATION_BOUNDARYTYPE'))} textStyle={{ whiteSpace: "pre" }} />
                     <Row label={t("HR_BOUNDARY_LABEL")} text={t(element?.boundary)} />
                     <Row

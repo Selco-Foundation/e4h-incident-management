@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Card, Loader } from "@egovernments/digit-ui-react-components";
+import { Card, Loader } from "@selco/digit-ui-react-components";
 import ComplaintsLink from "./inbox/ComplaintLinks";
 import ComplaintTable from "./inbox/ComplaintTable";
 import Filter from "./inbox/Filter";
@@ -57,7 +57,7 @@ const DesktopInbox = ({
       {
         Header: t("CS_COMMON_TICKET_NO"),
         Cell: ({ row }) => {
-          console.log("rowrow",row)
+          
           return (
             <div>
               <span className="link">
@@ -111,7 +111,7 @@ const DesktopInbox = ({
   let result;
   if (isLoading) {
     result = <Loader />;
-  } else if (data && data.length === 0) {
+  } else if (data && data.combinedRes.length === 0) {
     result = (
       <Card style={{ marginTop: 20 }}>
        <div style={{color:"#7a2824", marginTop:isIpadView? "210px":""}}> {t(LOCALE.NO_COMPLAINTS_EMPLOYEE)
@@ -124,11 +124,11 @@ const DesktopInbox = ({
           </div>
       </Card>
     );
-  } else if (data?.length > 0) {
+  } else if (data?.combinedRes?.length > 0) {
     result = (
       <ComplaintTable
         t={t}
-        data={data}
+        data={data?.combinedRes}
         columns={columns}
         getCellProps={(cellInfo) => {
           return {
@@ -163,14 +163,14 @@ const DesktopInbox = ({
   }
 
   return (
-    <div className="inbox-container" style={{overflowX: "scroll"}}>
+    <div className="inbox-container">
       <div className="filters-container">
         <ComplaintsLink />
         <div style={{paddingTop:"5px", paddingBottom:"0px"}}>
           <Filter complaints={data} onFilterChange={onFilterChange} type="desktop" searchParams={searchParams} />
         </div>
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, overflowX:"scroll", width:"100%" }}>
         <SearchComplaint onSearch={onSearch} type="desktop" />
         <div style={{ marginTop: "21px", marginLeft:"24px", flex: 1 }}>{result}</div>
       </div>

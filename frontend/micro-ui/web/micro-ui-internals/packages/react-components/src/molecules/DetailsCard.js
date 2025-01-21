@@ -7,10 +7,10 @@ import SubmitBar from "../atoms/SubmitBar";
 export const Details = ({ label, name, onClick}) => {
   return (
     <div className="detail" onClick={onClick}>
-      <span className="label">
+      <div className="label">
         <h2>{label}</h2>
-      </span>
-      <span className="name" style={{overflowWrap:"break-word", color:"black", paddingTop: "16px"}}>{name}</span>
+      </div>
+      <div className="name" style={{overflowWrap:"break-word", color:"black", paddingTop: "16px"}}>{name}</div>
     </div>
   );
 };
@@ -28,7 +28,7 @@ const DetailsCard = ({ data, serviceRequestIdKey, linkPrefix, handleSelect, sele
       </style>
         {data.map((object, itemIndex) => {
           let key = Object.keys(object)
-          const incidentId = object[key[0]]
+          const incidentId = object[key[0]].props.children
           return (
             <Link
               key={itemIndex}

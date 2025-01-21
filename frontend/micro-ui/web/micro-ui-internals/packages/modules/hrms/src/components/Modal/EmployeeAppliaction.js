@@ -1,5 +1,5 @@
 import React from "react";
-import { UploadFile, Dropdown } from "@egovernments/digit-ui-react-components";
+import { UploadFile, Dropdown } from "@selco/digit-ui-react-components";
 import { convertEpochToDate } from "../Utils/index";
 
 export const configEmployeeApplication = ({ t, action, selectFile, uploadedFile, setUploadedFile, selectedReason, Reasons, selectReason }) => {
@@ -25,6 +25,7 @@ export const configEmployeeApplication = ({ t, action, selectFile, uploadedFile,
              name: "orderNo",
             },
           },
+          
 
           {
             label: t("HR_EFFECTIVE_DATE"),
@@ -43,7 +44,7 @@ export const configEmployeeApplication = ({ t, action, selectFile, uploadedFile,
             label: t("HR_APPROVAL_UPLOAD_HEAD"),
             populators: (
               <div style={{ marginBottom: "2rem" }}>
-                <span>{t("TL_APPROVAL_UPLOAD_SUBHEAD")}</span>
+               <span>{t("TL_APPROVAL_UPLOAD_SUBHEAD")}</span>
                 <UploadFile
                 id={"hrms-deactivation-doc"}
                   onUpload={selectFile}
@@ -53,7 +54,8 @@ export const configEmployeeApplication = ({ t, action, selectFile, uploadedFile,
                   }}
                   message={uploadedFile ? `1 ${t(`HR_ACTION_FILEUPLOADED`)}` : t(`HR_ACTION_NO_FILEUPLOADED`)}
                 />
-              </div>
+                </div>
+             
             ),
           },
 

@@ -80,6 +80,7 @@ public class NotificationService {
             String reporterMobileNumber = request.getIncident().getReporter().getMobileNumber();
             String employeeMobileNumber = null;
             String citizenMobileNumber = null;
+            String crmMobileNumber = null;
             Boolean crmUser=false;
             
             if(applicationStatus.equalsIgnoreCase(PENDINGFORASSIGNMENT) && action.equalsIgnoreCase(APPLY)) {
@@ -104,8 +105,12 @@ public class NotificationService {
             else  if (applicationStatus.equalsIgnoreCase(RESOLVED)  && action.equalsIgnoreCase(IM_WF_RESOLVE)){
             	Map<String, String> reassigneeDetails  = getHRMSEmployee(request,"COMPLAINANT");
             	employeeMobileNumber = reassigneeDetails.get("employeeMobile");
+            	
                 ProcessInstance processInstance = getEmployeeName(incidentWrapper.getIncident().getTenantId(),incidentWrapper.getIncident().getIncidentId(),request.getRequestInfo(),IM_WF_RESOLVE);
                 citizenMobileNumber=processInstance.getAssigner().getMobileNumber();
+                
+                processInstance = getEmployeeName(incidentWrapper.getIncident().getTenantId(),incidentWrapper.getIncident().getIncidentId(),request.getRequestInfo(),ASSIGN);
+                crmMobileNumber=processInstance.getAssigner().getMobileNumber();
             }
             else  if(applicationStatus.equalsIgnoreCase(PENDINGFORASSIGNMENT) && action.equalsIgnoreCase(IM_WF_REOPEN)) {
                 ProcessInstance processInstance = getEmployeeName(incidentWrapper.getIncident().getTenantId(),incidentWrapper.getIncident().getIncidentId(),request.getRequestInfo(),IM_WF_RESOLVE);
@@ -120,6 +125,9 @@ public class NotificationService {
             else  if (applicationStatus.equalsIgnoreCase(CLOSED_AFTER_RESOLUTION) && action.equalsIgnoreCase(CLOSE)) {
                 ProcessInstance processInstance = getEmployeeName(incidentWrapper.getIncident().getTenantId(),incidentWrapper.getIncident().getIncidentId(),request.getRequestInfo(),IM_WF_RESOLVE);
                 employeeMobileNumber = processInstance.getAssigner().getMobileNumber();
+                
+                Map<String, String> reassigneeDetails  = getHRMSEmployee(request,"COMPLAINANT");
+            	citizenMobileNumber = reassigneeDetails.get("employeeMobile");
             }
             else if(applicationStatus.equalsIgnoreCase(PENDINGATVENDOR) && action.equalsIgnoreCase(REASSIGN))
             {
@@ -153,7 +161,7 @@ public class NotificationService {
                                     notificationUtil.sendSMS(tenantId, smsRequests);
                                 }
                             }
-                        } else {
+                        } else if (entry.getKey().equalsIgnoreCase(EMPLOYEE)) {
                             for (String msg : entry.getValue()) {
                                 List<SMSRequest> smsRequests = new ArrayList<>();
                                 smsRequests = enrichSmsRequest(employeeMobileNumber, msg);
@@ -161,6 +169,17 @@ public class NotificationService {
                                     notificationUtil.sendSMS(tenantId, smsRequests);
                                 }
                             }
+                        }
+                        else {
+                        	
+                                for (String msg : entry.getValue()) {
+                                    List<SMSRequest> smsRequests = new ArrayList<>();
+                                    smsRequests = enrichSmsRequest(crmMobileNumber, msg);
+                                    if (!CollectionUtils.isEmpty(smsRequests)) {
+                                        notificationUtil.sendSMS(tenantId, smsRequests);
+                                    }
+                                }
+                            
                         }
                     }
 
@@ -190,6 +209,7 @@ public class NotificationService {
 
         String messageForCitizen = null;
         String messageForEmployee = null;
+        String messageForCRM=null;
         String defaultMessage = null;
         Boolean crmUser=false;
 
@@ -408,6 +428,12 @@ public class NotificationService {
                 log.info("No message Found For Citizen On Topic : " + topic);
                 return null;
             }
+            
+            messageForCRM = notificationUtil.getCustomizedMsg(request.getWorkflow().getAction(), applicationStatus, CRM, localizationMessage);
+            if (messageForCRM == null) {
+                log.info("No message Found For CRM On Topic : " + topic);
+                return null;
+            }
 
 //            defaultMessage = notificationUtil.getDefaultMsg(CITIZEN, localizationMessage);
 //            if (defaultMessage == null) {
@@ -447,17 +473,17 @@ public class NotificationService {
                 return null;
             }
 
-//            defaultMessage = notificationUtil.getDefaultMsg(CITIZEN, localizationMessage);
-//            if (defaultMessage == null) {
-//                log.info("No default message Found For Topic : " + topic);
-//                return null;
-//            }
+            messageForCitizen = notificationUtil.getCustomizedMsg(request.getWorkflow().getAction(), applicationStatus, CITIZEN, localizationMessage);
+            if (messageForCitizen == null) {
+                log.info("No message Found For Citizen On Topic : " + topic);
+                return null;
+            }
 
             ProcessInstance processInstance = getEmployeeName(incidentWrapper.getIncident().getTenantId(),incidentWrapper.getIncident().getIncidentId(),request.getRequestInfo(),IM_WF_RESOLVE);
 
-            if(defaultMessage.contains("{status}"))
-                defaultMessage = defaultMessage.replace("{status}", localisedStatus);
-
+//            if(defaultMessage.contains("{status}"))
+//                defaultMessage = defaultMessage.replace("{status}", localisedStatus);
+//
 
 //            if(messageForEmployee.contains("{rating}"))
 //                messageForEmployee=messageForEmployee.replace("{rating}",incidentWrapper.getIncident().getRating().toString());
@@ -550,10 +576,20 @@ public class NotificationService {
             messageForEmployee = messageForEmployee.replace("{download_link}", config.getMobileDownloadLink());
         }
 
+        
+        if(messageForCRM != null) {
+        	messageForCRM = messageForCRM.replace("{ticket_type}", incidentWrapper.getIncident().getIncidentType());
+        	messageForCRM = messageForCRM.replace("{incidentId}", incidentWrapper.getIncident().getIncidentId());
+        	messageForCRM = messageForCRM.replace("{date}", date.format(formatter));
+        	messageForCRM = messageForCRM.replace("{download_link}", config.getMobileDownloadLink());
+        }
         if(messageForCitizen!=null)
         message.put(CITIZEN, Arrays.asList(new String[] {messageForCitizen}));
         message.put(EMPLOYEE, Arrays.asList(messageForEmployee));
-        log.info("message being sent is  "+ messageForEmployee + " , " + messageForCitizen);
+        if(messageForCRM!=null)
+        message.put(CRM, Arrays.asList(messageForCRM));
+
+        log.info("message being sent is  "+ messageForEmployee + " , " + messageForCitizen + " , " + messageForCRM );
         return message;
     }
 

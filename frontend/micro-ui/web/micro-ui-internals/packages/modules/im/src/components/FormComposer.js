@@ -13,7 +13,7 @@ import {
   SubmitBar,
   LabelFieldPair,
   Header,
-} from "@egovernments/digit-ui-react-components";
+} from "@selco/digit-ui-react-components";
 
 import { useTranslation } from "react-i18next";
 
@@ -76,9 +76,7 @@ export const FormComposer = (props) => {
             {section.body.map((field, index) => {
               return (
                 <React.Fragment key={index}>
-                  {errors[field.populators.name] && (field.populators?.validate ? errors[field.populators.validate] : true) && (
-                    <CardLabelError>{field.populators.error}</CardLabelError>
-                  )}
+                  
                   <LabelFieldPair>
                     <CardLabel>
                       {field.label}
@@ -86,6 +84,9 @@ export const FormComposer = (props) => {
                     </CardLabel>
                     <div className="field">{fieldSelector(field.type, field.populators)}</div>
                   </LabelFieldPair>
+                  {errors[field.populators.name] && (field.populators?.validate ? errors[field.populators.validate] : true) && (
+                    <CardLabelError>{field.populators.error}</CardLabelError>
+                  )}
                 </React.Fragment>
               );
             })}

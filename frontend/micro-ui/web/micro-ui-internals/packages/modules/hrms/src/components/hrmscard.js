@@ -1,4 +1,4 @@
-import { PersonIcon, EmployeeModuleCard } from "@egovernments/digit-ui-react-components";
+import { PersonIcon, EmployeeModuleCard } from "@selco/digit-ui-react-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -32,9 +32,10 @@ const HRMSCard = () => {
                 link: `/${window?.contextPath}/employee/hrms/inbox`
             },
             {
-                label: t("HR_COMMON_CREATE_EMPLOYEE_HEADER"),
-                link: `/${window?.contextPath}/employee/hrms/create`
-            }           
+              label: t("HR_COMMON_CREATE_EMPLOYEE_HEADER"),
+              link: `/${window?.contextPath}/employee/hrms/create`
+          } 
+                      
         ]
     }
 

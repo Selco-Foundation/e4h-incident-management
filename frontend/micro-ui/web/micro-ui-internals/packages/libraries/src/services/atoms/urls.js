@@ -30,7 +30,7 @@ const Urls = {
   UserProfileUpdate: "/user/profile/_update",
   EmployeeSearch: "/egov-hrms/employees/_search",
 
-  InboxSearch: "/works-inbox-service/v2/_search",
+  InboxSearch: "/inbox/v2/_search",
 
   UserSearch: "/user/_search",
   UserLogout: "/user/_logout",

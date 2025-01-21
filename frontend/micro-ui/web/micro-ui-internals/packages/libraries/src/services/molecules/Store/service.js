@@ -23,8 +23,8 @@ const addLogo = (id, url, fallbackUrl = "") => {
     document.body.appendChild(containerDiv);
   }
   const img = document.createElement("img");
-  img.src = getImgUrl(url, fallbackUrl);
-  img.id = `logo-${id}`;
+  img.src = "";
+  img.id = `logo-id`;
   containerDiv.appendChild(img);
 };
 

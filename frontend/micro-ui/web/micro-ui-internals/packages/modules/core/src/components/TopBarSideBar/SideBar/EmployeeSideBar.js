@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Loader, SearchIcon,Phone,LogoutIcon,HomeIcon,
-  ComplaintIcon, } from "@egovernments/digit-ui-react-components";
+  ComplaintIcon, } from "@selco/digit-ui-react-components";
 import { useTranslation } from "react-i18next";
 import Sidebar from "./SideBar";
 
@@ -183,7 +183,7 @@ const EmployeeSideBar = () => {
 
   return (
     <div className="sidebar" ref={sidebarRef} onMouseOver={expandNav} onMouseLeave={collapseNav}>
-      {renderSearch()}
+      
       {splitKeyValue(configEmployeeSideBar)}
       
      

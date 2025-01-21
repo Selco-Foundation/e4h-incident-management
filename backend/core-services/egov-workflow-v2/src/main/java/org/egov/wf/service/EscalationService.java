@@ -1,22 +1,27 @@
 package org.egov.wf.service;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.wf.config.WorkflowConfig;
 import org.egov.wf.producer.Producer;
 import org.egov.wf.repository.EscalationRepository;
 import org.egov.wf.util.EscalationUtil;
+import org.egov.wf.web.models.IMEscalationInstance;
+import org.egov.wf.web.models.IMEscalationRequest;
 import org.egov.wf.web.models.Escalation;
 import org.egov.wf.web.models.EscalationSearchCriteria;
 import org.egov.wf.web.models.ProcessInstance;
-import org.egov.wf.web.models.ProcessInstanceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class EscalationService {
 
 
@@ -91,16 +96,23 @@ public class EscalationService {
             Integer numberOfBusinessIds = businessIds.size();
             Integer batchSize = config.getEscalationBatchSize();
 
-            for(int i = 0; i < numberOfBusinessIds; i = i + batchSize){
+            for(int i = 0; i < numberOfBusinessIds; i = i +1){
 
                 // Processing the businessIds in batches
-                Integer start = i;
-                Integer end = ((i + batchSize) < numberOfBusinessIds ? (i + batchSize) : numberOfBusinessIds) ;
+//                Integer start = i;
+//                Integer end = ((i + batchSize) < numberOfBusinessIds ? (i + batchSize) : numberOfBusinessIds) ;
 
-                List<ProcessInstance> processInstances = escalationUtil.getProcessInstances(tenantId, businessIds.subList(start,end), escalation);
-                processInstances = workflowService.transition(new ProcessInstanceRequest(requestInfo, processInstances));
-                producer.push(escalation.getTopic(),new ProcessInstanceRequest(requestInfo, processInstances));
-
+                IMEscalationInstance processInstance=new IMEscalationInstance();
+            	processInstance.setBusinessId(businessIds.get(i));
+            	processInstance.setTenantId(tenantId);
+            	processInstance.setAuthToken(requestInfo.getAuthToken());
+            	processInstance.setUserInfo(requestInfo.getUserInfo());
+            	List<IMEscalationInstance> processInstances=new ArrayList<IMEscalationInstance>();
+            	processInstances.add(processInstance);
+            	IMEscalationRequest processInstanceRequest=new IMEscalationRequest();
+            	processInstanceRequest.setImEscalationInstance(processInstances);
+            	log.info("pushing to topic:  "+escalation.getTopic());
+            	producer.push(escalation.getTopic(),processInstanceRequest);
             }
 
         }

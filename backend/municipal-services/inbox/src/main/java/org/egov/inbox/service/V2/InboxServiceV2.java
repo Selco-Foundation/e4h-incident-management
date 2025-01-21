@@ -71,9 +71,15 @@ public class InboxServiceV2 {
         hashParamsWhereverRequiredBasedOnConfiguration(inboxRequest.getInbox().getModuleSearchCriteria(), inboxQueryConfiguration);
         List<Inbox> items = getInboxItems(inboxRequest, inboxQueryConfiguration.getIndex());
         enrichProcessInstanceInInboxItems(items);
-        Integer totalCount = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? 0 : getTotalApplicationCount(inboxRequest, inboxQueryConfiguration.getIndex());
-        List<HashMap<String, Object>> statusCountMap = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? new ArrayList<>() : getStatusCountMap(inboxRequest, inboxQueryConfiguration.getIndex());
-        Integer nearingSlaCount = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? 0 : getApplicationsNearingSlaCount(inboxRequest, inboxQueryConfiguration.getIndex());
+        //Integer totalCount = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? 0 : getTotalApplicationCount(inboxRequest, inboxQueryConfiguration.getIndex());
+        //List<HashMap<String, Object>> statusCountMap = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? new ArrayList<>() : getStatusCountMap(inboxRequest, inboxQueryConfiguration.getIndex());
+        //Integer nearingSlaCount = CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus()) ? 0 : getApplicationsNearingSlaCount(inboxRequest, inboxQueryConfiguration.getIndex());
+        
+        Integer totalCount = getTotalApplicationCount(inboxRequest, inboxQueryConfiguration.getIndex());
+        List<HashMap<String, Object>> statusCountMap = getStatusCountMap(inboxRequest, inboxQueryConfiguration.getIndex());
+        Integer nearingSlaCount = getApplicationsNearingSlaCount(inboxRequest, inboxQueryConfiguration.getIndex());
+        
+        
         InboxResponse inboxResponse = InboxResponse.builder().items(items).totalCount(totalCount).statusMap(statusCountMap).nearingSlaCount(nearingSlaCount).build();
 
         return inboxResponse;
@@ -118,10 +124,10 @@ public class InboxServiceV2 {
 
     private List<Inbox> getInboxItems(InboxRequest inboxRequest, String indexName){
         List<BusinessService> businessServices = workflowService.getBusinessServices(inboxRequest);
-        enrichActionableStatusesFromRole(inboxRequest, businessServices);
-        if(CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus())){
-            return new ArrayList<>();
-        }
+//        enrichActionableStatusesFromRole(inboxRequest, businessServices);
+//        if(CollectionUtils.isEmpty(inboxRequest.getInbox().getProcessSearchCriteria().getStatus())){
+//            return new ArrayList<>();
+//        }
         Map<String, Object> finalQueryBody = queryBuilder.getESQuery(inboxRequest, Boolean.TRUE);
         try {
             String q = mapper.writeValueAsString(finalQueryBody);
@@ -182,8 +188,8 @@ public class InboxServiceV2 {
         Map<String, Object> finalQueryBody = queryBuilder.getStatusCountQuery(inboxRequest);
         StringBuilder uri = getURI(indexName, SEARCH_PATH);
         Map<String, Object> response = (Map<String, Object>) serviceRequestRepository.fetchESResult(uri, finalQueryBody);
-        Set<String> actionableStatuses = new HashSet<>(inboxRequest.getInbox().getProcessSearchCriteria().getStatus());
-        HashMap<String, Object> statusCountMap = parseStatusCountMapFromAggregationResponse(response, actionableStatuses);
+        //Set<String> actionableStatuses = new HashSet<>(inboxRequest.getInbox().getProcessSearchCriteria().getStatus());
+        HashMap<String, Object> statusCountMap = parseStatusCountMapFromAggregationResponse(response);
         List<HashMap<String, Object>> transformedStatusMap = transformStatusMap(inboxRequest, statusCountMap);
         return transformedStatusMap;
     }
@@ -192,7 +198,12 @@ public class InboxServiceV2 {
 
         Long currentDate = System.currentTimeMillis(); //current time
         Map<String, Object> auditDetails = (Map<String, Object>) ((Map<String, Object>) data).get(AUDIT_DETAILS_KEY);
-        String stateUuid = JsonPath.read(data, STATE_UUID_PATH);
+        
+        String stateUuid =null;
+        
+        if(JsonPath.read(data,"$.currentProcessInstance")!=null)
+        	stateUuid= JsonPath.read(data, STATE_UUID_PATH);
+        if(stateUuid !=null) {
         if(stateUuidSlaMap.containsKey(stateUuid)){
             if (!ObjectUtils.isEmpty(auditDetails.get(LAST_MODIFIED_TIME_KEY))) {
                 Long lastModifiedTime = ((Number) auditDetails.get(LAST_MODIFIED_TIME_KEY)).longValue();
@@ -207,7 +218,7 @@ public class InboxServiceV2 {
 
                 return Long.valueOf(Math.round((businessServiceSLA - (currentDate - createdTime)) / ((double) (24 * 60 * 60 * 1000))));
             }
-        }
+        }}
         return null;
     }
 
@@ -236,13 +247,13 @@ public class InboxServiceV2 {
         return statusCountMapTransformed;
     }
 
-    private HashMap<String, Object> parseStatusCountMapFromAggregationResponse(Map<String, Object> response, Set<String> actionableStatuses) {
+    private HashMap<String, Object> parseStatusCountMapFromAggregationResponse(Map<String, Object> response) {
         List<HashMap<String, Object>> statusCountResponse = new ArrayList<>();
         if(!CollectionUtils.isEmpty((Map<String, Object>) response.get(AGGREGATIONS_KEY))){
             List<Map<String, Object>> statusCountBuckets = JsonPath.read(response, STATUS_COUNT_AGGREGATIONS_BUCKETS_PATH);
             HashMap<String, Object> statusCountMap = new HashMap<>();
             statusCountBuckets.forEach(bucket -> {
-                if(actionableStatuses.contains(bucket.get(KEY)))
+                //if(actionableStatuses.contains(bucket.get(KEY)))
                     statusCountMap.put((String)bucket.get(KEY), bucket.get(DOC_COUNT_KEY));
             });
             statusCountResponse.add(statusCountMap);
@@ -315,6 +326,7 @@ public class InboxServiceV2 {
 
             });
         }else{
+        	log.info("Fetching Nearing SLA Count");
             businessServiceVsStateUuids.keySet().forEach(businessService -> {
                 HashSet<String> setOfUuids = businessServiceVsStateUuids.get(businessService);
                 businessServiceVsUuidsBasedOnSearchCriteria.put(businessService, new ArrayList<>(setOfUuids));
@@ -331,7 +343,7 @@ public class InboxServiceV2 {
         for(int i = 0; i < businessServices.size(); i++){
             String businessService = businessServices.get(i);
             Long businessServiceSla = businessServiceSlaMap.get(businessService);
-            inboxRequest.getInbox().getProcessSearchCriteria().setStatus(businessServiceVsUuidsBasedOnSearchCriteria.get(businessService));
+            //inboxRequest.getInbox().getProcessSearchCriteria().setStatus(businessServiceVsUuidsBasedOnSearchCriteria.get(businessService));
             Map<String, Object> finalQueryBody = queryBuilder.getNearingSlaCountQuery(inboxRequest, businessServiceSla);
             StringBuilder uri = getURI(indexName, COUNT_PATH);
             Map<String, Object> response = (Map<String, Object>) serviceRequestRepository.fetchESResult(uri, finalQueryBody);

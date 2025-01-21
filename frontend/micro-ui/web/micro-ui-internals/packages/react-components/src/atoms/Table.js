@@ -21,7 +21,7 @@ const IndeterminateCheckbox = forwardRef(
       <React.Fragment>
         <CheckBox
           inputRef={resolvedRef}
-          {...rest}       
+          {...rest}      
         />
       </React.Fragment>
     )
@@ -134,6 +134,9 @@ const Table = ({
   const [toast, setToast] = useState({show : false, label : "", error : false});
   const iPadMaxWidth=1024;
   const iPadMinWidth=768
+  const tableWrapperRef = useRef(null); // Ref for the table wrapper
+  const paginationRef = useRef(null); // Ref for the pagination container
+
   const [isIpadView, setIsIpadView] = React.useState(window.innerWidth <= iPadMaxWidth && window.innerWidth>=iPadMinWidth);
   const onResize = () => {
     if (window.innerWidth >=iPadMinWidth && window.innerWidth <= iPadMaxWidth ) {
@@ -163,7 +166,7 @@ const Table = ({
 
 
   useEffect(() => setGlobalFilter(onSearch), [onSearch, setGlobalFilter,data]);
-  
+ 
   const handleSelection = async () => {
     const selectedRows = rows?.filter(ele => Object.keys(selectedRowIds)?.includes(ele?.id))
     const response = await tableSelectionHandler(selectedRows,t)
@@ -186,47 +189,49 @@ const Table = ({
   //use case -> without this if we enter string to search and then click on it's attendence checkbox or skill selector for that matter then the global filtering resets and whole table is shown
   return (
     <React.Fragment>
-      <div style={{marginTop:isIpadView? "210px":"none", marginLeft:isIpadView? -20:"none"}}>
-      <span className={customTableWrapperClassName}>
-        {tableTopComponent ? tableTopComponent : null}
-        <table className={className} {...getTableProps()} style={styles} ref={tableRef} {...getNoColumnBorder(noColumnBorder)}>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {showAutoSerialNo && (
-                  <th style={{ verticalAlign: "top" }}>
-                    {showAutoSerialNo && typeof showAutoSerialNo == "string" ? t(showAutoSerialNo) : t("TB_SNO")}
-                  </th>
-                )}
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} style={column?.id === 'selection' ? { minWidth: '100px' } : { verticalAlign: "top", textAlign: `${column?.headerAlign ? column?.headerAlign : "left"}` }}>
-                    {column.render("Header")}
-                    <span>{column.isSorted ? column.isSortedDesc ? <SortDown /> : <SortUp /> : ""}</span>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row, i) => {
-              // rows.slice(0, 10).map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} onClick={()=>onClickRow(row)} className={rowClassName}>
-                  {showAutoSerialNo && <td>{i + 1}</td>}
-                  {row.cells.map((cell) => {
-                    return (
-                      <td
-                        // style={{ padding: "20px 18px", fontSize: "16px", borderTop: "1px solid grey", textAlign: "left", verticalAlign: "middle" }}
-                        {...cell.getCellProps([
-                          // {
-                          //   className: cell.column.className,
-                          //   style: cell.column.style,
-                          // },
-                          // getColumnProps(cell.column),
-                          getCellProps(cell),
-                        ])}
-                      >
+ <div style={{ marginTop: isIpadView ? "210px" : "none", marginLeft: isIpadView ? -20 : "none" }}>
+      <div style={{ overflowX: "auto" }} ref={tableWrapperRef}>
+        {/* Table */}
+        <div style={{ display: "inline-block", minWidth: "100%" }}>
+          <table
+            className={className}
+            {...getTableProps()}
+            style={styles}
+            ref={tableRef}
+            {...getNoColumnBorder(noColumnBorder)}
+          >
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {showAutoSerialNo && (
+                    <th style={{ verticalAlign: "top" }}>
+                      {showAutoSerialNo && typeof showAutoSerialNo == "string" ? t(showAutoSerialNo) : t("TB_SNO")}
+                    </th>
+                  )}
+                  {headerGroup.headers.map((column) => (
+                    <th
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      style={
+                        column?.id === "selection"
+                          ? { minWidth: "100px" }
+                          : { verticalAlign: "top", textAlign: `${column?.headerAlign ? column?.headerAlign : "left"}` }
+                      }
+                    >
+                      {column.render("Header")}
+                      <span>{column.isSorted ? (column.isSortedDesc ? <SortDown /> : <SortUp />) : ""}</span>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row, i) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} onClick={() => onClickRow(row)} className={rowClassName}>
+                    {showAutoSerialNo && <td>{i + 1}</td>}
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps([getCellProps(cell)])}>
                         {cell.attachment_link ? (
                           <a style={{ color: "#1D70B8" }} href={cell.attachment_link}>
                             {cell.render("Cell")}
@@ -235,16 +240,25 @@ const Table = ({
                           <React.Fragment> {cell.render("Cell")} </React.Fragment>
                         )}
                       </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </span>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Pagination */}
       {isPaginationRequired && (
-        <div className="pagination dss-white-pre">
+        <div
+          className="pagination dss-white-pre"
+          ref={paginationRef}
+          style={{
+            marginTop: "8px",
+            overflow: "hidden",
+            width:"0px !important"
+          }}
+        >
           {`${t("CS_COMMON_ROWS_PER_PAGE")} :`}
           <select
             className="cp"
