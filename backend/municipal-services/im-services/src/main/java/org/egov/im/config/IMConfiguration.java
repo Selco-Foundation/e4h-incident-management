@@ -109,6 +109,12 @@ public class IMConfiguration {
 
     @Value("${im.kafka.update.topic}")
     private String updateTopic;
+    
+    @Value("${im.kafka.create.topic.indexer}")
+    private String createTopicIndexer;
+
+    @Value("${im.kafka.update.topic.indexer}")
+    private String updateTopicIndexer;
 
     @Value("${im.default.offset}")
     private Integer defaultOffset;

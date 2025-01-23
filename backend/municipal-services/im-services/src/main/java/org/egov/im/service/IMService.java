@@ -69,6 +69,7 @@ public class IMService {
         enrichmentService.enrichCreateRequest(request);
         workflowService.updateWorkflowStatus(request);
         producer.push(tenantId,config.getCreateTopic(),request);
+        producer.push(tenantId,config.getCreateTopicIndexer(),request);
         return request;
     }
 
@@ -130,6 +131,8 @@ public class IMService {
         enrichmentService.enrichUpdateRequest(request);
         workflowService.updateWorkflowStatus(request);
         producer.push(tenantId,config.getUpdateTopic(),request);
+        producer.push(tenantId,config.getUpdateTopicIndexer(),request);
+
         return request;
     }
 
