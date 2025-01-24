@@ -52,7 +52,8 @@ public class EnrichmentService {
 
         incident.setAccountId(incidentRequest.getIncident().getReporter().getUuid());        
         incident.setReporterTenant(incidentRequest.getIncident().getReporter().getTenantId());
-		incident.setBlock(toCamelCase(incident.getBlock()));
+
+        incident.setBlock(toCamelCase(incident.getBlock()));
         incident.setDistrict(toCamelCase(incident.getDistrict()));
 
         userService.callUserService(incidentRequest);
@@ -90,7 +91,7 @@ public class EnrichmentService {
         RequestInfo requestInfo = incidentRequest.getRequestInfo();
         Incident incident = incidentRequest.getIncident();
         AuditDetails auditDetails = utils.getAuditDetails(requestInfo.getUserInfo().getUuid(), incident,false);
-		incident.setBlock(toCamelCase(incident.getBlock()));
+        incident.setBlock(toCamelCase(incident.getBlock()));
         incident.setDistrict(toCamelCase(incident.getDistrict()));
         incident.setAuditDetails(auditDetails);
 
@@ -150,9 +151,8 @@ public class EnrichmentService {
         return idResponses.stream()
                 .map(IdResponse::getId).collect(Collectors.toList());
     }
-	
-	
-	public static String toCamelCase(String str)
+    
+    public static String toCamelCase(String str)
 	{
 	    if (str == null || str.isEmpty()) {
         return str;

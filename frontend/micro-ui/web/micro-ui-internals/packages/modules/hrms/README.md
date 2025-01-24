@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-npm install --save @egovernments/digit-ui-module-hrms
+npm install --save @selco/digit-ui-module-hrms
 ```
 
 ## Limitation
@@ -23,7 +23,9 @@ frontend/micro-ui/web/package.json
 ```
 
 ```json
-"@egovernments/digit-ui-module-hrms":"^1.5.0",
+
+"@selco/digit-ui-module-hrms":"^1.5.0",
+
 ```
 
 then navigate to App.js
@@ -36,7 +38,7 @@ then navigate to App.js
 ```jsx
 /** add this import **/
 
-import { initHRMSComponents } from "@egovernments/digit-ui-module-hrms";
+import { initHRMSComponents } from "@selco/digit-ui-module-hrms";
 
 /** inside enabledModules add this new module key **/
 

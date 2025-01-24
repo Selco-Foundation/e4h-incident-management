@@ -1,7 +1,8 @@
-import { Card, PersonIcon } from "@egovernments/digit-ui-react-components";
+import { Card, PersonIcon } from "@selco/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+
 
 const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
       .filter(({ roles }) => roles.some((e) => userRoles.map(({ code }) => code).includes(e)) || !roles.length);
     setLinks(linksToShow);
   }, []);
+
 
   const GetLogo = () => (
     <div className="header" style={{paddingBottom:"0px", paddingTop:"25px"}}>
@@ -36,6 +38,7 @@ const InboxLinks = ({ parentRoute, businessService, allLinks, headerText }) => {
           })}
         </div>
       </div>
+      
     </Card>
   );
 };

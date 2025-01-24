@@ -1,4 +1,4 @@
-import { Dropdown, Hamburger, TopBar as TopBarComponent } from "@egovernments/digit-ui-react-components";
+import { Dropdown, Hamburger, TopBar as TopBarComponent } from "@selco/digit-ui-react-components";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import ChangeCity from "../ChangeCity";
@@ -134,7 +134,7 @@ const TopBar = ({
             </div>
             <div className="left">{showLanguageChange && <ChangeLanguage dropdown={true} />}</div>
             {userDetails?.access_token && (
-              <div className="left" style={{width:"130px"}}>
+              <div className="left" style={{width:"160px"}}>
                 <Dropdown
                   option={userOptions}
                   optionKey={"name"}

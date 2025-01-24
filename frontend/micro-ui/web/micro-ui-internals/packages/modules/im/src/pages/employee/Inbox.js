@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader, Header } from "@egovernments/digit-ui-react-components";
+import { Loader, Header } from "@selco/digit-ui-react-components";
 
 import DesktopInbox from "../../components/DesktopInbox";
 import MobileInbox from "../../components/MobileInbox";
@@ -35,14 +35,14 @@ const Inbox = () => {
         tenantId = codes
       }
 
-      console.log("searchParamssearchParamsNew",searchParams,userRoles,tenantId)
-
-      let response = await Digit.PGRService.count(tenantId, applicationStatus?.length > 0  ? {applicationStatus} : {} );
-      console.log("STEP6",response,searchParams?.filters?.pgrQuery?.phcType,tenantId)
-      if (response?.count) {
-        setTotalRecords(response.count);
-      }
+      //let response = await Digit.PGRService.count(tenantId, applicationStatus?.length > 0  ? {applicationStatus} : {} );
+      // if (response?.count) {
+      //   setTotalRecords(response.count);
+      // }
     })();
+  }, [searchParams]);
+  useEffect(() => {
+    setPageOffset(0);
   }, [searchParams]);
 
   const fetchNextPage = () => {
@@ -62,25 +62,24 @@ const Inbox = () => {
   };
 
   const onSearch = (params = "") => {
-    console.log("paramsparams",params,searchParams)
     setSearchParams({ ...searchParams, search: params });
   };
 
   // let complaints = Digit.Hooks.pgr.useInboxData(searchParams) || [];
-  console.log("searchParamssearchParams",searchParams)
   let tenant=""
   if(searchParams?.search?.phcType)
   {
     tenant = searchParams?.search?.phcType
   }
   let isMobile = Digit.Utils.browser.isMobile();
-  console.log("tenant",tenant)
-  let { data: complaints, isLoading } =isMobile? Digit.Hooks.pgr.useInboxData({ ...searchParams }):Digit.Hooks.pgr.useInboxData({ ...searchParams,offset: pageOffset, limit: pageSize }) ;
-  console.log("complai", complaints)
-
-
-console.log("totalRecords",totalRecords)
-  if (complaints?.length !== null) {
+  let { data: complaints, isLoading } =isMobile? Digit.Hooks.pgr.useInboxData({ ...searchParams, offset: pageOffset, limit: pageSize  }):Digit.Hooks.pgr.useInboxData({ ...searchParams,offset: pageOffset, limit: pageSize }) ;
+  useEffect(()=>{
+    if(complaints!==undefined && complaints.combinedRes.length!==0){
+      const total=complaints.total
+      setTotalRecords(total)
+    }
+  },[totalRecords, complaints]) 
+  if (complaints.length!==null) {
     if (isMobile) {
       return (
         <MobileInbox data={complaints} isLoading={isLoading} onFilterChange={handleFilterChange} onSearch={onSearch} searchParams={searchParams} />
@@ -90,7 +89,7 @@ console.log("totalRecords",totalRecords)
         <div>
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
           <Header>{t("ES_COMMON_INBOX")}</Header>
-          <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"0px"}}>
+          <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"15px"}}>
               <Link to={`/digit-ui/employee`}>{t("CS_COMMON_BACK")}</Link>
           </div> 
           </div>

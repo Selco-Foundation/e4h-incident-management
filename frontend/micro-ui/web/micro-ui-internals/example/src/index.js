@@ -3,28 +3,21 @@ import ReactDOM from "react-dom";
 
 import { initLibraries } from "@egovernments/digit-ui-libraries";
 // import { paymentConfigs, PaymentLinks, PaymentModule } from "@egovernments/digit-ui-module-common";
-import { DigitUI } from "@egovernments/digit-ui-module-core";
-import { initDSSComponents } from "@egovernments/digit-ui-module-dss";
+import { DigitUI } from "@selco/digit-ui-module-core";
+import { initDSSComponents } from "@selco/digit-ui-module-dss";
 import { initEngagementComponents } from "@egovernments/digit-ui-module-engagement";
-import { initHRMSComponents } from "@egovernments/digit-ui-module-hrms";
+import { initHRMSComponents } from "@selco/digit-ui-module-hrms";
 // import { initUtilitiesComponents } from  "@egovernments/digit-ui-module-utilities";
 import {initWorkbenchComponents} from "@egovernments/digit-ui-module-workbench";
-import { initIMComponents,IMReducers } from "@egovernments/digit-ui-module-pgr";
-import "@egovernments/digit-ui-css/example/index.css";
+import { initIMComponents,IMReducers } from "@selco/digit-ui-module-pgr";
+import "@selco/selco-css/dist/index.css";
 
 import { pgrCustomizations } from "./pgr";
 import { UICustomizations } from "./UICustomizations";
 
 var Digit = window.Digit || {};
 
-const enabledModules = ["IM", "DSS", "HRMS",
-"Workbench"
-,"PGR"
-//  "Engagement", "NDSS","QuickPayLinks", "Payment",
-  // "Utilities",
-//added to check fsm
-// "FSM"
-];
+const enabledModules = ["IM", "DSS", "HRMS","PGR"];
 
 const initTokens = (stateCode) => {
   const userType = window.sessionStorage.getItem("userType") || process.env.REACT_APP_USER_TYPE || "CITIZEN";

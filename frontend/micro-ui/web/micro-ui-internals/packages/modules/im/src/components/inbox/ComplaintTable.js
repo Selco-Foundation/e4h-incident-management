@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "@egovernments/digit-ui-react-components";
+import { Table } from "@selco/digit-ui-react-components";
 
 const ComplaintTable = ({ t, columns, data, getCellProps, onNextPage, onPrevPage, currentPage, totalRecords, pageSizeLimit, onPageSizeChange }) => (
   
@@ -28,7 +28,8 @@ const ComplaintTable = ({ t, columns, data, getCellProps, onNextPage, onPrevPage
     onPageSizeChange={onPageSizeChange}
     pageSizeLimit={pageSizeLimit}
   />
-   </div>
+  </div>
+   
 );
-console.log("jhi", ComplaintTable)
+console.log("jhisss", ComplaintTable)
 export default ComplaintTable;

@@ -7,7 +7,10 @@
     "example",
     "packages/css",
     "packages/react-components",
-    "packages/modules/*"
+    "packages/modules/hrms",
+    "packages/modules/im",
+    "packages/modules/core",
+    "packages/modules/dss"
   ],
   "author": "JaganKumar <jagan.kumar@egov.org.in>",
   "license": "MIT",
@@ -50,7 +53,8 @@
   },
   "resolutions": {
     "**/@babel/runtime": "7.20.1",
-    "**/babel-preset-react-app": "10.0.0"
+    "**/babel-preset-react-app": "10.0.0",
+    "**/styled-components": "5.0.0"
   },
   "devDependencies": {
     "husky": "7.0.4",
@@ -63,9 +67,11 @@
     "*.{js,css,md}": "prettier --write"
   },
   "dependencies": {
+    "@egovernments/digit-ui-react-components": "1.8.0",
+    "@selco/digit-ui-react-components":"1.8.0",
+    "@selco/selco-css": "1.0.2",
     "lodash": "4.17.21",
     "microbundle-crl": "0.13.11",
-    "@egovernments/digit-ui-react-components": "1.8.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "6.15.8",

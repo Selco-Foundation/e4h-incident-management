@@ -1,4 +1,4 @@
-import { FormComposer, Loader, Modal } from "@egovernments/digit-ui-react-components";
+import { FormComposer, Loader, Modal } from "@selco/digit-ui-react-components";
 import set from "lodash/set";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";

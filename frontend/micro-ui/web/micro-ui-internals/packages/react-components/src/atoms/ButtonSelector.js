@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 
 const ButtonSelector = (props) => {
   let theme = "selector-button-primary";
+  const isMobile = window.Digit.Utils.browser.isMobile();
+  const language=JSON.parse(sessionStorage.getItem("Digit.locale"))?.value
   switch (props.theme) {
     case "border":
       theme = "selector-button-border";
@@ -18,7 +20,7 @@ const ButtonSelector = (props) => {
       form={props.formId}
       onClick={props.onSubmit}
       disabled={props.isDisabled}
-      style={props.style ? {...props.style,height:"3rem"} : null}
+      style={props.style ? {...props.style,height:"3rem", paddingLeft:isMobile && language==="ka_IN" ? "10px":"24px", paddingRight:isMobile && language==="ka_IN" ? "10px":"24px"} : null}
     >
       <h2 style={{ ...props?.textStyles, ...{ width: "100%",margin:"auto" } }}>{props.label}</h2>
     </button>

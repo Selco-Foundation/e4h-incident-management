@@ -185,12 +185,13 @@ const NavBar = ({ open, toggleSidebar, profileItem, menuItems, onClose, Footer, 
   marginBottom: '-30px'
 }} />
           <div className="drawer-list">
-            {isEmployee ? renderSearch() : null}
+           <div style={{marginTop:"10px"}}>
             {menuItems?.map((item, index) => (
               <div className={`sidebar-list ${pathname === item.link ? "active" : ""}`} key={index}>
                 <MenuItem item={item} />
               </div>
             ))}
+            </div>
             <div className={`sidebar-list`}>
               <div className="side-bar-footer">{Footer}</div>
             </div>

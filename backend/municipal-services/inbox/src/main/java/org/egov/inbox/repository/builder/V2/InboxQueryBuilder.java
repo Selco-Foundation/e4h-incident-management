@@ -268,8 +268,9 @@ public class InboxQueryBuilder implements QueryBuilderInterface {
 
     @Override
     public Map<String, Object> getStatusCountQuery(InboxRequest inboxRequest) {
-        Map<String, Object> baseEsQuery = getBaseESQueryBody(inboxRequest, Boolean.FALSE);
+        Map<String, Object> baseEsQuery = getESQuery(inboxRequest, Boolean.FALSE);
         appendStatusCountAggsNode(baseEsQuery);
+        log.info("status query====",baseEsQuery );
         return baseEsQuery;
     }
 
@@ -282,6 +283,7 @@ public class InboxQueryBuilder implements QueryBuilderInterface {
         Long gteParam = currenTimeInMillis - slotLimit;
 
         appendNearingSlaCountClause(baseEsQuery, gteParam, lteParam);
+        log.info("+++++++++++++++NEARING SLA QUERY+++++++++++++++++",baseEsQuery);
         return baseEsQuery;
     }
 
@@ -303,7 +305,7 @@ public class InboxQueryBuilder implements QueryBuilderInterface {
         Map<String, Object> statusCountNode = (Map<String, Object>) aggsNode.get("statusCount");
         statusCountNode.put("terms", new HashMap<>());
         Map<String, Object> innerTermsQuery = (Map<String, Object>) statusCountNode.get("terms");
-        innerTermsQuery.put("field", "Data.currentProcessInstance.state.uuid.keyword");
+        innerTermsQuery.put("field", "Data.incident.applicationStatus.keyword");
         baseEsQuery.put("aggs", aggsNode);
     }
 

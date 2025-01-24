@@ -50,7 +50,7 @@ const Modal = ({
         <HeaderBar main={headerBarMain} end={headerBarEnd} style={headerBarMainStyle ? headerBarMainStyle : {}}/>
         <div className="popup-module-main" style={popupModuleMianStyles ? popupModuleMianStyles : {}}>
           {children}
-          <div className="popup-module-action-bar" style={isOBPSFlow?!mobileView?{marginRight:"18px"}:{position:"absolute",bottom:"5%",right:"10%",left:window.location.href.includes("employee")?"0%":"7%"}:popupModuleActionBarStyles}>
+          <div className="popup-module-action-bar" style={isOBPSFlow?!mobileView?{marginRight:"18px"}:{position:"absolute",bottom:"5%",right:"10%",left:window.location.href.includes("employee")?"0%":"7%"}:{...popupModuleActionBarStyles, gap:"10px"}}>
             {actionCancelLabel ? <ButtonSelector textStyles={{margin:"0px", color: "white"}} theme="border" label={actionCancelLabel} onSubmit={actionCancelOnSubmit} style={isMobile? {...styles,height:"3rem"}:styles}/> : null}
             {!hideSubmit ? <ButtonSelector textStyles={{margin:"0px"}} label={actionSaveLabel} onSubmit={actionSaveOnSubmit} formId={formId} isDisabled={isDisabled} style={isMobile? {...styles,height:"3rem"}:styles}/> : null}
           </div>

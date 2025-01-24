@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-npm install --save @egovernments/digit-ui-module-dss
+npm install --save @selco/digit-ui-module-dss
 ```
 
 ## Limitation
@@ -23,7 +23,9 @@ frontend/micro-ui/web/package.json
 ```
 
 ```json
-"@egovernments/digit-ui-module-dss":"^1.5.0",
+
+"@selco/digit-ui-module-dss":"^1.5.0",
+
 ```
 
 then navigate to App.js
@@ -36,7 +38,7 @@ then navigate to App.js
 ```jsx
 /** add this import **/
 
-import { initDSSComponents } from "@egovernments/digit-ui-module-dss";
+import { initDSSComponents } from "@selco/digit-ui-module-dss";
 
 /** inside enabledModules add this new module key **/
 

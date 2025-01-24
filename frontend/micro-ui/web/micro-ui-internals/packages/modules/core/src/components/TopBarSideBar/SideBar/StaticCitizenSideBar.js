@@ -19,7 +19,7 @@ import {
   DeathIcon,
   FirenocIcon,
   LoginIcon
-} from "@egovernments/digit-ui-react-components";
+} from "@selco/digit-ui-react-components";
 import {Login} from "@egovernments/digit-ui-svg-components"
 import { Link, useLocation } from "react-router-dom";
 import SideBarMenu from "../../../config/sidebar-menu";
