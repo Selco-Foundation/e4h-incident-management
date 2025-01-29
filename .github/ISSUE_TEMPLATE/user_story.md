@@ -9,12 +9,12 @@ about: This template provides a basic structure for user story issues.
 **I want [an action or feature],**
 **So that [a reason or benefit].**
 
-## Acceptance Criteria
+## Acceptance Criteria 
 - [ ] Criteria 1: Describe the first acceptance criterion here.
 - [ ] Criteria 2: Describe the second acceptance criterion here.
 - [ ] Criteria 3: Describe additional criteria as needed.
 
-## Sprint Ready Checklist 
+## Sprint Ready Checklist (To be filled by dev team)
 1. - [ ] Acceptance criteria defined 
 2. - [ ] Team understands acceptance criteria 
 3. - [ ] Team has the required technical design/solution
