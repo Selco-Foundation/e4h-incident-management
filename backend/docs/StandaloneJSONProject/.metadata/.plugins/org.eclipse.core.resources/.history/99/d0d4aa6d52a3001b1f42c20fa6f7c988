@@ -1,0 +1,81 @@
+package com.readexcel.demo.entity;
+
+import java.util.List;
+
+import com.readexcel.demo.entity.jurisdiction.Jurisdiction;
+
+public class Employees {
+	private String tenantId;
+	private String employeeStatus;
+	private String dateOfAppointment;
+	private String employeeType;
+	private List<User>user;
+	private List<Jurisdiction> jurisdiction;
+	private List<Assignments>assignments;
+	private List<ServiceHistory> serviceHistory;
+	private List<Education> education;
+	private List<Test> test;
+	public String getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+	public String getEmployeeStatus() {
+		return employeeStatus;
+	}
+	public void setEmployeeStatus(String employeeStatus) {
+		this.employeeStatus = employeeStatus;
+	}
+	public String getDateOfAppointment() {
+		return dateOfAppointment;
+	}
+	public void setDateOfAppointment(String dateOfAppointment) {
+		this.dateOfAppointment = dateOfAppointment;
+	}
+	public String getEmployeeType() {
+		return employeeType;
+	}
+	public void setEmployeeType(String employeeType) {
+		this.employeeType = employeeType;
+	}
+	public List<User> getUser() {
+		return user;
+	}
+	public void setUser(List<User> user) {
+		this.user = user;
+	}
+	public List<Jurisdiction> getJurisdiction() {
+		return jurisdiction;
+	}
+	public void setJurisdiction(List<Jurisdiction> jurisdiction) {
+		this.jurisdiction = jurisdiction;
+	}
+	public List<Assignments> getAssignments() {
+		return assignments;
+	}
+	public void setAssignments(List<Assignments> assignments) {
+		this.assignments = assignments;
+	}
+	public List<ServiceHistory> getServiceHistory() {
+		return serviceHistory;
+	}
+	public void setServiceHistory(List<ServiceHistory> serviceHistory) {
+		this.serviceHistory = serviceHistory;
+	}
+	public List<Education> getEducation() {
+		return education;
+	}
+	public void setEducation(List<Education> education) {
+		this.education = education;
+	}
+	public List<Test> getTest() {
+		return test;
+	}
+	public void setTest(List<Test> test) {
+		this.test = test;
+	}
+	
+	
+
+}

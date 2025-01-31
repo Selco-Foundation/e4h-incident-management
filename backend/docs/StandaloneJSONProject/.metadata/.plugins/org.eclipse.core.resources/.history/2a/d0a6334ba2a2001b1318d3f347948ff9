@@ -1,0 +1,17 @@
+package com.readexcel.demo.entity;
+
+import java.util.List;
+
+import com.readexcel.demo.entity.jurisdiction.Jurisdiction;
+
+public class Employees {
+	private String tenantId;
+	private String employeeStatus;
+	private String dateOfAppointment;
+	private String employeeType;
+	private List<User>user;
+	private List<Jurisdiction> jurisdiction;
+	private List<Assignments>assignments;
+	
+
+}

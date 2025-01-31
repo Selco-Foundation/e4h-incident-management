@@ -1,0 +1,156 @@
+#url
+url=https://sujog-dev.odisha.gov.in/egov-hrms/employees/_create?tenantId=
+
+#input excel
+inexcel=/home/rajatp932/Rajat/Workspaces/StandaloneJSONProject/demo/User_Creation_Sheet_17.xlsx
+
+#output excel
+outexcel=/home/rajatp932/Rajat/Workspaces/StandaloneJSONProject/demo/result.xlsx
+
+#requestinfo
+apId:Rainmaker
+ver:.01
+action:
+did:1.0
+key:
+msgId:20170310130902|en_IN
+requesterId:
+authToken:065b42bb-392e-461a-aac6-667d1fd66035
+
+#jurisdictions
+hierarchy=ADMIN
+boundaryType=City
+
+#assignments
+appointDate=1617215400000
+fromdate=1617215400000
+
+#roles
+CITIZEN=Citizen
+EMPLOYEE=Employee
+SUPERUSER=Super User
+GO=Grievance Officer
+RO=Redressal Officer
+GA=Grivance Administrator
+GRO=Grievance Routing Officer
+Asset Administrator=Asset Administrator
+ULB Operator=ULB Operator
+EMPLOYEE ADMIN=EMPLOYEE ADMIN
+Property Approver=Property Approver
+Property Verifier=Property Verifier
+Financial Administrator=Financial Administrator
+AssetReportViewer=AssetReportViewer
+AssetCreator=AssetCreator
+PTIS_MASTER=PTIS Master
+PTIS_ADMIN=PTIS Admin
+TL_ADMIN=TL Admin
+TL_CREATOR=TL Creator
+COLL_OPERATOR=Collection Operator
+BANK_COLL_OPERATOR=Bank Collection Operator
+CSC_COLL_OPERATOR=CSC Collection Operator
+LEGACY_RECEIPT_CREATOR=Legacy Receipt Creator
+TL_APPROVER=TL Approver
+COLL_REP_VIEW=Collection Report Viewer
+testonecode112234324=test3test2
+testtwocode11234354=test4test1
+testonecode112234324=test3test21
+STORE INCHARGE=Store Incharge
+directortestcode112234324=director123456
+COMMISSIONER=Commissioner
+AE_CREATOR=Abstract Estimate Creator
+WORKS_FINANCIAL_APPROVER=Financials Approver
+DE_CREATOR=Detailed Estimate Creator
+LOA_CREATOR=LOA Creator
+WO_CREATOR=WO Creator
+WORKS_BILL_CREATOR=Works Bill Creator
+CONTRACTOR_ADVANCE_CREATOR=Contractor Advance creator
+MB_CREATOR=MB creator
+WORKS_APPROVER=Works Approver
+WORKS_ADMINISTRATOR=Works Administrator
+WORKS_MASTER_CREATOR=Works Master creator
+DGRO=Department Grievance Routing Officer
+CSR=Customer Support Representative
+PGR-ADMIN=PGR Administrator
+CEMP=Counter Employee
+FEMP=Field Employee
+PTADMIN=ULB Administrator
+STADMIN=State Administrator
+EGF_BILL_CREATOR=EGF Bill Creator
+EGF_BILL_APPROVER=EGF Bill Approver
+EGF_VOUCHER_CREATOR=Finance Voucher Creator
+EGF_VOUCHER_APPROVER=Finance Voucher Approver
+EGF_PAYMENT_CREATOR=Finance Payment Creator
+EGF_PAYMENT_APPROVER=Finance Payment Approver
+EGF_MASTER_ADMIN=Finance Master Admin
+EGF_REPORT_VIEW=Finance Report View
+COLL_RECEIPT_CREATOR=Collections Receipt Creator
+COLL_REMIT_TO_BANK=Collections Remitter
+SYS_INTEGRATOR_FINANCE=System Integrator Finance
+SYS_INTEGRATOR_WATER_SEW=System Integrator W&S
+TL_CEMP=TL Counter Employee
+TL_APPROVER=TL Approver
+EMPLOYEE_FINANCE=Employee Finance
+EGF_ADMINISTRATOR=Finance Adminsitrator
+PGR_LME=PGR Last Mile Employee
+TL_FIELD_INSPECTOR=TL Field Inspector
+TL_DOC_VERIFIER=TL doc verifier
+NOC_CEMP=NoC counter employee
+NOC_DOC_VERIFIER=NoC Doc Verifier
+NOC_FIELD_INSPECTOR=NoC Field Inpector
+NOC_APPROVER=NoC counter Approver
+BPA_ARCHITECT=BPA Architect
+BPA_CIVILENGINEER=BPA Civil Engineer
+BPA_ELECTRICALENGINEER=BPA Electrical Engineer
+BPA_STRUCTURALENGINEER=BPA Structural Engineer
+BPA_TOWNPLANNER=BPA Town Planner
+ANONYMOUS=Anonymous User
+BPAREG_APPROVER=BPAREG Approver
+BPAREG_DOC_VERIFIER=BPAREG doc verifier
+BPAREG_EMPLOYEE=BPAREG Employee
+BPA_APPROVER=BPA Services Approver
+BPA1_APPROVER=BPA1 Services Approver
+BPA2_APPROVER=BPA2 Services Approver
+BPA3_APPROVER=BPA3 Services Approver
+BPA4_APPROVER=BPA4 Services Approver
+BPA_VERIFIER=BPA Services verifier
+HRMS_ADMIN=HRMS ADMIN
+BPA_SUPERVISOR=BPA Supervisor
+BPA_FIELD_INSPECTOR=BPA Field Inspector
+BPA_NOC_VERIFIER=BPA NOC Verifier
+BPA2_APP_L1_VERIFIER=BPA2 App L1 Verifier
+BPA3_APP_L1_VERIFIER=BPA3 App L1 Verifier
+BPA3_APP_L2_VERIFIER=BPA3 App L2 Verifier
+BPA4_APP_L1_VERIFIER=BPA4 App L1 Verifier
+BPA4_APP_L2_VERIFIER=BPA4 App L2 Verifier
+BPA4_APP_L3_VERIFIER=BPA4 App L3 Verifier
+PT_CEMP=PT Counter Employee
+PT_DOC_VERIFIER=PT Doc Verifier
+PT_FIELD_INSPECTOR=PT Field Inspector
+PT_APPROVER=PT Counter Approver
+WS_CEMP=WS Counter Employee
+WS_DOC_VERIFIER=WS Document Verifier
+WS_FIELD_INSPECTOR=WS Field Inspector
+WS_APPROVER=WS Approver
+WS_CLERK=WS Clerk
+SW_CEMP=SW Counter Employee
+SW_DOC_VERIFIER=SW Document Verifier
+SW_FIELD_INSPECTOR=SW Field Inspector
+SW_APPROVER=SW Approver
+SW_CLERK=SW Clerk
+FIRE_NOC_APPROVER=Fire Noc Department Approver
+AIRPORT_AUTHORITY_APPROVER=Airport authority Approver
+CFC=Citizen Feedback Centre
+FSM_CREATOR_EMP=FSM Employee Application Creator
+FSM_EDITOR_EMP=FSM Employee Application Editor
+FSM_VIEW_EMP=FSM Employee Application Viewer
+FSM_REPORT_VIEWER=FSM Employee Report Viewer
+FSM_DASHBOARD_VIEWER=FSM Employee Dashboard Viewer
+FSM_ADMIN=FSM Administrator
+FSM_DSO=FSM Desluding Operator
+FSM_DRIVER=FSM Driver
+FSM_EMP_FSTPO=FSM FSTP Opperator
+FSM_COLLECTOR=FSM Payment Collector
+SYSTEM=System user
+ESCALATION_OFFICER1=Escalation Officer1
+ESCALATION_OFFICER2=Escalation Officer2
+

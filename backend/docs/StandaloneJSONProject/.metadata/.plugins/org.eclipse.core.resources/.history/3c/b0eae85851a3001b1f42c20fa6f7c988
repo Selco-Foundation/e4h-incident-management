@@ -1,0 +1,316 @@
+package com.readexcel.demo;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.odftoolkit.odfdom.doc.OdfDocument;
+import org.springframework.stereotype.Service;
+
+import com.readexcel.demo.entity.Employees;
+import com.readexcel.demo.entity.RequestInfo;
+
+
+@Service
+public class JsonApiCon {
+	
+
+	public List<PwcCustomer> readXLSXFile() throws Exception
+	    {
+			List<PwcCustomer> plist =new ArrayList();
+			List<RequestInfo> req = new ArrayList<RequestInfo>();
+			try {
+		        FileInputStream file = new FileInputStream(new File("F:/StandaloneJSONProject/demo/jsonxsl.xlsx"));
+		        XSSFWorkbook  wb = new XSSFWorkbook(file);   
+		        XSSFSheet sheet = wb.getSheetAt(0);
+		     
+		        Iterator<Row> rowIterator = sheet.iterator();
+		        int j=0;
+	            while (rowIterator.hasNext()) 
+	            {
+	            	j++;
+	            	if(j==1) {
+	            		rowIterator.next();
+	            	}
+	                Row row = rowIterator.next();
+	                //For each row, iterate through all the columns
+	                Iterator<Cell> cellIterator = row.cellIterator();
+	                int i=0;
+	                Object cellvalue = null;
+	               
+	                RequestInfo r= new RequestInfo();
+	                while (cellIterator.hasNext()) 
+	                {
+	                	i++;
+	                	
+	                    Cell cell = cellIterator.next();
+	                  
+	                    
+	                    switch (cell.getCellType()) 
+	                    {
+	                        case Cell.CELL_TYPE_NUMERIC:
+	                        
+	                            cellvalue=cell.getNumericCellValue();
+	                            break;
+	                        case Cell.CELL_TYPE_STRING:
+	                        
+	                            cellvalue=cell.getStringCellValue();
+	                            break;
+	                         
+	                    }
+	                    
+						
+						/*
+						 * if(i==1) { p.setId(cellvalue.toString()); } if(i==2) {
+						 * p.setName(cellvalue.toString()); } if(i==3) {
+						 * p.setAddress(cellvalue.toString()); } if(i==4) {
+						 * p.setAge(cellvalue.toString()); }
+						 * 
+						 */
+	                    
+	                    System.out.println(i+" "+cellvalue);
+	                }
+	               // plist.add(p);
+	              //  System.out.println("");
+	            }
+	            file.close();
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			// plist.remove(0);
+			return plist;
+	    }
+	
+	
+	
+	
+	public List<RequestInfo> readXLSXFile2() throws Exception
+    {
+		List<RequestInfo> reqList = new ArrayList<RequestInfo>();
+		try {
+			
+		   
+	        FileInputStream file = new FileInputStream(new File("F:/StandaloneJSONProject/demo/jsonxsl.xlsx"));
+	     
+	        XSSFWorkbook  wb = new XSSFWorkbook(file);   
+	        System.out.println(wb.getNumberOfSheets());
+	        XSSFSheet sheet = wb.getSheetAt(0);
+	    
+	        Iterator<Row> rowIterator = sheet.iterator();
+	        
+	        int j=0;
+            while (rowIterator.hasNext()) 
+            {
+            	j++;
+            	if(j==1) {
+            		rowIterator.next();
+            	}
+                Row row = rowIterator.next();
+                
+              
+                Iterator<Cell> cellIterator = row.cellIterator();
+               
+                int i=0;
+                int x=0;
+                Object cellvalue = null;
+                RequestInfo r= new RequestInfo();
+               
+                while (cellIterator.hasNext()) 
+                {
+                		
+                    Cell cell = cellIterator.next(); 
+                    
+                   // System.out.println(cell.getCellType());
+                    switch (cell.getCellType()) 
+                    {
+                        case Cell.CELL_TYPE_NUMERIC:
+                        	// System.out.println("Numeric");
+                            cellvalue=cell.getNumericCellValue();
+                            break;
+                        case Cell.CELL_TYPE_STRING:
+                        	//  System.out.println("String");
+                            cellvalue=cell.getStringCellValue();
+                            break;
+						
+						  case Cell.CELL_TYPE_BLANK: 
+							//  System.out.println("Vikassh");
+							  cellvalue=cell.getStringCellValue();
+							  break;
+						 
+                        	
+                    }
+                    
+                    i++;
+                    if(cellvalue!=null) {
+                    	if(cellvalue.toString()=="null" || cellvalue.toString().isBlank() ||cellvalue.toString().isEmpty())
+                    	cellvalue=null;
+                    }
+					
+                    //Switch
+					//x++;
+                  //  System.out.println(cell.getRowIndex()+x+" "+cellvalue);
+                   
+                }
+                reqList.add(r);
+              //  System.out.println("");
+                
+            }
+            file.close();
+            
+            testing();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		// plist.remove(0);
+		return reqList;
+    }
+	
+	
+	
+	public String getString(Object o) {
+		if(null!=o)
+		return o.toString();
+		else
+			return null;
+	}
+	
+	public Integer getInteger(Object o) {
+		if(null!=o)
+		return Integer.parseInt(o.toString());
+		else
+		return null;
+	}
+	
+	
+	
+	
+	public  List<RequestInfo> testing() {
+		
+		List<RequestInfo> reqList = new ArrayList<RequestInfo>();
+		List<Object> a=new ArrayList();
+		try {
+		
+		   FileInputStream file = new FileInputStream(new File("F:/StandaloneJSONProject/demo/jsonxsl.xlsx"));
+	        XSSFWorkbook  wb = new XSSFWorkbook(file);   
+	        
+	        
+	        
+		for(int sn=0; sn<wb.getNumberOfSheets(); sn++) {
+		   Sheet sheet = wb.getSheetAt(sn);
+		   for (int rn=sheet.getFirstRowNum(); rn<=sheet.getLastRowNum(); rn++) {
+		      Row row = sheet.getRow(rn);
+		      if(rn>0)
+		      if (row != null) {
+		    	  RequestInfo r =  new RequestInfo();
+		    	  Employees e = new Employees();
+		    	  int i=0;
+		    	  Object cellvalue=null;
+			         for (int cn=0; cn<row.getLastCellNum(); cn++) {
+			            Cell cell = row.getCell(cn);
+			           
+			            
+			            if (cell != null) {
+			            	switch (cell.getCellType()) 
+		                    {
+		                        case Cell.CELL_TYPE_NUMERIC:
+		                        	
+		                            cellvalue=cell.getNumericCellValue();
+		                           
+		                            break;
+		                        case Cell.CELL_TYPE_STRING:
+		                        	
+		                            cellvalue=cell.getStringCellValue();
+		                          
+		                            break;   	
+		                    }
+			            } else {
+			            	 cellvalue=null;
+			            	 
+			            }
+			            
+			        	
+			            switch (cn){
+	                    
+                    	
+	                    case 0:{
+	                    	r.setApiId(getString(cellvalue));
+	                    	break;
+	                    }
+	                    case 1:{
+	                    	r.setVer(getString(cellvalue));
+	                    	break;
+	                    }
+	                    
+	                    case 2:{
+	                    	r.setAction(getString(cellvalue));
+	                    	break;
+	                    }
+	                    
+	                    case 3:{
+	                    	r.setDid(getString(cellvalue));
+	                    	break;
+	                    }
+	                    case 4:{
+	                    	r.setKey(getString(cellvalue));
+	                    	break;
+	                    }
+	                    
+	                    case 5:{
+	                    	r.setMsgId(getString(cellvalue));
+	                    	break;
+	                    }
+	                    case 6:{
+	                    	r.setRequesterId(getString(cellvalue));
+	                    	break;
+	                    }
+	                    
+	                    case 7:{
+	                    	r.setAuthToken(getString(cellvalue));
+	                    	break;
+	                    }
+	                    case 8:{
+	                    	e.setTenantId(getString(cellvalue));
+	                    	break;
+	                    	
+	                    }
+	                    
+	                  }
+			       
+			          //System.out.println( r.hashCode()); 
+			          System.out.println(cn+" "+cellvalue);
+			            
+			            
+			       }
+			       
+			         reqList.add(r);
+			         
+		      }
+		    
+		   }
+		}
+		
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//System.out.println(a);
+		return reqList;
+	}
+}

@@ -1,0 +1,9 @@
+package com.readexcel.demo;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class TestController {
+	
+
+}

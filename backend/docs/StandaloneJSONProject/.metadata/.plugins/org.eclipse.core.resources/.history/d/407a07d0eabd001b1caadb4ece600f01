@@ -1,0 +1,20 @@
+package com.readexcel.demo.entity;
+
+public class JsonResponse {
+	
+	private String jsonResponse;
+	private String tennantId;
+	public String getJsonResponse() {
+		return jsonResponse;
+	}
+	public void setJsonResponse(String jsonResponse) {
+		this.jsonResponse = jsonResponse;
+	}
+	public String getTennantId() {
+		return tennantId;
+	}
+	public void setTennantId(String tennantId) {
+		this.tennantId = tennantId;
+	}
+
+}

@@ -1,0 +1,13 @@
+package com.readexcel.demo.entity;
+
+public class RequestInfo {
+	
+	String apiId;
+	String ver;
+	String action;
+	String did;
+	String key;
+	String msgId;
+	String requesterId;
+	String authToken;
+}

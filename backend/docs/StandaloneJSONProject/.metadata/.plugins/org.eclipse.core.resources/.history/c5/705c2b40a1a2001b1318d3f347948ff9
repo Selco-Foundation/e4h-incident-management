@@ -1,0 +1,10 @@
+package com.readexcel.demo.entity;
+
+public class Employees {
+	private String mobileNumber;
+	private String fatherOrHusbandName;
+	private String relationship;
+	private String gender;
+	private String dob;
+	private String tenantId;
+}
