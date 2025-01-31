@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename field &apos;jsonResponse&apos; in &apos;com.readexcel.demo.entity.JsonResponse&apos; to &apos;json&apos;&#x0A;- Original project: &apos;demo&apos;&#x0A;- Original element: &apos;com.readexcel.demo.entity.JsonResponse.jsonResponse&apos;&#x0A;- Renamed element: &apos;com.readexcel.demo.entity.JsonResponse.json&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" delegate="false" deprecate="false" description="Rename field &apos;jsonResponse&apos;" flags="589826" getter="false" id="org.eclipse.jdt.ui.rename.field" input="/src\/main\/java&lt;com.readexcel.demo.entity{JsonResponse.java[JsonResponse^jsonResponse" name="json" references="true" setter="false" stamp="1622010177664" textual="false" version="1.0"/>
+</session>

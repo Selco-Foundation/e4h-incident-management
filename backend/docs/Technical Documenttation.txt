@@ -1,0 +1,17 @@
+Index names 
+
+im-services 
+
+
+
+Kafka topics
+
+save-im-request
+save-im-request-indexer
+update-im-request
+update-im-request-indexer
+
+
+Postman collections to test IM APIs
+
+https://api.postman.com/collections/9242526-4dcdca9d-0bd5-4c0b-9188-8002ab58e552?access_key=PMAT-01JJVK4BKJEKBYHTM43BAAHH5A

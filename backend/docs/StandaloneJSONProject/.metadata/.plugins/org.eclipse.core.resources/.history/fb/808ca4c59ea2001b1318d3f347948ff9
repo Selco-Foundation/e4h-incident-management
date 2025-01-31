@@ -1,0 +1,7 @@
+package com.readexcel.demo.entity.jurisdiction;
+
+public class Role {
+	
+	 private String value;
+	 private String label;
+}

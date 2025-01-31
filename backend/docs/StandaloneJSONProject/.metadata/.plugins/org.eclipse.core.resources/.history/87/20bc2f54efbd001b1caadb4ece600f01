@@ -1,0 +1,65 @@
+package com.readexcel.demo.entity;
+
+import java.math.BigDecimal;
+
+public class Assignments {
+	
+	private BigDecimal fromDate;
+	private BigDecimal toDate;
+	private boolean isCurrentAssignment;
+	private String department;
+	private String designation;
+	
+	public BigDecimal getFromDate() {
+		return fromDate;
+	}
+	public void setFromDate(BigDecimal fromDate) {
+		this.fromDate = fromDate;
+	}
+	public BigDecimal getToDate() {
+		return toDate;
+	}
+	public void setToDate(BigDecimal toDate) {
+		this.toDate = toDate;
+	}
+	public boolean getIsCurrentAssignment() {
+		return isCurrentAssignment;
+	}
+	public void setIsCurrentAssignment(boolean isCurrentAssignment) {
+		this.isCurrentAssignment = isCurrentAssignment;
+	}
+	
+	public void setIsCurrentAssignment(String isCurrentAssignment) {
+		if(isCurrentAssignment.equalsIgnoreCase("TRUE"))
+			this.isCurrentAssignment=true;
+		else
+			this.isCurrentAssignment=false;
+	}
+	
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+	public boolean isHOD() {
+		return isHOD;
+	}
+	public void setIsHOD(boolean isHOD) {
+		this.isHOD = isHOD;
+	}
+	public void setIsHOD(String isHOD) {
+		if(isHOD.equalsIgnoreCase("TRUE"))
+			this.isHOD=true;
+		else
+			this.isHOD=false;
+	}
+	
+
+}

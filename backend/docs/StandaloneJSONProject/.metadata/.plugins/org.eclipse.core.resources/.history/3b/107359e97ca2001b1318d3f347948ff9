@@ -1,0 +1,83 @@
+package com.readexcel.demo;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.odftoolkit.odfdom.doc.OdfDocument;
+import org.springframework.stereotype.Service;
+
+
+//@Service
+public class JsonApiCon {
+	
+
+	
+	  public static void main(String[] args) throws Exception {
+	  
+	  System.out.println("Json Here"); readXLSXFile();
+	  }
+	 
+	
+	public static void readXLSXFile() throws Exception
+    {
+		try {
+			
+			OdfDocument inputStream = OdfDocument.loadDocument(new File("F:/StandaloneJSONProject/demo/user.xls"));
+//	      InputStream ExcelFileToRead = new FileInputStream("/home/java/kun.xlsx");
+	       
+	        
+	        FileInputStream file = new FileInputStream(new File("F:/StandaloneJSONProject/demo/user2.xlsx"));
+	        
+	       // HSSFWorkbook hs = new HSSFWorkbook(file);
+	        XSSFWorkbook  wb = new XSSFWorkbook(file);
+	    
+	        
+	        
+	        System.out.println(wb.getNumberOfSheets());
+	        XSSFSheet sheet = wb.getSheetAt(0);
+	       // HSSFSheet hsheet = hs.getSheetAt(0);
+	        Iterator<Row> rowIterator = sheet.iterator();
+            while (rowIterator.hasNext()) 
+            {
+                Row row = rowIterator.next();
+                //For each row, iterate through all the columns
+                Iterator<Cell> cellIterator = row.cellIterator();
+                 
+                while (cellIterator.hasNext()) 
+                {
+                    Cell cell = cellIterator.next();
+                    //Check the cell type and format accordingly
+                    switch (cell.getCellType()) 
+                    {
+                        case Cell.CELL_TYPE_NUMERIC:
+                            System.out.print(cell.getNumericCellValue() + "t");
+                          
+                            break;
+                        case Cell.CELL_TYPE_STRING:
+                            System.out.print(cell.getStringCellValue() + "t");
+                            break;
+                    }
+                }
+                System.out.println("");
+            }
+            file.close();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+}
+	
+}
