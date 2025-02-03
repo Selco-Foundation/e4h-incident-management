@@ -1,0 +1,60 @@
+package com.readexcel.demo.entity;
+
+import java.util.List;
+
+public class Employees {
+	private String mobileNumber;
+	private String fatherOrHusbandName;
+	private String relationship;
+	private String gender;
+	private String dob;
+	private List<Roles>roles; 
+	
+	private String tenantId;
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+	public String getFatherOrHusbandName() {
+		return fatherOrHusbandName;
+	}
+	public void setFatherOrHusbandName(String fatherOrHusbandName) {
+		this.fatherOrHusbandName = fatherOrHusbandName;
+	}
+	public String getRelationship() {
+		return relationship;
+	}
+	public void setRelationship(String relationship) {
+		this.relationship = relationship;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getDob() {
+		return dob;
+	}
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+	public List<Roles> getRoles() {
+		return roles;
+	}
+	public void setRoles(List<Roles> roles) {
+		this.roles = roles;
+	}
+	public String getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+	
+	
+	
+	
+}

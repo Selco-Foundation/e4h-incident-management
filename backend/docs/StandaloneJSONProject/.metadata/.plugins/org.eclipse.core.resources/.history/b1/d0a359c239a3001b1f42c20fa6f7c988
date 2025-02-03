@@ -1,0 +1,30 @@
+package com.readexcel.demo;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class TestController {
+	
+	@Autowired
+	JsonApiCon j;
+	
+	@RequestMapping("/getuser")
+	public List <PwcCustomer> getUser() {
+		List <PwcCustomer> p = null;
+		try {
+		p= j.readXLSXFile2();
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		return p;
+	}
+	
+
+}

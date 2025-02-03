@@ -1,0 +1,15 @@
+package com.readexcel.demo.entity;
+
+import java.util.List;
+
+public class Employees {
+	private String mobileNumber;
+	private String fatherOrHusbandName;
+	private String relationship;
+	private String gender;
+	private String dob;
+	private List<Roles>roles; 
+	private String tenantId;
+	
+	
+}
