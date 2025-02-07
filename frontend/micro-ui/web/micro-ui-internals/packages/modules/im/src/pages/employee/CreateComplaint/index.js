@@ -204,6 +204,11 @@ useEffect(async () => {
   const handleDistrictChange = async (selectedDistrict) => {
    
     setDistrict(selectedDistrict);
+    setBlock({});
+    setHealthCentre({});
+    setHealthCareType({});
+    setPhcMenu([]);
+    setPhcSubTypeMenu([]);
     const response=mdmsData?.Incident?.Block;
     if(response){
       const blocks=response.filter((def)=>def.districtCode===selectedDistrict.key);
@@ -236,8 +241,9 @@ useEffect(async () => {
   }
   const handleBlockChange= (selectedBlock)=>{
     //sessionStorage.setItem("block",JSON.stringify(value))
-    setHealthCareType({})
     setHealthCentre({})
+    setHealthCareType({})
+    setPhcSubTypeMenu([]);
     if (selectTenant && selectTenant !== "pg")
     {
       
