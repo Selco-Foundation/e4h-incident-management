@@ -82,7 +82,8 @@ const getCitizenStyles = (value) => {
       },
       tagContainerStyles: {
        margin: "0px",
-       padding: "0px"
+       padding: "0px",
+       maxWidth: "100%",
       },
       tagStyles: {
         height: "auto", 
