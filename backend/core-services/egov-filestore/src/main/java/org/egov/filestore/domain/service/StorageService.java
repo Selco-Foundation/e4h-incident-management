@@ -88,6 +88,10 @@ public class StorageService {
 
 	private List<Artifact> mapFilesToArtifact(List<MultipartFile> files, String module, String tag, String tenantId) {
 
+		if(files.size() > fileStoreConfig.getFileListAllowed()) {
+			throw new CustomException("EG_FILE_LIST_EXCEEDED",
+					String.format("Cannot upload more than %d files", fileStoreConfig.getFileListAllowed()));
+		}
 		final String folderName = getFolderName(module, tenantId);
 		String inputStreamAsString = null;
 		List<Artifact> artifacts = new ArrayList<>();
