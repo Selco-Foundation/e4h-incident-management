@@ -16,76 +16,82 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class StorageValidator {
 
-	private FileStoreConfig fileStoreConfig;
-
-	
-	@Autowired
-	public StorageValidator(FileStoreConfig fileStoreConfig) {
-		super();
-		this.fileStoreConfig = fileStoreConfig;
-	}
+    private FileStoreConfig fileStoreConfig;
 
 
-	public void validate(Artifact artifact) {
-			
-		String extension = (FilenameUtils.getExtension(artifact.getMultipartFile().getOriginalFilename())).toLowerCase();
-		validateFileExtention(extension);
-		validateContentType(artifact.getFileContentInString(), extension);
-		validateInputContentType(artifact);
-		validateVideoSize(artifact.getMultipartFile());
-	}
-	
-	private void validateFileExtention(String extension) {
-		if(!fileStoreConfig.getAllowedFormatsMap().containsKey(extension)) {
-			throw new CustomException("EG_FILESTORE_INVALID_INPUT","Inalvid input provided for file : " + extension + ", please upload any of the allowed formats : " + fileStoreConfig.getAllowedKeySet());
-		}
-	}
-	
-	private void validateContentType(String inputStreamAsString, String extension) {
-		
-		String inputFormat = null;
-		Tika tika = new Tika();
-		try {
-			
-			InputStream ipStreamForValidation = IOUtils.toInputStream(inputStreamAsString, fileStoreConfig.getImageCharsetType());
-			inputFormat = tika.detect(ipStreamForValidation);
-			ipStreamForValidation.close();
-		} catch (IOException e) {
-			throw new CustomException("EG_FILESTORE_PARSING_ERROR","not able to parse the input please upload a proper file of allowed type : " + e.getMessage());
-		}
-		
-		if (!fileStoreConfig.getAllowedFormatsMap().get(extension).contains(inputFormat)) {
-			throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Inalvid input provided for file, the extension does not match the file format. Please upload any of the allowed formats : "
-							+ fileStoreConfig.getAllowedKeySet());
-		}
-	}
-
-	private void validateInputContentType(Artifact artifact){
-
-		MultipartFile file =  artifact.getMultipartFile();
-		String contentType = file.getContentType();
-		String extension = (FilenameUtils.getExtension(artifact.getMultipartFile().getOriginalFilename())).toLowerCase();
+    @Autowired
+    public StorageValidator(FileStoreConfig fileStoreConfig) {
+        super();
+        this.fileStoreConfig = fileStoreConfig;
+    }
 
 
-		if (!fileStoreConfig.getAllowedFormatsMap().get(extension).contains(contentType)) {
-			throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Invalid Content Type");
-		}
-	}
+    public void validate(Artifact artifact) {
 
-	private void validateVideoSize(MultipartFile file) {
-		String contentType = file.getContentType();
+        String extension = (FilenameUtils.getExtension(artifact.getMultipartFile().getOriginalFilename())).toLowerCase();
+        validateFileExtention(extension);
+        validateContentType(artifact.getFileContentInString(), extension);
+        validateInputContentType(artifact);
+		validateFileSize(artifact.getMultipartFile());
+    }
 
-		if (contentType != null && contentType.startsWith("video/")) {
-			long maxSizeInBytes = fileStoreConfig.getMaxVideoSizeInMB() * 1024 * 1024; // Convert MB to Bytes
-			long fileSizeInBytes = file.getSize();
+    private void validateFileExtention(String extension) {
+        if (!fileStoreConfig.getAllowedFormatsMap().containsKey(extension)) {
+            throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Inalvid input provided for file : " + extension + ", please upload any of the allowed formats : " + fileStoreConfig.getAllowedKeySet());
+        }
+    }
 
-			if (fileSizeInBytes > maxSizeInBytes) {
-				throw new CustomException("EG_FILESTORE_VIDEO_SIZE_EXCEEDED",
-						"File size exceeds the allowed limit of " + fileStoreConfig.getMaxVideoSizeInMB() + "MB.");
-			}
-		}
-	}
+    private void validateContentType(String inputStreamAsString, String extension) {
 
+        String inputFormat = null;
+        Tika tika = new Tika();
+        try {
+
+            InputStream ipStreamForValidation = IOUtils.toInputStream(inputStreamAsString, fileStoreConfig.getImageCharsetType());
+            inputFormat = tika.detect(ipStreamForValidation);
+            ipStreamForValidation.close();
+        } catch (IOException e) {
+            throw new CustomException("EG_FILESTORE_PARSING_ERROR", "not able to parse the input please upload a proper file of allowed type : " + e.getMessage());
+        }
+
+        if (!fileStoreConfig.getAllowedFormatsMap().get(extension).contains(inputFormat)) {
+            throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Inalvid input provided for file, the extension does not match the file format. Please upload any of the allowed formats : "
+                    + fileStoreConfig.getAllowedKeySet());
+        }
+    }
+
+    private void validateInputContentType(Artifact artifact) {
+
+        MultipartFile file = artifact.getMultipartFile();
+        String contentType = file.getContentType();
+        String extension = (FilenameUtils.getExtension(artifact.getMultipartFile().getOriginalFilename())).toLowerCase();
+
+
+        if (!fileStoreConfig.getAllowedFormatsMap().get(extension).contains(contentType)) {
+            throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Invalid Content Type");
+        }
+    }
+
+    private void validateFileSize(MultipartFile file) {
+        String contentType = file.getContentType();
+
+        long maxSizeInBytes = 0L;
+        long fileSize = 0;
+
+        if (contentType != null && contentType.startsWith("video/")) {
+            fileSize = fileStoreConfig.getMaxVideoSizeInMB();
+            maxSizeInBytes = fileSize * 1024 * 1024; // Convert MB to Bytes
+        } else if (contentType != null && contentType.startsWith("image/")) {
+            fileSize = fileStoreConfig.getMaxVideoSizeInMB();
+            maxSizeInBytes = fileSize * 1024 * 1024; // Convert MB to Bytes
+        }
+        long fileSizeInBytes = file.getSize();
+
+        if (fileSizeInBytes > maxSizeInBytes) {
+            throw new CustomException("EG_FILESTORE_VIDEO_SIZE_EXCEEDED",
+                    String.format("File size exceeds the allowed limit of %d MB.", fileSize));
+        }
+    }
 
 	
 	/*private void validateFilesToUpload(List<MultipartFile> filesToStore, String module, String tag, String tenantId) {
