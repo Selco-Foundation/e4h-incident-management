@@ -142,6 +142,7 @@ if(translatedPhcMenu.length>0){
   }
 
   function onSelectHealthCare(value, type) {
+    if(!value) return
     if (!ifExists(pgrfilters.phcType, value)) {
       setPgrFilters({ ...pgrfilters, phcType: [...pgrfilters.phcType, value] });
     }
