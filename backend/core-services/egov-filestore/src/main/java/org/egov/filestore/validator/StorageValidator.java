@@ -32,6 +32,7 @@ public class StorageValidator {
 		validateFileExtention(extension);
 		validateContentType(artifact.getFileContentInString(), extension);
 		validateInputContentType(artifact);
+		validateVideoSize(artifact.getMultipartFile());
 	}
 	
 	private void validateFileExtention(String extension) {
@@ -70,6 +71,21 @@ public class StorageValidator {
 			throw new CustomException("EG_FILESTORE_INVALID_INPUT", "Invalid Content Type");
 		}
 	}
+
+	private void validateVideoSize(MultipartFile file) {
+		String contentType = file.getContentType();
+
+		if (contentType != null && contentType.startsWith("video/")) {
+			long maxSizeInBytes = fileStoreConfig.getMaxVideoSizeInMB() * 1024 * 1024; // Convert MB to Bytes
+			long fileSizeInBytes = file.getSize();
+
+			if (fileSizeInBytes > maxSizeInBytes) {
+				throw new CustomException("EG_FILESTORE_VIDEO_SIZE_EXCEEDED",
+						"File size exceeds the allowed limit of " + fileStoreConfig.getMaxVideoSizeInMB() + "MB.");
+			}
+		}
+	}
+
 
 	
 	/*private void validateFilesToUpload(List<MultipartFile> filesToStore, String module, String tag, String tenantId) {
