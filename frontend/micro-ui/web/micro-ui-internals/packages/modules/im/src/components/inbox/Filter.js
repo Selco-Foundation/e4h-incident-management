@@ -197,7 +197,7 @@ if(translatedPhcMenu.length>0){
   };
 
   const GetSelectOptions = (lable, options, selected = null, select, optionKey, onRemove, key) => {
-    selected = selected || { [optionKey]: " ", code: "" };
+    selected = selected || { [optionKey]: "", code: "" };
    
     return (
       <div>
