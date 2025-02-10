@@ -46,6 +46,9 @@ public class FileStoreConfig {
 	
 	@Value("#{'${image.formats}'.split(',')}") 
 	private List<String> imageFormats;
+
+	@Value("${max.video.size}")
+	private Integer maxVideoSizeInMB;
 	
 	@PostConstruct
 	private void enrichKeysetForFormats() {
