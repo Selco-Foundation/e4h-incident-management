@@ -49,6 +49,9 @@ public class FileStoreConfig {
 
 	@Value("${max.video.size}")
 	private Integer maxVideoSizeInMB;
+
+	@Value("${filelist.allowed}")
+	private Integer fileListAllowed;
 	
 	@PostConstruct
 	private void enrichKeysetForFormats() {
