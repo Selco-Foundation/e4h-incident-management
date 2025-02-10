@@ -50,6 +50,9 @@ public class FileStoreConfig {
 	@Value("${max.video.size}")
 	private Integer maxVideoSizeInMB;
 
+	@Value("${max.image.size}")
+	private Integer maxImageSizeInMB;
+
 	@Value("${filelist.allowed}")
 	private Integer fileListAllowed;
 	
