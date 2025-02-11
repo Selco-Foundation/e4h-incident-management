@@ -88,36 +88,27 @@ export const Complaint = {
     complaintDetails.workflow.action = action;
     complaintDetails.workflow.assignes = employeeData ? [employeeData.uuid] : null;
     complaintDetails.workflow.comments = comments;
-    complaintDetails.workflow.reopenreason = selectedReopenReason;
-    complaintDetails.workflow.rejectReason = selectedRejectReason?.code;
-    if (selectedReopenReason) {
-      if (!complaintDetails.incident.additionalDetail.reopenreason) {
-        complaintDetails.incident.additionalDetail.reopenreason = [];
-        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason);
-      } else {
-        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason);
-      }
-    } else if (selectedRejectReason) {
-      if (!complaintDetails.incident.additionalDetail.rejectReason) {
-        complaintDetails.incident.additionalDetail.rejectReason = [];
-        complaintDetails.incident.additionalDetail.rejectReason.push(selectedRejectReason?.localizedCode);
-      } else {
-        complaintDetails.incident.additionalDetail.rejectReason.push(selectedRejectReason?.localizedCode);
-      }
-    } else if (selectedSendBackReason) {
-      if (!complaintDetails.incident.additionalDetail.selectedSendBackReason) {
-        complaintDetails.incident.additionalDetail.sendBackReason = [];
-        complaintDetails.incident.additionalDetail.sendBackReason.push({
+    const reasonMap = {
+      reopenreason: selectedReopenReason && { value: selectedReopenReason },
+      rejectReason: selectedRejectReason && { value: selectedRejectReason?.localizedCode },
+      sendBackReason: selectedSendBackReason && {
+        value: {
           reason: selectedSendBackReason?.localizedCode,
           subReason: selectedSendBackSubReason?.localizedCode,
-        });
-      } else {
-        complaintDetails.incident.additionalDetail.sendBackReason.push({
-          reason: selectedSendBackReason?.localizedCode,
-          subReason: selectedSendBackSubReason?.localizedCode,
-        });
+        },
+      },
+    };
+
+    Object.entries(reasonMap).forEach(([key, data]) => {
+      complaintDetails.workflow[key] = data.value;
+
+      if (data) {
+        if (!complaintDetails.incident.additionalDetail[key]) {
+          complaintDetails.incident.additionalDetail[key] = [];
+        }
+        complaintDetails.incident.additionalDetail[key].push(data.value);
       }
-    }
+    });
 
     uploadedDocument ? (complaintDetails.workflow.verificationDocuments = uploadedDocument) : null;
 

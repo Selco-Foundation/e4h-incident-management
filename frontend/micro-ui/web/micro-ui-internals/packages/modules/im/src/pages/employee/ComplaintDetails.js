@@ -621,9 +621,9 @@ export const ComplaintDetails = (props) => {
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
-    let reopenReasons = [...(complaintDetails?.incident?.additionalDetail?.reopenreason || [])].reverse();
-    let rejectReasons = [...(complaintDetails?.incident?.additionalDetail?.rejectReason || [])].reverse();
-    let sendBackReasons = [...(complaintDetails?.incident?.additionalDetail?.sendBackReason || [])].reverse();
+    const reopenReasons = Array.from(complaintDetails?.incident?.additionalDetail?.reopenreason || []).reverse();
+    const rejectReasons = Array.from(complaintDetails?.incident?.additionalDetail?.rejectReason || []).reverse();
+    const sendBackReasons = Array.from(complaintDetails?.incident?.additionalDetail?.sendBackReason || []).reverse();
 
     let arrNew = arr.map((abc) => {
       switch (abc.performedAction) {
@@ -679,16 +679,13 @@ export const ComplaintDetails = (props) => {
             {checkpoint.performedAction === "SENDBACK" ? (
               <div className="TLComments">
                 <h3>{t("WF_SENDBACK_REASON")}</h3>
-                <h1>
-                  {arrNew[index]?.sendBackReason?.reason}
-                  {arrNew[index]?.sendBackReason?.subReason ? ` - ${arrNew[index]?.sendBackReason?.subReason}` : ""}
-                </h1>
+                <h1>{[arrNew[index]?.sendBackReason?.reason, arrNew[index]?.sendBackReason?.subReason].filter(Boolean).join(" - ")}</h1>
               </div>
             ) : null}
             {checkpoint?.wfComment ? (
               <div>
-                {checkpoint?.wfComment?.map((e) => (
-                  <div className="TLComments">
+                {checkpoint?.wfComment?.map((e, index) => (
+                  <div key={`comment-${index}`} className="TLComments">
                     <h3>{t("WF_COMMON_COMMENTS")}</h3>
                     <p>{e}</p>
                   </div>
@@ -724,8 +721,8 @@ export const ComplaintDetails = (props) => {
         ) : null}
         {comment ? (
           <div>
-            {comment?.map((e) => (
-              <div className="TLComments">
+            {comment?.map((e, index) => (
+              <div key={`comment-${index}`} className="TLComments">
                 <h3>{t("WF_COMMON_COMMENTS")}</h3>
                 <p style={{ overflowX: "scroll" }}>{e}</p>
               </div>
