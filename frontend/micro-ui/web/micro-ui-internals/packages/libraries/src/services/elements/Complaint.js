@@ -73,28 +73,51 @@ export const Complaint = {
     return response;
   },
 
-  assign: async (complaintDetails, action, employeeData, comments, uploadedDocument, tenantId, reasons = {}) => {
+  assign: async (
+    complaintDetails,
+    action,
+    employeeData,
+    comments,
+    uploadedDocument,
+    tenantId,
+    selectedReopenReason,
+    selectedRejectReason,
+    selectedSendBackReason,
+    selectedSendBackSubReason
+  ) => {
     complaintDetails.workflow.action = action;
     complaintDetails.workflow.assignes = employeeData ? [employeeData.uuid] : null;
     complaintDetails.workflow.comments = comments;
-
-    const reasonMappings = {
-      selectedReopenReason: "reopenreason",
-      selectedRejectReason: "rejectReason",
-      selectedSendBackReason: "sendBackReason",
-      selectedSendBackSubReason: "sendBackSubReason",
-    };
-
-    Object.entries(reasonMappings).forEach(([key, workflowKey]) => {
-      if (reasons[key]) {
-        complaintDetails.workflow[workflowKey] = reasons[key]?.code || reasons[key];
-
-        if (!complaintDetails.incident.additionalDetail[workflowKey]) {
-          complaintDetails.incident.additionalDetail[workflowKey] = [];
-        }
-        complaintDetails.incident.additionalDetail[workflowKey].push(reasons[key]?.localizedCode || reasons[key]);
+    complaintDetails.workflow.reopenreason = selectedReopenReason;
+    complaintDetails.workflow.rejectReason = selectedRejectReason?.code;
+    if (selectedReopenReason) {
+      if (!complaintDetails.incident.additionalDetail.reopenreason) {
+        complaintDetails.incident.additionalDetail.reopenreason = [];
+        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason);
+      } else {
+        complaintDetails.incident.additionalDetail.reopenreason.push(selectedReopenReason);
       }
-    });
+    } else if (selectedRejectReason) {
+      if (!complaintDetails.incident.additionalDetail.rejectReason) {
+        complaintDetails.incident.additionalDetail.rejectReason = [];
+        complaintDetails.incident.additionalDetail.rejectReason.push(selectedRejectReason?.localizedCode);
+      } else {
+        complaintDetails.incident.additionalDetail.rejectReason.push(selectedRejectReason?.localizedCode);
+      }
+    } else if (selectedSendBackReason) {
+      if (!complaintDetails.incident.additionalDetail.selectedSendBackReason) {
+        complaintDetails.incident.additionalDetail.sendBackReason = [];
+        complaintDetails.incident.additionalDetail.sendBackReason.push({
+          reason: selectedSendBackReason?.localizedCode,
+          subReason: selectedSendBackSubReason?.localizedCode,
+        });
+      } else {
+        complaintDetails.incident.additionalDetail.sendBackReason.push({
+          reason: selectedSendBackReason?.localizedCode,
+          subReason: selectedSendBackSubReason?.localizedCode,
+        });
+      }
+    }
 
     uploadedDocument ? (complaintDetails.workflow.verificationDocuments = uploadedDocument) : null;
 

@@ -272,12 +272,15 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
         } else if (selectedAction === "RESOLVE" && uploadedFile.length === 0) {
           setError(t("CS_MANDATORY_FILE_UPLOAD"));
         } else {
-          onAssign(selectedEmployee, comments, uploadedFile, {
+          onAssign(
+            selectedEmployee,
+            comments,
+            uploadedFile,
             selectedReopenReason,
             selectedRejectReason,
             selectedSendBackReason,
-            selectedSendBackSubReason,
-          });
+            selectedSendBackSubReason
+          );
         }
       }}
       error={error}
@@ -571,7 +574,15 @@ export const ComplaintDetails = (props) => {
     }
   }
 
-  async function onAssign(selectedEmployee, comments, uploadedFile, reasons) {
+  async function onAssign(
+    selectedEmployee,
+    comments,
+    uploadedFile,
+    selectedReopenReason,
+    selectedRejectReason,
+    selectedSendBackReason,
+    selectedSendBackSubReason
+  ) {
     setPopup(false);
     const response = await Digit.Complaint.assign(
       complaintDetails,
@@ -580,7 +591,10 @@ export const ComplaintDetails = (props) => {
       comments,
       uploadedFile,
       tenant,
-      reasons
+      selectedReopenReason,
+      selectedRejectReason,
+      selectedSendBackReason,
+      selectedSendBackSubReason
     );
     if (response?.IncidentWrappers) {
       setAssignResponse(response);
@@ -607,38 +621,21 @@ export const ComplaintDetails = (props) => {
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
-    let reopenCount = 0;
-    let rejectCount = 0;
-    let sendBackCount = 0;
-    let sendBackSubReasonCount = 0;
+    let reopenReasons = [...(complaintDetails?.incident?.additionalDetail?.reopenreason || [])].reverse();
+    let rejectReasons = [...(complaintDetails?.incident?.additionalDetail?.rejectReason || [])].reverse();
+    let sendBackReasons = [...(complaintDetails?.incident?.additionalDetail?.sendBackReason || [])].reverse();
 
     let arrNew = arr.map((abc) => {
-      if (abc.performedAction === "REOPEN") {
-        let reopen = complaintDetails?.incident?.additionalDetail?.reopenreason;
-        let obj = { ...abc, reopenreason: reopen?.reverse()[reopenCount] };
-        reopen?.reverse();
-        reopenCount += 1;
-        return obj;
-      } else if (abc.performedAction === "REJECT") {
-        let rejectreason = complaintDetails?.incident?.additionalDetail?.rejectReason;
-        let obj = { ...abc, rejectReason: rejectreason?.reverse()[rejectCount] };
-        rejectreason?.reverse();
-        rejectCount += 1;
-        return obj;
-      } else if (abc.performedAction === "SENDBACK") {
-        let sendBackReason = complaintDetails?.incident?.additionalDetail?.sendBackReason;
-        let sendBackSubReason = complaintDetails?.incident?.additionalDetail?.sendBackSubReason;
-        let obj = {
-          ...abc,
-          sendBackReason: sendBackReason?.reverse()[sendBackCount],
-          sendBackSubReason: sendBackSubReason?.reverse()[sendBackSubReasonCount],
-        };
-        sendBackReason?.reverse();
-        sendBackSubReason?.reverse();
-        sendBackCount += 1;
-        sendBackSubReasonCount += 1;
-        return obj;
-      } else return abc;
+      switch (abc.performedAction) {
+        case "REOPEN":
+          return { ...abc, reopenreason: reopenReasons.shift() };
+        case "REJECT":
+          return { ...abc, rejectReason: rejectReasons.shift() };
+        case "SENDBACK":
+          return { ...abc, sendBackReason: sendBackReasons.shift() };
+        default:
+          return abc;
+      }
     });
     const arr1 = arr;
     const { wfComment: comment, thumbnailsToShow } = checkpoint;
@@ -683,8 +680,8 @@ export const ComplaintDetails = (props) => {
               <div className="TLComments">
                 <h3>{t("WF_SENDBACK_REASON")}</h3>
                 <h1>
-                  {arrNew[index]?.sendBackReason}
-                  {arrNew[index]?.sendBackSubReason ? ` - ${arrNew[index]?.sendBackSubReason}` : ""}
+                  {arrNew[index]?.sendBackReason?.reason}
+                  {arrNew[index]?.sendBackReason?.subReason ? ` - ${arrNew[index]?.sendBackReason?.subReason}` : ""}
                 </h1>
               </div>
             ) : null}
