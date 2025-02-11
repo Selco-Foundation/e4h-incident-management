@@ -571,7 +571,7 @@ export const ComplaintDetails = (props) => {
     }
   }
 
-  async function onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason, selectedRejectReason, selectedSendBackReason) {
+  async function onAssign(selectedEmployee, comments, uploadedFile, reasons) {
     setPopup(false);
     const response = await Digit.Complaint.assign(
       complaintDetails,
@@ -580,9 +580,7 @@ export const ComplaintDetails = (props) => {
       comments,
       uploadedFile,
       tenant,
-      selectedReopenReason,
-      selectedRejectReason,
-      selectedSendBackReason
+      reasons
     );
     if (response?.IncidentWrappers) {
       setAssignResponse(response);
