@@ -20,8 +20,6 @@ import java.util.*;
 @org.springframework.stereotype.Service
 public class IMService {
 
-
-
     private EnrichmentService enrichmentService;
 
     private UserService userService;

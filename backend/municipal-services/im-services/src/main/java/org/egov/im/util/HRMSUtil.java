@@ -33,13 +33,14 @@ public class HRMSUtil {
 
     /**
      * Gets the list of department for the given list of uuids of employees
+     *
      * @param uuids
      * @param requestInfo
      * @return
      */
-    public List<String> getDepartment(List<String> uuids, RequestInfo requestInfo){
+    public List<String> getDepartment(List<String> uuids, RequestInfo requestInfo) {
 
-        StringBuilder url = getHRMSURI(uuids,null,null);
+        StringBuilder url = getHRMSURI(uuids, null, null);
 
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
 
@@ -48,14 +49,13 @@ public class HRMSUtil {
         List<String> departments = null;
 
         try {
-             departments = JsonPath.read(res, HRMS_DEPARTMENT_JSONPATH);
-        }
-        catch (Exception e){
-            throw new CustomException("PARSING_ERROR","Failed to parse HRMS response");
+            departments = JsonPath.read(res, HRMS_DEPARTMENT_JSONPATH);
+        } catch (Exception e) {
+            throw new CustomException("PARSING_ERROR", "Failed to parse HRMS response");
         }
 
-        if(CollectionUtils.isEmpty(departments))
-            throw new CustomException("DEPARTMENT_NOT_FOUND","The Department of the user with uuid: "+uuids.toString()+" is not found");
+        if (CollectionUtils.isEmpty(departments))
+            throw new CustomException("DEPARTMENT_NOT_FOUND", "The Department of the user with uuid: " + uuids.toString() + " is not found");
 
         return departments;
 
@@ -63,32 +63,29 @@ public class HRMSUtil {
 
     /**
      * Builds HRMS search URL
+     *
      * @param uuids
      * @return
      */
 
-    public StringBuilder getHRMSURI(List<String> uuids, String tenantId, String role){
+    public StringBuilder getHRMSURI(List<String> uuids, String tenantId, String role) {
 
         StringBuilder builder = new StringBuilder(config.getHrmsHost());
         builder.append(config.getHrmsEndPoint());
-        if(uuids!=null) {
-        builder.append("?uuids=");
-        builder.append(StringUtils.join(uuids, ","));
-        builder.append("&tenantId=");
-        builder.append(tenantId);
+        if (uuids != null) {
+            builder.append("?uuids=");
+            builder.append(StringUtils.join(uuids, ","));
+            builder.append("&tenantId=");
+            builder.append(tenantId);
 
+        } else {
+            builder.append("?tenantId=");
+            builder.append(tenantId);
         }
-        else
-        {
-        	 builder.append("?tenantId=");
-             builder.append(tenantId);
-        }
-        
+
         builder.append("&roles=");
         builder.append(role);
 
         return builder;
     }
-
-
 }

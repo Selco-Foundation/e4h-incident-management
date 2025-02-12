@@ -7,8 +7,6 @@ import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.egov.im.util.IMConstants.SCHEMA_REPLACE_STRING;
-
 @Component
 public class IMUtils {
 

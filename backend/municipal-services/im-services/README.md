@@ -64,6 +64,9 @@ the citizen and will be updated by notifications whenever the status of the comp
 
 **c) Count Complaints `POST /_search` :** API to return the count of total number of complaints satisfying the given criteria
 
+**c) Count Complaints `POST / video/_upload` :** API for uploading video to filestore
+
+
 ### Kafka Consumers
 
 - NA

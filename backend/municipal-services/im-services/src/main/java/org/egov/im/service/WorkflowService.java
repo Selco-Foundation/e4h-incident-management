@@ -25,16 +25,18 @@ public class WorkflowService {
     private ServiceRequestRepository repository;
 
     private ObjectMapper mapper;
-    
+
     private NotificationService notificationService;
 
 
     @Autowired
-    public WorkflowService(IMConfiguration imConfiguration, ServiceRequestRepository repository, ObjectMapper mapper,NotificationService notificationService) {
+    public WorkflowService(IMConfiguration imConfiguration,
+                           ServiceRequestRepository repository,
+                           ObjectMapper mapper, NotificationService notificationService) {
         this.imConfiguration = imConfiguration;
         this.repository = repository;
         this.mapper = mapper;
-        this.notificationService=notificationService;
+        this.notificationService = notificationService;
     }
 
     /*
@@ -45,7 +47,8 @@ public class WorkflowService {
     public BusinessService getBusinessService(IncidentRequest incidentRequest) {
         String tenantId = incidentRequest.getIncident().getTenantId();
         StringBuilder url = getSearchURLWithParams(tenantId, IM_BUSINESSSERVICE);
-        RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(incidentRequest.getRequestInfo()).build();
+        RequestInfoWrapper requestInfoWrapper
+                = RequestInfoWrapper.builder().requestInfo(incidentRequest.getRequestInfo()).build();
         Object result = repository.fetchResult(url, requestInfoWrapper);
         BusinessServiceResponse response = null;
         try {
@@ -103,8 +106,6 @@ public class WorkflowService {
     }
 
 
-
-
     public List<IncidentWrapper> enrichWorkflow(RequestInfo requestInfo, List<IncidentWrapper> incidentWrappers) {
 
         // FIX ME FOR BULK SEARCH
@@ -112,7 +113,7 @@ public class WorkflowService {
 
         List<IncidentWrapper> enrichedServiceWrappers = new ArrayList<>();
 
-        for(String tenantId : tenantIdToServiceWrapperMap.keySet()) {
+        for (String tenantId : tenantIdToServiceWrapperMap.keySet()) {
 
             List<String> serviceRequestIds = new ArrayList<>();
 
@@ -153,10 +154,10 @@ public class WorkflowService {
 
     private Map<String, List<IncidentWrapper>> getTenantIdToServiceWrapperMap(List<IncidentWrapper> incidentWrappers) {
         Map<String, List<IncidentWrapper>> resultMap = new HashMap<>();
-        for(IncidentWrapper incidentWrapper : incidentWrappers){
-            if(resultMap.containsKey(incidentWrapper.getIncident().getTenantId())){
+        for (IncidentWrapper incidentWrapper : incidentWrappers) {
+            if (resultMap.containsKey(incidentWrapper.getIncident().getTenantId())) {
                 resultMap.get(incidentWrapper.getIncident().getTenantId()).add(incidentWrapper);
-            }else{
+            } else {
                 List<IncidentWrapper> incidentWrapperList = new ArrayList<>();
                 incidentWrapperList.add(incidentWrapper);
                 resultMap.put(incidentWrapper.getIncident().getTenantId(), incidentWrapperList);
@@ -174,12 +175,12 @@ public class WorkflowService {
 
         Incident incident = request.getIncident();
         Workflow workflow = request.getWorkflow();
-        if(request.getWorkflow().getAction().equalsIgnoreCase("RESOLVE") || request.getWorkflow().getAction().equalsIgnoreCase("REJECT"))
-        {
-        	workflow.setAssignes(null);
-        	Map<String, String> reassigneeDetails  = notificationService.getHRMSEmployee(request,"COMPLAINANT");
-        	List<String> assignee=Arrays.asList(reassigneeDetails.get("employeeUUID"));
-        	workflow.setAssignes(assignee);
+        if (request.getWorkflow().getAction().equalsIgnoreCase("RESOLVE")
+                || request.getWorkflow().getAction().equalsIgnoreCase("REJECT")) {
+            workflow.setAssignes(null);
+            Map<String, String> reassigneeDetails = notificationService.getHRMSEmployee(request, "COMPLAINANT");
+            List<String> assignee = Arrays.asList(reassigneeDetails.get("employeeUUID"));
+            workflow.setAssignes(assignee);
         }
         ProcessInstance processInstance = new ProcessInstance();
         processInstance.setBusinessId(incident.getIncidentId());
@@ -190,7 +191,7 @@ public class WorkflowService {
         processInstance.setDocuments(request.getWorkflow().getVerificationDocuments());
         processInstance.setComment(workflow.getComments());
 
-        if(!CollectionUtils.isEmpty(workflow.getAssignes())){
+        if (!CollectionUtils.isEmpty(workflow.getAssignes())) {
             List<User> users = new ArrayList<>();
 
             workflow.getAssignes().forEach(uuid -> {
@@ -206,7 +207,6 @@ public class WorkflowService {
     }
 
     /**
-     *
      * @param processInstances
      */
     public Map<String, Workflow> getWorkflow(List<ProcessInstance> processInstances) {
@@ -216,7 +216,7 @@ public class WorkflowService {
         processInstances.forEach(processInstance -> {
             List<String> userIds = null;
 
-            if(!CollectionUtils.isEmpty(processInstance.getAssignes())){
+            if (!CollectionUtils.isEmpty(processInstance.getAssignes())) {
                 userIds = processInstance.getAssignes().stream().map(User::getUuid).collect(Collectors.toList());
             }
 
@@ -259,8 +259,5 @@ public class WorkflowService {
         url.append("&businessIds=");
         url.append(IncidentId);
         return url;
-
     }
-
-
 }
