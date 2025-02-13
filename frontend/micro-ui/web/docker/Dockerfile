@@ -22,8 +22,6 @@ ENV GENERATE_SOURCEMAP "false"
  
 COPY ${WORK_DIR} .
 
-# RUN chown $USER:$USER .
-
 RUN ls -lah
  
 #RUN node web/envs.js
