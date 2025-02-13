@@ -1,4 +1,4 @@
-FROM ghcr.io/egovernments/alpine-node-builder-14:yarn AS build
+FROM egovio/alpine-node-builder-14:yarn AS build
 
 RUN apk update && apk upgrade
 
@@ -27,9 +27,10 @@ RUN ls -lah
 #RUN node web/envs.js
 
 RUN cd web/ \
-&& ./install-deps.sh \
-&& yarn install \
-&& yarn build
+    && chmod +x install-deps.sh \
+    &&  ./install-deps.sh \
+    && yarn install \
+    && yarn build:webpack
  
 FROM nginx:mainline-alpine
 
