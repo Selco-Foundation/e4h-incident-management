@@ -21,7 +21,7 @@ jobs:
 
       # Login to Docker Container Registry
       - name: Login to Docker Container Registry
-        run: docker login -u selcofoundation -p ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u selcohub -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Set Version from Branch
         id: set_version
         run: |
@@ -40,6 +40,6 @@ jobs:
 
       - name: Build and Push Docker image for digit-ui
         run: |
-          docker build  -t selcofoundation/micro-ui:${{ env.VERSION }}-${{ env.commit_hash }} -f  web/docker/Dockerfile .
-          docker push selcofoundation/micro-ui:${{ env.VERSION }}-${{ env.commit_hash }}
+          docker build  -t selcohub/micro-ui:${{ env.VERSION }}-${{ env.commit_hash }} -f  web/docker/Dockerfile .
+          docker push selcohub/micro-ui:${{ env.VERSION }}-${{ env.commit_hash }}
         working-directory: frontend/micro-ui
