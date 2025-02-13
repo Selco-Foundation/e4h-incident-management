@@ -100,9 +100,9 @@ export const Complaint = {
     };
 
     Object.entries(reasonMap).forEach(([key, data]) => {
-      complaintDetails.workflow[key] = data.value;
 
       if (data) {
+        complaintDetails.workflow[key] = data.value;
         if (!complaintDetails.incident.additionalDetail[key]) {
           complaintDetails.incident.additionalDetail[key] = [];
         }
