@@ -21,7 +21,7 @@ jobs:
 
       # Login to Docker Container Registry
       - name: Login to Docker Container Registry
-        run: docker login -u selcofoundation -p ${{ secrets.ACR_PASSWORD }}
+        run: docker login -u selcofoundation -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Set Version from Branch
         id: set_version
         run: |
