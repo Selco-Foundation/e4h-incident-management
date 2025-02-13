@@ -1,4 +1,4 @@
-FROM ghcr.io/egovernments/alpine-node-builder-14:yarn AS build
+FROM egovio/alpine-node-builder-14:yarn AS build
 
 RUN apk update && apk upgrade
 
@@ -21,6 +21,8 @@ ENV NODE_OPTIONS "--max-old-space-size=8192"
 ENV GENERATE_SOURCEMAP "false"
  
 COPY ${WORK_DIR} .
+
+RUN chown $USER:$USER .
 
 RUN ls -lah
  
