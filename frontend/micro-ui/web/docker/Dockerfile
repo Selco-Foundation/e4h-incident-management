@@ -27,9 +27,9 @@ RUN ls -lah
 #RUN node web/envs.js
 
 RUN cd web/ \
-&& ./install-deps.sh \
-&& yarn install \
-&& yarn build
+    &&  ./install-deps.sh \
+    && yarn install \
+    && yarn build:webpack
  
 FROM nginx:mainline-alpine
 
