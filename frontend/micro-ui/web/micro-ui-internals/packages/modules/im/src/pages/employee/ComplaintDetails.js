@@ -30,7 +30,8 @@ import {
   Modal,
   SectionalDropdown,
   ImageUploadHandler,
-  MultiUploadWrapper
+  MultiUploadWrapper,
+  RadioButtons,
 } from "@selco/digit-ui-react-components";
 import { Link } from "react-router-dom";
 
@@ -106,11 +107,12 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
   const cityDetails = Digit.ULBService.getCurrentUlb();
   const [selectedReopenReason, setSelectedReopenReason] = useState(null);
   const [selectedRejectReason, setSelectedRejectReason] = useState(null);
+  const [selectedSendBackReason, setSelectedSendBackReason] = useState(null);
+  const [selectedSendBackSubReason, setSelectedSendBackSubReason] = useState(null);
   const state = Digit.ULBService.getStateId();
   const reopenReasonMenu = [t(`CS_REOPEN_OPTION_ONE`), t(`CS_REOPEN_OPTION_TWO`), t(`CS_REOPEN_OPTION_THREE`), t(`CS_REOPEN_OPTION_FOUR`)];
-  const { isMdmsLoading, data: rejectReasons } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["RejectReasons"]);
+  const { isMdmsLoading, data: rejectSendBackReasons } = Digit.Hooks.pgr.useMDMS(state, "Incident", ["RejectReasons", "SendBackReasons"]);
   const [dataState, setDataState] = useState({ newArr: [], mappedArray: [] });
-  console.log("rejectedreason", rejectReasons)
   // const uploadFile = useCallback( () => {
 
   //   }, [file]);
@@ -145,7 +147,15 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
   function onSelectRejectReason(reason) {
     setSelectedRejectReason(reason);
   }
-  const clearError=useCallback(()=>{
+  function onSelectSendBackReason(reason) {
+    setSelectedSendBackReason(reason);
+    setSelectedSendBackSubReason(null);
+    setComments("");
+  }
+  function onSelectSendBackSubReason(reason) {
+    setSelectedSendBackSubReason(reason);
+  }
+  const clearError = useCallback(() => {
     setError("");
   },[])
   useEffect(()=>{
@@ -243,30 +253,34 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
       
       
       actionSaveOnSubmit={() => {
-        if(selectedAction==="REJECT" && !selectedRejectReason){
-          setError(t("CS_MANDATORY_REJECT_REASON"))
-        }
-        else if(selectedAction==="REJECT" && !comments){
+        if (selectedAction === "REJECT" && !selectedRejectReason) {
+          setError(t("CS_MANDATORY_REJECT_REASON"));
+        } else if (selectedAction === "REJECT" && !comments) {
           setError(t("CS_MANDATORY_COMMENTS"));
-        }
-       else if((selectedAction==="SENDBACK") && !comments){
-            setError(t("CS_MANDATORY_COMMENTS"));
-        }
-        else if(selectedAction==="REOPEN" && selectedReopenReason===null){
-          setError(t("CS_REOPEN_REASON_MANDATORY"))
-        }
-        else if(selectedAction==="ASSIGN" && selectedEmployee===null){
-           setError(t("CS_ASSIGNEE_MANDATORY"))
-        }
-        else if(selectedAction==="RESOLVE" && !comments){
+        } else if (selectedAction === "SENDBACK" && !selectedSendBackReason) {
+          setError(t("CS_MANDATORY_SENDBACK_REASON"));
+        } else if (selectedAction === "SENDBACK" && selectedSendBackReason?.additionalInputs?.[0].type === "radio" && !selectedSendBackSubReason) {
+          setError(t("CS_MANDATORY_SENDBACK_SUBREASON"));
+        } else if (selectedAction === "SENDBACK" && selectedSendBackReason?.additionalInputs?.[0].type === "textarea" && !comments) {
           setError(t("CS_MANDATORY_COMMENTS"));
-        }
-        else if(selectedAction==="RESOLVE" && uploadedFile.length===0) {
+        } else if (selectedAction === "REOPEN" && selectedReopenReason === null) {
+          setError(t("CS_REOPEN_REASON_MANDATORY"));
+        } else if (selectedAction === "ASSIGN" && selectedEmployee === null) {
+          setError(t("CS_ASSIGNEE_MANDATORY"));
+        } else if (selectedAction === "RESOLVE" && !comments) {
+          setError(t("CS_MANDATORY_COMMENTS"));
+        } else if (selectedAction === "RESOLVE" && uploadedFile.length === 0) {
           setError(t("CS_MANDATORY_FILE_UPLOAD"));
-        }
-        else{
-          
-        onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason, selectedRejectReason);
+        } else {
+          onAssign(
+            selectedEmployee,
+            comments,
+            uploadedFile,
+            selectedReopenReason,
+            selectedRejectReason,
+            selectedSendBackReason,
+            selectedSendBackSubReason
+          );
         }
       }}
       error={error}
@@ -276,22 +290,35 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
       {selectedAction === "REJECT" ? (
           <React.Fragment>
             <CardLabel>{t("CS_REJECT_COMPLAINT")}*</CardLabel>
-            <Dropdown 
-  selected={selectedRejectReason} 
-  option={rejectReasons?.Incident?.RejectReasons?.map(reason => ({
-    ...reason,
-    localizedCode: t(reason.code) // Use localized text if available, otherwise fallback to default name
-  }))} 
-  optionKey={"localizedCode"} 
-  select={onSelectRejectReason}
-/>
-
+            <Dropdown
+              selected={selectedRejectReason}
+              option={rejectSendBackReasons?.Incident?.RejectReasons?.map((reason) => ({
+                ...reason,
+                localizedCode: t(reason.code), // Use localized text if available, otherwise fallback to default name
+              }))}
+              optionKey={"localizedCode"}
+              select={onSelectRejectReason}
+            />
           </React.Fragment>
         ) : null}
 
-        {selectedAction === "REJECT" || selectedAction === "RESOLVE" || selectedAction === "REOPEN" || selectedAction==="SENDBACK" ? null : (
+        {selectedAction === "SENDBACK" ? (
           <React.Fragment>
-            
+            <CardLabel>{t("CS_SENDBACK_COMPLAINT")}*</CardLabel>
+            <Dropdown
+              selected={selectedSendBackReason}
+              option={rejectSendBackReasons?.Incident?.SendBackReasons?.map((reason) => ({
+                ...reason,
+                localizedCode: t(reason.code), // Use localized text if available, otherwise fallback to default name
+              }))}
+              optionKey={"localizedCode"}
+              select={onSelectSendBackReason}
+            />
+          </React.Fragment>
+        ) : null}
+
+        {selectedAction === "REJECT" || selectedAction === "RESOLVE" || selectedAction === "REOPEN" || selectedAction === "SENDBACK" ? null : (
+          <React.Fragment>
             <CardLabel>{t("CS_COMMON_EMPLOYEE_NAME")}*</CardLabel>
             
             {employeeData &&  <Dropdown  option={employeeData?.[0]?.options} optionKey="name" id="employee" selected={selectedEmployee} select={onSelectEmployee} required={true}/>}
@@ -304,14 +331,36 @@ const ComplaintDetailsModal = ({ workflowDetails, complaintDetails, close, popup
             <Dropdown selected={selectedReopenReason} option={reopenReasonMenu} select={onSelectReopenReason} />
           </React.Fragment>
         ) : null}
-        {selectedAction !== "ASSIGN"  && selectedAction!=="REOPEN" ? (
-        <CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}*</CardLabel>
-        ):<CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}</CardLabel>}
-        <TextArea name="comment" onChange={addComment} value={comments} />
-        {selectedAction==="RESOLVE" ? (
-           <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}*</CardLabel>
-        ):  <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}</CardLabel>}
-       
+        {selectedAction !== "SENDBACK" || selectedSendBackReason?.additionalInputs?.[0].type === "textarea" ? (
+          <>
+            {selectedAction !== "ASSIGN" && selectedAction !== "REOPEN" ? (
+              <CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}*</CardLabel>
+            ) : (
+              <CardLabel>{t("CS_COMMON_EMPLOYEE_COMMENTS")}</CardLabel>
+            )}
+            <TextArea name="comment" onChange={addComment} value={comments} />
+          </>
+        ) : null}
+        {selectedAction === "SENDBACK" && selectedSendBackReason?.additionalInputs?.[0].type === "radio" && (
+          <React.Fragment>
+            <CardLabel>{t("CS_SENDBACK_SUBCOMPLAINT")}*</CardLabel>
+            <RadioButtons
+              onSelect={onSelectSendBackSubReason}
+              selectedOption={selectedSendBackSubReason}
+              optionsKey="name"
+              options={selectedSendBackReason?.additionalInputs[0]?.options?.map((reason) => ({
+                ...reason,
+                localizedCode: t(reason.code), // Use localized text if available, otherwise fallback to default name
+              }))}
+            />
+          </React.Fragment>
+        )}
+        {selectedAction === "RESOLVE" ? (
+          <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}*</CardLabel>
+        ) : (
+          <CardLabel>{t("CS_ACTION_SUPPORTING_DOCUMENTS")}</CardLabel>
+        )}
+
         {/* {selectedAction==="RESOLVE" ? (
         //   <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}*</CardLabelDesc>
         // ) : <CardLabelDesc>{t(`CS_UPLOAD_RESTRICTIONS`)}</CardLabelDesc>} */}
@@ -525,16 +574,35 @@ export const ComplaintDetails = (props) => {
     }
   }
 
-  async function onAssign(selectedEmployee, comments, uploadedFile, selectedReopenReason, selectedRejectReason) {
+  async function onAssign(
+    selectedEmployee,
+    comments,
+    uploadedFile,
+    selectedReopenReason,
+    selectedRejectReason,
+    selectedSendBackReason,
+    selectedSendBackSubReason
+  ) {
     setPopup(false);
-    const response = await Digit.Complaint.assign(complaintDetails, selectedAction, selectedEmployee, comments, uploadedFile, tenant, selectedReopenReason, selectedRejectReason);
-    if(response?.IncidentWrappers){
+    const response = await Digit.Complaint.assign(
+      complaintDetails,
+      selectedAction,
+      selectedEmployee,
+      comments,
+      uploadedFile,
+      tenant,
+      selectedReopenReason,
+      selectedRejectReason,
+      selectedSendBackReason,
+      selectedSendBackSubReason
+    );
+    if (response?.IncidentWrappers) {
       setAssignResponse(response);
-    }else{
-      setError(response)
+    } else {
+      setError(response);
       //setTimeout(() => setError(false), 10000);
     }
-    
+
     setToast(true);
     setLoader(true);
     await refreshData();
@@ -553,40 +621,30 @@ export const ComplaintDetails = (props) => {
   if (workflowDetails.isError) return <React.Fragment>{workflowDetails.error}</React.Fragment>;
 
   const getTimelineCaptions = (checkpoint, index, arr) => {
+    const reopenReasons = Array.from(complaintDetails?.incident?.additionalDetail?.reopenreason || []).reverse();
+    const rejectReasons = Array.from(complaintDetails?.incident?.additionalDetail?.rejectReason || []).reverse();
+    const sendBackReasons = Array.from(complaintDetails?.incident?.additionalDetail?.sendBackReason || []).reverse();
 
-    let reopenCount = 0;
-    let rejectCount = 0;
-    let arrNew= arr.map((abc) => {
-      if(abc.performedAction === "REOPEN")
-      {
-        let reopen=complaintDetails?.incident?.additionalDetail?.reopenreason
-        let obj ={...abc, reopenreason:reopen?.reverse()[reopenCount]}
-        reopen?.reverse()
-        reopenCount +=1
-        return obj
+    let arrNew = arr.map((abc) => {
+      switch (abc.performedAction) {
+        case "REOPEN":
+          return { ...abc, reopenreason: reopenReasons.shift() };
+        case "REJECT":
+          return { ...abc, rejectReason: rejectReasons.shift() };
+        case "SENDBACK":
+          return { ...abc, sendBackReason: sendBackReasons.shift() };
+        default:
+          return abc;
       }
-      else if(abc.performedAction === "REJECT")
-      {
-        let rejectreason=complaintDetails?.incident?.additionalDetail?.rejectReason
-        let obj ={...abc, rejectReason:rejectreason?.reverse()[rejectCount]}
-        rejectreason?.reverse()
-        rejectCount +=1
-        return obj
-      }
-      else return abc
-      
-    })
-    const arr1=arr
-    const {wfComment: comment, thumbnailsToShow} = checkpoint;
-    function zoomImageTimeLineWrapper(imageSource, index,thumbnailsToShow,arr){
-      
-      if(arr1[index]?.status == "RESOLVED")
-      {
-        window.open(arr1[index].thumbnailsToShow.fullImage[0], "_blank")
-      }
-      else {
-        let newIndex=thumbnailsToShow.thumbs?.findIndex(link=>link===imageSource);
-        zoomImage((newIndex>-1&&thumbnailsToShow?.fullImage?.[newIndex])||imageSource);
+    });
+    const arr1 = arr;
+    const { wfComment: comment, thumbnailsToShow } = checkpoint;
+    function zoomImageTimeLineWrapper(imageSource, index, thumbnailsToShow, arr) {
+      if (arr1[index]?.status == "RESOLVED") {
+        window.open(arr1[index].thumbnailsToShow.fullImage[0], "_blank");
+      } else {
+        let newIndex = thumbnailsToShow.thumbs?.findIndex((link) => link === imageSource);
+        zoomImage((newIndex > -1 && thumbnailsToShow?.fullImage?.[newIndex]) || imageSource);
       }
       
     }
@@ -610,72 +668,99 @@ export const ComplaintDetails = (props) => {
         const caption = {
           date: Digit.DateUtils.ConvertEpochToDate(complaintDetails.audit.details.lastModifiedTime),         
         };
-        return <>
-          {checkpoint?.wfComment ? <div>{checkpoint?.wfComment?.map( e => 
-            <div className="TLComments">
-              <h3>{t("WF_COMMON_COMMENTS")}</h3>
-              <p>{e}</p>
-            </div>
-          )}</div> : null}
-          {checkpoint.status!=="COMPLAINT_FILED" && checkpoint.performedAction!=="SENDBACK" ? (
-            <div className="TLComments">
-              <h3>{t("WF_REOPEN_REASON")}</h3>
-              <h1>{arrNew[index]?.reopenreason}</h1>
-            </div>
-          ):null}
-          {checkpoint.status==="REJECT" ? (
-            <div className="TLComments">
-              <h3>{t("WF_REJECT_REASON")}</h3>
-              <h1>{arrNew[index]?.rejectReason}</h1>
-            </div>
-          ):null}
-          {checkpoint.status !== "COMPLAINT_FILED" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
-            <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-            <DisplayPhotos srcs={thumbnailsToShow.fullImage} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
-          </div> : null}
-          {caption?.date ? <TLCaption data={caption}/> : null}
-        </>
+        return (
+          <>
+            {checkpoint.performedAction !== "SENDBACK" ? (
+              <div className="TLComments">
+                <h3>{t("WF_REOPEN_REASON")}</h3>
+                <h1>{arrNew[index]?.reopenreason}</h1>
+              </div>
+            ) : null}
+            {checkpoint.performedAction === "SENDBACK" ? (
+              <div className="TLComments">
+                <h3>{t("WF_SENDBACK_REASON")}</h3>
+                <h1>{[arrNew[index]?.sendBackReason?.reason, arrNew[index]?.sendBackReason?.subReason].filter(Boolean).join(" - ")}</h1>
+              </div>
+            ) : null}
+            {checkpoint?.wfComment ? (
+              <div>
+                {checkpoint?.wfComment?.map((e, index) => (
+                  <div key={`comment-${index}`} className="TLComments">
+                    <h3>{t("WF_COMMON_COMMENTS")}</h3>
+                    <p>{e}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {thumbnailsToShow?.thumbs?.length > 0 ? (
+              <div className="TLComments">
+                <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
+                <DisplayPhotos
+                  srcs={thumbnailsToShow.fullImage}
+                  onClick={(src, index) => zoomImageTimeLineWrapper(src, index, thumbnailsToShow, arr)}
+                />
+              </div>
+            ) : null}
+            {checkpoint.performedAction === "SENDBACK"
+              ? captionForOtherCheckpointsInTL?.date && <TLCaption data={captionForOtherCheckpointsInTL} />
+              : caption?.date && <TLCaption data={caption} />}
+          </>
+        );
       }
-    }
-   else if(checkpoint.status === "CLOSEDAFTERRESOLUTION")
-    {      
-      
-    return <TLCaption data={""} comments={checkpoint?.wfComment}/>;
-
+    } else if (checkpoint.status === "CLOSEDAFTERRESOLUTION") {
+      return <TLCaption data={""} comments={checkpoint?.wfComment} />;
     }
     // return (checkpoint.caption && checkpoint.caption.length !== 0) || checkpoint?.wfComment?.length > 0 ? <TLCaption data={checkpoint?.caption?.[0]} comments={checkpoint?.wfComment} /> : null;
-    return <>
-      {comment ? <div>{comment?.map( e => 
-        <div className="TLComments">
-          <h3>{t("WF_COMMON_COMMENTS")}</h3>
-          <p style={{overflowX:"scroll"}}>{e}</p>
-        </div>
-      )}</div> : null}
-      {checkpoint.status !== "COMPLAINT_FILED" && checkpoint?.performedAction!=="INITIATE" && thumbnailsToShow?.thumbs?.length > 0 ? <div className="TLComments">
-        <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
-        <DisplayPhotos srcs={thumbnailsToShow.fullImage} onClick={(src, index) => zoomImageTimeLineWrapper(src, index,thumbnailsToShow,arr)} />
-      </div> : null}
-      {checkpoint.status==="REJECTED" ? (
-        <div className="TLComments">
-           <h3>{t("WF_REJECT_REASON")}</h3>
+    return (
+      <>
+        {checkpoint.status === "REJECTED" ? (
+          <div className="TLComments">
+            <h3>{t("WF_REJECT_REASON")}</h3>
             <h1>{arrNew[index]?.rejectReason}</h1>
-        </div>
-      ):null}
-      {captionForOtherCheckpointsInTL?.date ? <TLCaption data={captionForOtherCheckpointsInTL}/> : null}
-      {(checkpoint.status == "CLOSEDAFTERRESOLUTION" && complaintDetails.workflow.action == "RATE" && index <= 1) && complaintDetails.audit.rating ? <StarRated text={t("CS_ADDCOMPLAINT_YOU_RATED")} rating={complaintDetails.audit.rating} />: null}
-    </>
-  }
-return (
-  <React.Fragment>
-     <div style={{color:"#9e1b32", marginBottom:'10px', textAlign:"right", marginRight:"15px"}}>
-    <Link to={`/digit-ui/employee/im/inbox`}>{t("CS_COMMON_BACK")}</Link></div> 
-    <Card>
-      
-      <div style={{display:"flex", flexDirection:"column", gap:"5px"}}>
-      <CardSubHeader>{t(`CS_HEADER_INCIDENT_SUMMARY`)}</CardSubHeader>
-      <div style={{fontWeight:"bolder", fontSize: isMobile ? "16px":"21px", marginTop: isMobile || isIpadView? "20px": -20, marginBottom:"22px"}}>{t("CS_HEADER_TICKET_DETAILS")}</div>
+          </div>
+        ) : null}
+        {comment ? (
+          <div>
+            {comment?.map((e, index) => (
+              <div key={`comment-${index}`} className="TLComments">
+                <h3>{t("WF_COMMON_COMMENTS")}</h3>
+                <p style={{ overflowX: "scroll" }}>{e}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {checkpoint.status !== "COMPLAINT_FILED" && checkpoint?.performedAction !== "INITIATE" && thumbnailsToShow?.thumbs?.length > 0 ? (
+          <div className="TLComments">
+            <h3>{t("CS_COMMON_ATTACHMENTS")}</h3>
+            <DisplayPhotos srcs={thumbnailsToShow.fullImage} onClick={(src, index) => zoomImageTimeLineWrapper(src, index, thumbnailsToShow, arr)} />
+          </div>
+        ) : null}
+        {captionForOtherCheckpointsInTL?.date ? <TLCaption data={captionForOtherCheckpointsInTL} /> : null}
+        {checkpoint.status == "CLOSEDAFTERRESOLUTION" && complaintDetails.workflow.action == "RATE" && index <= 1 && complaintDetails.audit.rating ? (
+          <StarRated text={t("CS_ADDCOMPLAINT_YOU_RATED")} rating={complaintDetails.audit.rating} />
+        ) : null}
+      </>
+    );
+  };
+  return (
+    <React.Fragment>
+      <div style={{ color: "#9e1b32", marginBottom: "10px", textAlign: "right", marginRight: "15px" }}>
+        <Link to={`/digit-ui/employee/im/inbox`}>{t("CS_COMMON_BACK")}</Link>
       </div>
-      
+      <Card>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+          <CardSubHeader>{t(`CS_HEADER_INCIDENT_SUMMARY`)}</CardSubHeader>
+          <div
+            style={{
+              fontWeight: "bolder",
+              fontSize: isMobile ? "16px" : "21px",
+              marginTop: isMobile || isIpadView ? "20px" : -20,
+              marginBottom: "22px",
+            }}
+          >
+            {t("CS_HEADER_TICKET_DETAILS")}
+          </div>
+        </div>
 
       {isLoading ? (
         <Loader />
