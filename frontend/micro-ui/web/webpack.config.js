@@ -10,30 +10,42 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js)$/,
-        use: ["babel-loader"],
+        test: /\.(js|jsx)$/, // Allow JSX files
+        exclude: /node_modules/, // Ignore node_modules for faster builds
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"],
+            plugins: [
+              "@babel/plugin-proposal-optional-chaining"
+            ]
+          }
+        }
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader"]
       }
-    ],
+    ]
+  },
+  resolve: {
+    extensions: [".js", ".jsx"] // Allow importing JS & JSX without specifying extension
   },
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, "build"),
-    publicPath: "/digit-ui/",
+    publicPath: "/digit-ui/"
   },
   optimization: {
     splitChunks: {
-      chunks: 'all',
-      minSize:20000,
-      maxSize:50000,
-      enforceSizeThreshold:50000,
-      minChunks:1,
-      maxAsyncRequests:30,
-      maxInitialRequests:30
-    },
+      chunks: "all",
+      minSize: 20000,
+      maxSize: 50000,
+      enforceSizeThreshold: 50000,
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30
+    }
   },
   plugins: [
     new CleanWebpackPlugin(),
