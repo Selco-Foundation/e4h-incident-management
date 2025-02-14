@@ -20,6 +20,8 @@ import org.egov.im.web.models.RequestInfoWrapper;
 import org.egov.im.web.models.workflow.ProcessInstance;
 import org.egov.im.web.models.workflow.ProcessInstanceResponse;
 import org.egov.tracer.model.CustomException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -34,19 +36,37 @@ import java.util.*;
 
 import static org.egov.im.util.IMConstants.*;
 
-@RequiredArgsConstructor
 @Service
 @Slf4j
 public class NotificationService {
 
-    private final IMConfiguration config;
-    private final NotificationUtil notificationUtil;
-    private final WorkflowService workflowService;
-    private final ServiceRequestRepository serviceRequestRepository;
-    private final MDMSUtils mdmsUtils;
-    private final HRMSUtil hrmsUtils;
-    private final ObjectMapper mapper;
-    private final MultiStateInstanceUtil centralInstanceUtil;
+    private IMConfiguration config;
+    private NotificationUtil notificationUtil;
+    private WorkflowService workflowService;
+    private ServiceRequestRepository serviceRequestRepository;
+    private MDMSUtils mdmsUtils;
+    private HRMSUtil hrmsUtils;
+    private ObjectMapper mapper;
+    private MultiStateInstanceUtil centralInstanceUtil;
+
+    @Autowired
+    public NotificationService(IMConfiguration config,
+                               NotificationUtil notificationUtil,
+                               ServiceRequestRepository serviceRequestRepository,
+                               MDMSUtils mdmsUtils,
+                               HRMSUtil hrmsUtils,
+                               ObjectMapper mapper,
+                               MultiStateInstanceUtil centralInstanceUtil,
+                               @Lazy WorkflowService workflowService) {
+        this.config = config;
+        this.notificationUtil = notificationUtil;
+        this.serviceRequestRepository = serviceRequestRepository;
+        this.mdmsUtils = mdmsUtils;
+        this.hrmsUtils = hrmsUtils;
+        this.mapper = mapper;
+        this.centralInstanceUtil = centralInstanceUtil;
+        this.workflowService = workflowService;
+    }
 
     public void process(IncidentRequest request, String topic) {
         try {

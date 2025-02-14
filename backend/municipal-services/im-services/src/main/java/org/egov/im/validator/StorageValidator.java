@@ -20,7 +20,6 @@ import java.util.Objects;
 public class StorageValidator {
 
 	private final IMConfiguration fileStoreConfig;
-	private final Tika tika;
 
 	public void validate(List<MultipartFile> files) {
 		log.info("validating {} files", files.size());
@@ -54,6 +53,7 @@ public class StorageValidator {
 
 	private void validateVideoContentType(InputStream inputStream, String extension) {
 		String detectedFormat;
+		Tika tika = new Tika();
 		try {
 			detectedFormat = tika.detect(inputStream);
 		} catch (IOException e) {
