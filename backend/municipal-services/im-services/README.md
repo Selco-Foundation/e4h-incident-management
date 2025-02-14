@@ -76,4 +76,3 @@ the citizen and will be updated by notifications whenever the status of the comp
 - Following are the Producer topic.
     - **save-im-request** :- This topic is used to create new complaint in the system.
     - **update-im-request** :- This topic is used to update the existing complaint in the systen.
-
