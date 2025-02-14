@@ -3,15 +3,14 @@ on:
   push:
     branches:
       - develop
-      - image-build-im-services
-#    paths:
-#      - 'backend/municipal-services/im-services/**'
+    paths:
+      - 'backend/municipal-services/im-services/**'
   workflow_dispatch:
   workflow_call:
 
 jobs:
   docker_image-build:
-#    if: (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/develop')))
+    if: (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/develop')))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,12 +40,12 @@ jobs:
       - name: Login to Docker Container Registry
         run: docker login -u selcohub -p ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker image for Collection-Service
+      - name: Build and Push Docker image for im-Service
         run: |
           docker build --build-arg WORK_DIR="backend/municipal-services/im-services" -t selcohub/im-services:${{ env.VERSION }}-${{ env.commit_hash }} -f build/maven/Dockerfile .
           docker push selcohub/im-services:${{ env.VERSION }}-${{ env.commit_hash }}
 
-      - name: Build and Push Docker image for Collection-Service_DB
+      - name: Build and Push Docker image for im-Service-DB
         run: |
           docker build  -t selcohub/im-services-db:${{ env.VERSION }}-${{ env.commit_hash }} -f  Dockerfile .
           docker push selcohub/im-services-db:${{ env.VERSION }}-${{ env.commit_hash }}
