@@ -1,15 +1,13 @@
 package org.egov.im.service;
 
 
-import org.egov.common.contract.request.RequestInfo;
-
 import org.egov.im.config.IMConfiguration;
 import org.egov.im.producer.Producer;
 import org.egov.im.repository.IMRepository;
 import org.egov.im.util.MDMSUtils;
 import org.egov.im.validator.ServiceRequestValidator;
 import org.egov.im.web.models.IncidentWrapper;
-import org.egov.im.web.controllers.*;
+import org.egov.im.web.models.RequestInfo;
 import org.egov.im.web.models.RequestSearchCriteria;
 import org.egov.im.web.models.IncidentRequest;
 import org.springframework.beans.factory.annotation.Autowired;

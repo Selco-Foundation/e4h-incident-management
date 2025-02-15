@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.response.ResponseInfo;
 import org.egov.im.service.IMService;
-import org.egov.im.util.IMConstants;
 import org.egov.im.util.ResponseInfoFactory;
 import org.egov.im.web.models.CountResponse;
 import org.egov.im.web.models.IncidentRequest;
@@ -45,7 +44,6 @@ public class RequestsApiController{
         this.responseInfoFactory = responseInfoFactory;
     }
 
-
     @RequestMapping(value="/request/_create", method = RequestMethod.POST)
     public ResponseEntity<IncidentResponse> requestsCreatePost(@Valid @RequestBody IncidentRequest request) throws IOException {
         IncidentRequest enrichedReq = imService.create(request);
@@ -60,14 +58,7 @@ public class RequestsApiController{
     public ResponseEntity<IncidentResponse> requestsSearchPost(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
                                                               @Valid @ModelAttribute RequestSearchCriteria criteria) {
     	
-    	String tenantId = criteria.getTenantId();
         List<IncidentWrapper> incidentWrappers = imService.search(requestInfoWrapper.getRequestInfo(), criteria);
-        //Map<String,Integer> dynamicData = imService.getDynamicData(tenantId);
-        
-        //int complaintsResolved = dynamicData.get(IMConstants.COMPLAINTS_RESOLVED);
-	    //int averageResolutionTime = dynamicData.get(IMConstants.AVERAGE_RESOLUTION_TIME);
-	    int complaintTypes = imService.getComplaintTypes();
-        
         ResponseInfo responseInfo = responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true);
         IncidentResponse response = IncidentResponse.builder().responseInfo(responseInfo).IncidentWrappers(incidentWrappers).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
